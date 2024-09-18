@@ -1,46 +1,41 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>로그인 페이지</title>
+
+    <!-- 외부 스타일시트 적용 -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- 로그인 페이지에만 적용될 CSS -->
     <style>
-        /* 전체 페이지를 중앙에 배치하고, 폰트와 배경색을 설정 */
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-            margin: 0;
-        }
-        /* 로그인 컨테이너의 스타일 */
-        .login-container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            width: 100%;
-        }
-        /* 로그인 제목의 스타일 */
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        /* 아이디 및 비밀번호 입력 필드의 스타일 */
-        input[type="text"], input[type="password"] {
+        /* 입력 필드 스타일 */
+        
+        input[type="text"],
+        input[type="password"] {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 4px;
+            font-size: 16px;
+        }
+        /* 입력 필드에 포커스가 갔을 때 스타일 */
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
         }
         /* 로그인 버튼 스타일 */
+        
         button {
             width: 100%;
             padding: 10px;
+            margin: 10px 0;
             background-color: #007BFF;
             color: white;
             border: none;
@@ -48,54 +43,37 @@
             cursor: pointer;
             font-size: 16px;
         }
-        /* 로그인 버튼을 호버할 때 스타일 변화 */
+        /* 버튼에 마우스를 올렸을 때 배경색 변경 */
+        
         button:hover {
             background-color: #0056b3;
         }
-        /* 회원가입 링크를 포함하는 div의 스타일 */
-        .signup-link {
-            text-align: center;
+        /* 메인 페이지 링크 스타일 */
+        
+        .link {
+            display: block;
             margin-top: 20px;
-        }
-        /* 회원가입 링크의 기본 스타일 */
-        .signup-link a {
             color: #007BFF;
             text-decoration: none;
         }
-        /* 회원가입 링크를 호버할 때 밑줄 표시 */
-        .signup-link a:hover {
+        
+        .link:hover {
             text-decoration: underline;
         }
     </style>
 </head>
-<body>
 
-    <!-- 로그인 폼을 포함하는 컨테이너 -->
-    <div class="login-container">
-        <h2>로그인</h2>
-        <!-- 로그인 폼: 아이디와 비밀번호를 입력받고 POST 방식으로 /login으로 전송 -->
-        <form action="/login" method="POST">
-            <!-- 아이디 입력 필드 -->
-            <label for="id">아이디</label>
-            <input type="text" id="id" name="id" placeholder="아이디 입력" required>
-            
-            <!-- 비밀번호 입력 필드 -->
-            <label for="password">비밀번호</label>
-            <input type="password" id="password" name="password" placeholder="비밀번호 입력" required>
-            
-            <!-- 로그인 버튼 -->
+<body>
+    <div class="container">
+        <h1>로그인</h1>
+        <form action="login.html" method="POST">
+            <input type="text" name="username" id="input-user-id" placeholder="아이디" required>
+            <input type="password" name="password" id="input-user-password" placeholder="비밀번호" required>
             <button type="submit">로그인</button>
         </form>
-        <!-- 계정을 찾는 링크가 있는 div인데... 구현할 수 있을지 미지수ㅠㅠㅠㅠ -->
-         <div class="find-account-link">
-            <p>계정을 잃어버리셨나요?<a href=findaccount.html></a></p>
-         </div>
-
-        <!-- 회원가입 링크가 있는 div -->
-        <div class="signup-link">
-            <p>계정이 없으신가요? <a href="signup.html">회원가입</a></p>
-        </div>
+        <a href="index.html" class="link">계정을 잃어버리셨나요?</a>
+        <a href="index.html" class="link">계정이 없으신가요?</a>
     </div>
-
 </body>
+
 </html>
