@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>interview Page</title>
+    <style>
+        .left-menu {
+            float: left;
+            height: 100%;
+            width: 150px;
+        }
+        
+        .menu {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .menu li {
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        
+        .hidden {
+            visibility: hidden;
+        }
+        
+        .visible {
+            visibility: visible;
+        }
+        
+        .container {
+            display: flex;
+        }
+        
+        article {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="header"></div>
+    <div class="container">
+        <div id="left-menu">
+            <ul class="menu">
+                <li onclick="showSection('resume-upload')">자기소개서 등록</li>
+                <li onclick="showSection('resume-check')">자기소개서 조회</li>
+            </ul>
+        </div>
+        <div class="article">
+            <div id="resume-upload" class="visible">
+                <h1>자기소개서 등록</h1>
+                <form action="login.html" method="POST">
+                    <input type="text" name="question" id="input-interview-question" placeholder="질문" required>
+                    <input type="text" name="answer" id="input-interview-answer" placeholder="답변" required>
+                    <button type="submit">질답 추가</button>
+                </form>
+            </div>
+            <div id="resume-check" class="hidden">
+                <p>이력서 조회하기</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // header.html 파일을 불러와서 #header div에 삽입
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header').innerHTML = data;
+            });
+
+        // 특정 섹션을 표시하고 나머지는 숨기는 함수
+        function showSection(sectionId) {
+            // 모든 섹션을 숨김
+            document.getElementById('resume-upload').classList.remove('visible');
+            document.getElementById('resume-upload').classList.add('hidden');
+            document.getElementById('resume-check').classList.remove('visible');
+            document.getElementById('resume-check').classList.add('hidden');
+
+            // 선택한 섹션을 표시
+            document.getElementById(sectionId).classList.remove('hidden');
+            document.getElementById(sectionId).classList.add('visible');
+        }
+    </script>
+
+</body>
+
+</html>

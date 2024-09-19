@@ -1,0 +1,28 @@
+<!-- example.html -->
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QnA Page</title>
+</head>
+
+<body>
+
+    <div id="header"></div>
+
+    <!-- 나머지 페이지 내용 -->
+
+    <script>
+        // header.html 파일을 불러와서 #header div에 삽입
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header').innerHTML = data;
+            });
+    </script>
+
+</body>
+
+</html>
