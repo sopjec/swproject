@@ -93,20 +93,25 @@
         width: 300px;
         position: absolute;
         top: 200px;
-        right: 20px;
+        right: 50px;
     }
     /* 자막 css */
     
     .cc {
         position: absolute;
         top: 800px;
+        color: black;
     }
     
-    #stop-recording {
-        width: 100px;
+    .recording-button {
+        width: 500px;
         position: absolute;
-        right: 20px;
+        left: 1600px;
         top: 800px;
+    }
+    
+    .recording-button img {
+        width: 25px;
     }
     /* 테이블 전체 스타일 */
     
@@ -182,7 +187,12 @@
     <div class="main" id="select-interview">
         <video id="webcam" autoplay playsinline></video>
         <p class="cc">면접관 질문 자막</p>
-        <button id="stop-recording">녹화 종료</button>
+        <div class="recording-button">
+            <button id="stop-recording">녹화 종료</button>
+            <button id="speedup"><img src="speeddown.png"></button>
+            <button id="wait-recording"><img src="wait.png"></button>
+            <button id="speedown"><img src="speedup.png"></button>
+        </div>
     </div>
 
     <div class="main" id="select-interview-check">
