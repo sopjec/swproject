@@ -2,7 +2,7 @@
 <html lang="ko">
 
 <head>
-    <meta charset="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
     <title>Interview Page</title>
 </head>
@@ -88,7 +88,6 @@
         top: 200px;
         right: 50px;
     }
-    /* 자막 css */
     
     .cc {
         position: absolute;
@@ -106,7 +105,6 @@
     .recording-button img {
         width: 25px;
     }
-    /* 이력서 선택 테이블 스타일 */
     
     #resumeTable {
         width: 100%;
@@ -141,7 +139,6 @@
         height: 50px;
         cursor: pointer;
     }
-    /* 면접 기록 조회 테이블 스타일 */
     
     #interviewTable {
         width: 100%;
@@ -176,7 +173,6 @@
         height: 50px;
         cursor: pointer;
     }
-    /* 모달 창 스타일 */
     
     #saveModal {
         display: none;
@@ -193,7 +189,7 @@
     }
     
     #saveModal input {
-        width: 100%;
+        width: 90%;
         padding: 10px;
         margin: 10px 0;
     }
@@ -215,10 +211,8 @@
 
 <body>
 
-    <!-- 헤더 영역 -->
     <div id="header"></div>
 
-    <!-- 왼쪽 메뉴 -->
     <div class="left-menu">
         <ul class="sub-menu">
             <li id="view-interview">
@@ -230,12 +224,10 @@
         </ul>
     </div>
 
-    <!-- 이력서 선택 페이지 -->
     <div class="main" id="resume-select">
         <h1>면접보기</h1>
         <p>이력서 선택 후 면접이 시작됩니다. 면접 과정은 자동으로 녹화됩니다.</p>
 
-        <!-- 이력서 선택 테이블 -->
         <table id="resumeTable">
             <thead>
                 <tr>
@@ -244,20 +236,17 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- 이력서 데이터를 여기에 출력 -->
             </tbody>
         </table>
     </div>
 
-    <!-- 면접 진행 페이지 -->
     <div class="main" id="select-interview">
         <p class="cc">면접관 질문 자막</p>
         <video id="webcam" autoplay playsinline></video>
         <div class="recording-button">
             <button id="stop-recording">녹화 종료</button>
         </div>
-        <!-- 영상 저장 모달창 -->
-        <div id="saveModal" style="display: none;">
+        <div id="saveModal">
             <h2>영상 저장</h2>
             <label for="videoTitle">영상 제목:</label>
             <input type="text" id="videoTitle" placeholder="영상 제목을 입력하세요">
@@ -266,11 +255,9 @@
 
     </div>
 
-    <!-- 면접 기록 조회 페이지 -->
     <div class="main" id="select-interview-check">
         <h1>면접 기록 조회</h1>
 
-        <!-- 면접 기록 조회 테이블 -->
         <table id="interviewTable">
             <thead>
                 <tr>
@@ -281,12 +268,10 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- JavaScript로 면접 기록을 출력할 영역 -->
             </tbody>
         </table>
     </div>
 
-    <!-- 영상 재생 페이지 -->
     <div class="main" id="interview-recording-play" style="display: none;">
         <video id="videoPlayer" width="90%" controls>
             <source id="videoSource" src="" type="video/mp4">
@@ -295,14 +280,12 @@
     </div>
 
     <script>
-        // header.html 파일을 불러와서 #header div에 삽입
         fetch('header.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('header').innerHTML = data;
             });
 
-        // 이력서 선택 후 면접 보기 페이지로 전환
         const resumeSelectSection = document.getElementById('resume-select');
         const selectInterviewSection = document.getElementById('select-interview');
         const viewRecordsButton = document.getElementById('view-records');
@@ -311,9 +294,8 @@
         let stream;
         let mediaRecorder;
         let recordedChunks = [];
-        let interviewRecordings = []; // 면접 기록 저장할 배열
+        let interviewRecordings = [];
 
-        // 면접보기 클릭 시 면접 보기 페이지로 이동
         const viewInterviewButton = document.getElementById('view-interview');
         viewInterviewButton.addEventListener('click', () => {
             resumeSelectSection.style.display = 'block';
@@ -321,21 +303,17 @@
             selectInterviewCheckSection.style.display = 'none';
         });
 
-        // 이력서 선택 후 면접 시작
         async function startInterview(resumeTitle) {
             resumeSelectSection.style.display = 'none';
             selectInterviewSection.style.display = 'block';
 
             try {
-                // 웹캠 스트림 가져오기
                 stream = await navigator.mediaDevices.getUserMedia({
                     video: true,
                     audio: true
                 });
                 video.srcObject = stream;
 
-
-                // 녹화 시작
                 recordedChunks = [];
                 mediaRecorder = new MediaRecorder(stream);
 
@@ -351,11 +329,9 @@
                     });
                     const url = URL.createObjectURL(blob);
 
-                    // 현재 날짜 가져오기
                     const currentDate = new Date().toISOString().slice(0, 10);
-                    const duration = "10:00"; // 임시 영상 길이
+                    const duration = calculateDuration(blob); // 실제 녹화된 영상 길이 계산
 
-                    // 면접 기록 저장
                     interviewRecordings.push({
                         title: resumeTitle,
                         date: currentDate,
@@ -363,10 +339,8 @@
                         videoUrl: url
                     });
 
-                    // 면접 기록 테이블 업데이트
                     updateInterviewTable();
 
-                    // 녹화 종료 후 다운로드 링크 생성 (선택적)
                     const downloadLink = document.createElement('a');
                     downloadLink.href = url;
                     downloadLink.download = 'interview_recording.webm';
@@ -381,7 +355,6 @@
             }
         }
 
-        // 이력서 데이터 예시
         const resumeData = [{
             id: 1,
             title: '이력서 1'
@@ -393,10 +366,9 @@
             title: '이력서 3'
         }];
 
-        // 테이블에 이력서 데이터를 출력하고, 클릭 시 면접 시작
         function displayResumeTable() {
             const tableBody = document.querySelector('#resumeTable tbody');
-            tableBody.innerHTML = ''; // 기존 내용을 초기화
+            tableBody.innerHTML = '';
 
             resumeData.forEach((resume, index) => {
                 const row = document.createElement('tr');
@@ -409,32 +381,29 @@
                 titleCell.textContent = resume.title;
                 row.appendChild(titleCell);
 
-                // 이력서 클릭 시 면접 시작
                 row.addEventListener('click', () => startInterview(resume.title));
 
                 tableBody.appendChild(row);
             });
         }
 
-        // 면접 기록 데이터 예시
         interviewRecordings = [{
             id: 1,
             title: '첫번째 면접',
             date: '2024-09-25',
             duration: '10:00',
-            videoUrl: 'example_video1.mp4' // 예시 영상 링크
+            videoUrl: 'example_video1.mp4'
         }, {
             id: 2,
             title: '두번째 면접',
             date: '2024-09-25',
             duration: '12:00',
-            videoUrl: 'example_video2.mp4' // 예시 영상 링크
+            videoUrl: 'example_video2.mp4'
         }];
 
-        // 면접 기록 조회 테이블 업데이트 함수
         function updateInterviewTable() {
             const tableBody = document.querySelector('#interviewTable tbody');
-            tableBody.innerHTML = ''; // 기존 내용을 초기화
+            tableBody.innerHTML = '';
 
             if (interviewRecordings.length === 0) {
                 const emptyRow = document.createElement('tr');
@@ -447,24 +416,20 @@
                 interviewRecordings.forEach((interview, index) => {
                     const row = document.createElement('tr');
 
-                    // 순번
                     const idCell = document.createElement('td');
                     idCell.textContent = index + 1;
                     row.appendChild(idCell);
 
-                    // 제목
                     const titleCell = document.createElement('td');
                     titleCell.textContent = interview.title;
                     titleCell.style.cursor = 'pointer';
                     titleCell.addEventListener('click', () => loadVideo(interview.videoUrl));
                     row.appendChild(titleCell);
 
-                    // 날짜
                     const dateCell = document.createElement('td');
                     dateCell.textContent = interview.date;
                     row.appendChild(dateCell);
 
-                    // 영상 길이
                     const durationCell = document.createElement('td');
                     durationCell.textContent = interview.duration;
                     row.appendChild(durationCell);
@@ -474,7 +439,6 @@
             }
         }
 
-        // 선택한 영상 재생 함수
         function loadVideo(videoUrl) {
             document.getElementById('select-interview-check').style.display = 'none';
             document.getElementById('interview-recording-play').style.display = 'block';
@@ -487,44 +451,36 @@
             videoPlayer.play();
         }
 
-        // 페이지 로드 시 이력서 테이블 및 면접 기록 테이블 출력
         document.addEventListener('DOMContentLoaded', () => {
-            displayResumeTable(); // 이력서 테이블 출력
-            updateInterviewTable(); // 면접 기록 테이블 출력
+            displayResumeTable();
+            updateInterviewTable();
         });
 
-        // 면접 기록 조회 클릭 시 면접 기록 페이지로 이동
         viewRecordsButton.addEventListener('click', () => {
             resumeSelectSection.style.display = 'none';
             selectInterviewSection.style.display = 'none';
             selectInterviewCheckSection.style.display = 'block';
-            updateInterviewTable(); // 면접 기록 테이블 업데이트
+            updateInterviewTable();
         });
 
-
         recordedChunks = [];
-        mediaRecorder;
 
-        // 모달창 열기 함수
         function showModal() {
             document.getElementById('saveModal').style.display = 'block';
         }
 
-        // 모달창 닫기 함수
         function closeModal() {
             document.getElementById('saveModal').style.display = 'none';
         }
 
-        // 녹화 종료 버튼 클릭 시 모달창 열기
         document.getElementById('stop-recording').addEventListener('click', () => {
             if (mediaRecorder && mediaRecorder.state !== 'inactive') {
                 mediaRecorder.stop();
                 console.log('녹화 종료');
-                showModal(); // 녹화 종료 후 모달창 열기
+                showModal();
             }
         });
 
-        // 영상 저장 버튼 클릭 시 저장 처리
         document.getElementById('saveVideo').addEventListener('click', () => {
             const videoTitle = document.getElementById('videoTitle').value;
             const blob = new Blob(recordedChunks, {
@@ -534,29 +490,22 @@
 
             if (videoTitle) {
                 const currentDate = new Date().toISOString().slice(0, 10);
-
-                // 실제 녹화된 영상 길이 계산 (초 단위 -> 분:초 형식으로 변환)
-                const videoDuration = video.duration; // 녹화된 영상의 길이 (초 단위)
+                const videoDuration = video.duration;
                 const minutes = Math.floor(videoDuration / 60);
                 const seconds = Math.floor(videoDuration % 60);
-                const duration = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`; // 분:초 형식으로 변환
+                const duration = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
-                // 다운로드 링크 생성
                 const downloadLink = document.createElement('a');
                 downloadLink.href = url;
-                downloadLink.download = `${videoTitle}.webm`; // 다운로드될 파일 이름 설정 -> 경로 설정은 백엔드를 통해서 해야됨 
-                downloadLink.style.display = 'none'; // 링크를 화면에 표시하지 않음
+                downloadLink.download = `${videoTitle}.webm`;
+                downloadLink.style.display = 'none';
 
                 document.body.appendChild(downloadLink);
-
-                // 링크를 자동으로 클릭하여 다운로드 실행
                 downloadLink.click();
 
-                // 모달창 닫기
                 closeModal();
 
-                // interview.html로 이동 (또는 새로고침)
-                window.location.href = 'interview.html'; // 현재 페이지를 다시 로드하거나 다른 페이지로 이동
+                window.location.href = 'interview.html';
             } else {
                 alert('영상 제목을 입력해주세요.');
             }
