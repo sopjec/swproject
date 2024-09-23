@@ -12,7 +12,7 @@
             padding: 0;
             background-color: #f0f0f0;
         }
-        
+
         .left-menu {
             float: left;
             width: 200px;
@@ -23,13 +23,13 @@
             text-align: center;
             padding: 20px 0;
         }
-        
+
         .menu {
             list-style-type: none;
             padding: 0;
             margin: 0;
         }
-        
+
         .menu li {
             cursor: pointer;
             padding: 15px 0;
@@ -37,30 +37,30 @@
             background-color: #ff69b4;
             border-bottom: 1px solid white;
         }
-        
+
         .menu li:hover {
             background-color: #ff1493;
         }
-        
+
         .menu li.active {
             background-color: #c71585;
         }
-        
+
         .container {
             display: flex;
             margin-left: 200px;
             padding: 20px;
         }
-        
+
         .section {
             display: none;
             width: 100%;
         }
-        
+
         .section.visible {
             display: block;
         }
-        
+
         button {
             padding: 10px;
             margin: 10px 0;
@@ -71,7 +71,7 @@
             cursor: pointer;
             font-size: 16px;
         }
-        
+
         button:hover {
             background-color: #ff1493;
         }
@@ -88,11 +88,11 @@
         </ul>
     </div>
 
-    <div class="container">
-        <div id="resume-check" class="section visible">
-            <h1>자기소개서 조회</h1>
-            <p>이력서 조회하기</p>
-        </div>
+        <div class="container">    
+            <div id="resume-check" class="section visible">
+                <h1>자기소개서 조회</h1>
+                <p>이력서 조회하기</p>
+            </div>
     </div>
 
     <script>
@@ -126,6 +126,8 @@
             // 클릭한 메뉴 항목에 active 클래스 추가
             event.target.classList.add('active');
         }
+
+        
     </script>
 
 </body>
