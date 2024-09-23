@@ -4,38 +4,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>interview Page</title>
+    <title>Interview Page</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: white;
+        }
+
         .left-menu {
             float: left;
-            height: 100%;
-            width: 150px;
+            width: 200px;
+            height: 100vh;
+            background-color: #ff69b4;
+            color: white;
+            border-right: 1px solid rgb(119, 119, 119);
+            text-align: center;
+            padding: 20px 0;
         }
-        
+
         .menu {
             list-style-type: none;
             padding: 0;
+            margin: 0;
         }
-        
+
         .menu li {
             cursor: pointer;
+            padding: 15px 0;
             margin: 10px 0;
+            background-color: #ff69b4;
+            border-bottom: 1px solid white;
         }
-        
-        .hidden {
-            visibility: hidden;
+
+        .menu li:hover {
+            background-color: #ff1493;
         }
-        
-        .visible {
-            visibility: visible;
+
+        .menu li.active {
+            background-color: #c71585;
         }
-        
+
         .container {
             display: flex;
+            margin-left: 200px;
+            padding: 20px;
         }
-        
-        article {
-            margin-left: 20px;
+
+        .section {
+            display: none;
+            width: 100%;
+        }
+
+        .section.visible {
+            display: block;
+        }
+
+        button {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #ff1493;
         }
     </style>
 </head>
@@ -43,25 +81,28 @@
 <body>
 
     <div id="header"></div>
+    <div class="left-menu">
+        <ul class="menu">
+            <li onclick="showSection('resume-upload')">자기소개서 등록</li>
+            <li onclick="showSection('resume-check')">자기소개서 조회</li>
+        </ul>
+    </div>
     <div class="container">
-        <div id="left-menu">
-            <ul class="menu">
-                <li onclick="showSection('resume-upload')">자기소개서 등록</li>
-                <li onclick="showSection('resume-check')">자기소개서 조회</li>
-            </ul>
+        <div id="resume-upload" class="section visible">
+            <h1>자기소개서 등록</h1>
+            <form id="question-form">
+                <div id="questions-container">
+                    <div class="question-answer">
+                        <textarea name="question" placeholder="질문" style="text-align:center; height: auto; width: 400px;" [(ngModel)]="memo"></textarea>
+                        <textarea name="answer" placeholder="답변" style="text-align:center; height: auto; width: 400px;" [(ngModel)]="memo"></textarea>
+                    </div>
+                </div>
+                <button type="button" onclick="addQuestion()">질답 추가</button> <!-- type="button"으로 변경 -->
+            </form>
         </div>
-        <div class="article">
-            <div id="resume-upload" class="visible">
-                <h1>자기소개서 등록</h1>
-                <form action="login.html" method="POST">
-                    <input type="text" name="question" id="input-interview-question" placeholder="질문" required>
-                    <input type="text" name="answer" id="input-interview-answer" placeholder="답변" required>
-                    <button type="submit">질답 추가</button>
-                </form>
-            </div>
-            <div id="resume-check" class="hidden">
-                <p>이력서 조회하기</p>
-            </div>
+        <div id="resume-check" class="section">
+            <h1>자기소개서 조회</h1>
+            <p>이력서 조회하기</p>
         </div>
     </div>
 
@@ -76,14 +117,38 @@
         // 특정 섹션을 표시하고 나머지는 숨기는 함수
         function showSection(sectionId) {
             // 모든 섹션을 숨김
-            document.getElementById('resume-upload').classList.remove('visible');
-            document.getElementById('resume-upload').classList.add('hidden');
-            document.getElementById('resume-check').classList.remove('visible');
-            document.getElementById('resume-check').classList.add('hidden');
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('visible');
+                section.classList.add('hidden');
+            });
 
             // 선택한 섹션을 표시
-            document.getElementById(sectionId).classList.remove('hidden');
-            document.getElementById(sectionId).classList.add('visible');
+            const selectedSection = document.getElementById(sectionId);
+            selectedSection.classList.remove('hidden');
+            selectedSection.classList.add('visible');
+
+            // 모든 메뉴 항목에서 active 클래스 제거
+            const menuItems = document.querySelectorAll('.menu li');
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // 클릭한 메뉴 항목에 active 클래스 추가
+            event.target.classList.add('active');
+        }
+
+        // 질답 추가 버튼 클릭 시 새로운 질문과 답변 입력란을 추가하는 함수
+        function addQuestion() {
+            const container = document.getElementById('questions-container');
+            const newQuestionAnswer = document.createElement('div');
+            newQuestionAnswer.classList.add('question-answer');
+            newQuestionAnswer.innerHTML = `
+                <textarea name="question" placeholder="질문" style="text-align:center; height: auto; width: 400px;" [(ngModel)]="memo"></textarea>
+                <textarea name="answer" placeholder="답변" style="text-align:center; height: auto; width: 400px;" [(ngModel)]="memo"></textarea>
+
+            `;
+            container.appendChild(newQuestionAnswer);
         }
     </script>
 
