@@ -2,15 +2,9 @@
 <html lang="ko">
 
 <head>
-<<<<<<< HEAD
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
     <title>Interview Page</title>
-=======
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>interview page</title>
->>>>>>> 8354a4b (Add all untracked files)
 </head>
 
 <style>
@@ -22,11 +16,8 @@
     .left-menu {
         float: left;
         width: 130px;
-<<<<<<< HEAD
         height: 800px;
-=======
         height: 100%;
->>>>>>> 8354a4b (Add all untracked files)
         border-right: 1px solid rgb(119, 119, 119);
         text-align: center;
         padding: 0;
@@ -39,11 +30,7 @@
     .left-menu li {
         list-style-type: none;
         width: 100%;
-<<<<<<< HEAD
         height: 90px;
-=======
-        height: 100px;
->>>>>>> 8354a4b (Add all untracked files)
         padding-top: 60px;
         border-bottom: 1px rgb(119, 119, 119) solid;
         cursor: pointer;
@@ -57,13 +44,6 @@
         margin: 0;
     }
     
-<<<<<<< HEAD
-=======
-    .sub-menu {
-        margin: 0;
-    }
-    
->>>>>>> 8354a4b (Add all untracked files)
     .main {
         margin-left: 130px;
         height: 100vh;
@@ -93,26 +73,14 @@
         background-repeat: no-repeat;
         height: 100vh;
         display: none;
-<<<<<<< HEAD
-=======
-        /* 기본적으로 숨김 */
->>>>>>> 8354a4b (Add all untracked files)
     }
     
     #resume-select {
         display: block;
-<<<<<<< HEAD
-=======
-        /* 기본적으로 보임 */
->>>>>>> 8354a4b (Add all untracked files)
     }
     
     #select-interview-check {
         display: none;
-<<<<<<< HEAD
-=======
-        /* 기본적으로 숨김 */
->>>>>>> 8354a4b (Add all untracked files)
     }
     
     #webcam {
@@ -121,10 +89,6 @@
         top: 200px;
         right: 50px;
     }
-<<<<<<< HEAD
-=======
-    /* 자막 css */
->>>>>>> 8354a4b (Add all untracked files)
     
     .cc {
         position: absolute;
@@ -142,37 +106,21 @@
     .recording-button img {
         width: 25px;
     }
-<<<<<<< HEAD
-=======
-    /* 테이블 전체 스타일 */
->>>>>>> 8354a4b (Add all untracked files)
     
     #resumeTable {
         width: 100%;
         border-collapse: collapse;
         margin-top: 20px;
     }
-<<<<<<< HEAD
     
     #resumeTable thead th {
         background-color: #ff69b4;
-=======
-    /* 테이블 헤더 스타일 */
-    
-    #resumeTable thead th {
-        background-color: #ff69b4;
-        /* 핑크 */
->>>>>>> 8354a4b (Add all untracked files)
         color: white;
         padding: 10px;
         text-align: center;
         font-size: 18px;
         border: 2px solid black;
     }
-<<<<<<< HEAD
-=======
-    /* 테이블 본문 스타일 */
->>>>>>> 8354a4b (Add all untracked files)
     
     #resumeTable tbody td {
         background-color: black;
@@ -181,7 +129,6 @@
         text-align: center;
         font-size: 16px;
         border: 2px solid #ff69b4;
-<<<<<<< HEAD
     }
     
     #resumeTable tbody tr:hover td {
@@ -260,21 +207,6 @@
     
     #saveModal button:hover {
         background-color: #ff1493;
-=======
-        /* 핑크 테두리 */
-    }
-    /* tr 전체에 hover 효과 적용 */
-    
-    #resumeTable tbody tr:hover td {
-        background-color: #ff1493;
-        /* 진한 핑크 */
-        color: white;
-    }
-    /* 테이블 행 간격 */
-    
-    #resumeTable tbody tr {
-        height: 50px;
->>>>>>> 8354a4b (Add all untracked files)
     }
 </style>
 
@@ -297,7 +229,6 @@
         <h1>면접보기</h1>
         <p>이력서 선택 후 면접이 시작됩니다. 면접 과정은 자동으로 녹화됩니다.</p>
 
-<<<<<<< HEAD
         <table id="resumeTable">
             <thead>
                 <tr>
@@ -322,37 +253,11 @@
             <input type="text" id="videoTitle" placeholder="영상 제목을 입력하세요">
             <button id="saveVideo">저장</button>
         </div>
-
-=======
-        <table style="border: 1px solid white;">
-            <tr>
-                <td>이력서 1</td>
-            </tr>
-        </table>
-        <button id="select-resume">선택</button>
-
-    </div>
-
-    <div class="main" id="select-interview">
-        <video id="webcam" autoplay playsinline></video>
-        <p class="cc">면접관 질문 자막</p>
-        <div class="recording-button">
-            <button id="stop-recording">녹화 종료</button>
-            <button id="speedup"><img src="img/speeddown.png"></button>
-            <button id="wait-recording"><img src="img/wait.png"></button>
-            <button id="speedown"><img src="img/speedup.png"></button>
-        </div>
->>>>>>> 8354a4b (Add all untracked files)
     </div>
 
     <div class="main" id="select-interview-check">
         <h1>면접 기록 조회</h1>
-<<<<<<< HEAD
-
         <table id="interviewTable">
-=======
-        <table id="resumeTable">
->>>>>>> 8354a4b (Add all untracked files)
             <thead>
                 <tr>
                     <th>순번</th>
@@ -362,64 +267,34 @@
                 </tr>
             </thead>
             <tbody>
-<<<<<<< HEAD
             </tbody>
         </table>
     </div>
 
     <div class="main" id="interview-recording-play" style="display: none;">
         <video id="videoPlayer" width="90%" controls>
-=======
-                <!-- JavaScript로 이력서 정보를 여기 출력 -->
-            </tbody>
-        </table>
-    </div>
-    <div class="main" id="interview-recording-play" style="display: none;">
-        <h1>영상 재생</h1>
-        <video id="videoPlayer" width="600" controls>
->>>>>>> 8354a4b (Add all untracked files)
             <source id="videoSource" src="" type="video/mp4">
             당신의 브라우저는 비디오 태그를 지원하지 않습니다.
         </video>
     </div>
 
-<<<<<<< HEAD
     <script>
-=======
-
-
-    <script>
-        // header.html 파일을 불러와서 #header div에 삽입
->>>>>>> 8354a4b (Add all untracked files)
         fetch('header.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('header').innerHTML = data;
             });
 
-<<<<<<< HEAD
-=======
-        const selectResumeButton = document.getElementById('select-resume');
->>>>>>> 8354a4b (Add all untracked files)
         const resumeSelectSection = document.getElementById('resume-select');
         const selectInterviewSection = document.getElementById('select-interview');
         const viewRecordsButton = document.getElementById('view-records');
         const selectInterviewCheckSection = document.getElementById('select-interview-check');
         const video = document.getElementById('webcam');
-<<<<<<< HEAD
         let stream;
         let mediaRecorder;
         let recordedChunks = [];
         let interviewRecordings = [];
 
-=======
-        const downloadLink = document.getElementById('downloadLink');
-        let stream;
-        let mediaRecorder;
-        let recordedChunks = [];
-
-        // 면접보기 클릭 시 면접 페이지로 이동
->>>>>>> 8354a4b (Add all untracked files)
         const viewInterviewButton = document.getElementById('view-interview');
         viewInterviewButton.addEventListener('click', () => {
             resumeSelectSection.style.display = 'block';
@@ -427,31 +302,17 @@
             selectInterviewCheckSection.style.display = 'none';
         });
 
-<<<<<<< HEAD
         async function startInterview(resumeTitle) {
-=======
-        // 이력서 선택 후 면접 시작
-        selectResumeButton.addEventListener('click', async() => {
-            // 이력서 선택 후 화면 전환
->>>>>>> 8354a4b (Add all untracked files)
             resumeSelectSection.style.display = 'none';
             selectInterviewSection.style.display = 'block';
 
             try {
-<<<<<<< HEAD
-=======
-                // 웹캠 스트림 가져오기
->>>>>>> 8354a4b (Add all untracked files)
                 stream = await navigator.mediaDevices.getUserMedia({
                     video: true,
                     audio: true
                 });
                 video.srcObject = stream;
 
-<<<<<<< HEAD
-=======
-                // 녹화 시작
->>>>>>> 8354a4b (Add all untracked files)
                 recordedChunks = [];
                 mediaRecorder = new MediaRecorder(stream);
 
@@ -466,7 +327,6 @@
                         type: 'video/webm'
                     });
                     const url = URL.createObjectURL(blob);
-<<<<<<< HEAD
 
                     const currentDate = new Date().toISOString().slice(0, 10);
                     const duration = calculateDuration(blob); // 실제 녹화된 영상 길이 계산
@@ -485,12 +345,6 @@
                     downloadLink.download = 'interview_recording.webm';
                     downloadLink.textContent = '녹화 영상 다운로드';
                     document.body.appendChild(downloadLink);
-=======
-                    downloadLink.href = url;
-                    downloadLink.download = 'interview_recording.webm';
-                    downloadLink.style.display = 'block'; // 다운로드 링크 표시
-                    downloadLink.textContent = '녹화 영상 다운로드';
->>>>>>> 8354a4b (Add all untracked files)
                 };
 
                 mediaRecorder.start();
@@ -498,7 +352,6 @@
             } catch (err) {
                 console.error('웹캠 접근 오류: ', err);
             }
-<<<<<<< HEAD
         }
 
         const resumeData = [{
@@ -516,52 +369,6 @@
             const tableBody = document.querySelector('#resumeTable tbody');
             tableBody.innerHTML = '';
 
-=======
-        });
-
-        // 면접 기록 조회 클릭 시 'select-interview-check' 보여주기
-        viewRecordsButton.addEventListener('click', () => {
-            resumeSelectSection.style.display = 'none';
-            selectInterviewSection.style.display = 'none';
-            selectInterviewCheckSection.style.display = 'block';
-        });
-
-        const stopRecordingButton = document.getElementById('stop-recording');
-
-        stopRecordingButton.addEventListener('click', () => {
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-                console.log('녹화 종료');
-            }
-        });
-    </script>
-
-    <!-- 면접 기록 조회 js로 가져오기 -->
-    <script>
-        const resumeData = [{
-            id: 1,
-            title: '첫번째 면접 !',
-            date: '2024-09-20',
-            duration: '10:00',
-            videoUrl: 'video1.mp4'
-        }, {
-            id: 2,
-            title: '두번째 면접',
-            date: '2024-09-19',
-            duration: '15:30',
-            videoUrl: 'video2.mp4'
-        }, {
-            id: 3,
-            title: '면접 망했다;;',
-            date: '2024-09-18',
-            duration: '12:45',
-            videoUrl: 'video3.mp4'
-        }];
-
-        function displayResumeData() {
-            const tableBody = document.querySelector('#resumeTable tbody');
-            tableBody.innerHTML = ''; // 기존 내용을 초기화
->>>>>>> 8354a4b (Add all untracked files)
             resumeData.forEach((resume, index) => {
                 const row = document.createElement('tr');
 
@@ -571,31 +378,14 @@
 
                 const titleCell = document.createElement('td');
                 titleCell.textContent = resume.title;
-<<<<<<< HEAD
                 row.appendChild(titleCell);
 
                 row.addEventListener('click', () => startInterview(resume.title));
-=======
-                titleCell.style.cursor = 'pointer';
-                titleCell.addEventListener('click', () => {
-                    loadVideo(resume.videoUrl); // 영상 재생 함수 호출
-                });
-                row.appendChild(titleCell);
-
-                const dateCell = document.createElement('td');
-                dateCell.textContent = resume.date;
-                row.appendChild(dateCell);
-
-                const durationCell = document.createElement('td');
-                durationCell.textContent = resume.duration;
-                row.appendChild(durationCell);
->>>>>>> 8354a4b (Add all untracked files)
 
                 tableBody.appendChild(row);
             });
         }
 
-<<<<<<< HEAD
         interviewRecordings = [{
             id: 1,
             title: '첫번째 면접',
@@ -652,14 +442,6 @@
             document.getElementById('select-interview-check').style.display = 'none';
             document.getElementById('interview-recording-play').style.display = 'block';
 
-=======
-        function loadVideo(videoUrl) {
-            // 면접 기록 섹션을 숨기고 영상 재생 섹션을 표시
-            document.getElementById('select-interview-check').style.display = 'none';
-            document.getElementById('interview-recording-play').style.display = 'block';
-
-            // 비디오 소스를 변경하고 재생
->>>>>>> 8354a4b (Add all untracked files)
             const videoSource = document.getElementById('videoSource');
             videoSource.src = videoUrl;
 
@@ -668,7 +450,6 @@
             videoPlayer.play();
         }
 
-<<<<<<< HEAD
         document.addEventListener('DOMContentLoaded', () => {
             displayResumeTable();
             updateInterviewTable();
@@ -730,12 +511,6 @@
         });
     </script>
 
-=======
-        document.addEventListener('DOMContentLoaded', displayResumeData);
-    </script>
-
-
->>>>>>> 8354a4b (Add all untracked files)
 </body>
 
 </html>
