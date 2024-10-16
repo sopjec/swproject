@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자기소개서 등록</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .section {
+            display: none;
+            width: 100%;
+        }
+
+        .section.active {
+            display: block;
+        }
+        /* 상단바 스타일 */
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: white;
+            border-bottom: 1px solid #ddd;
+        }
+        .header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: auto;
+        }
+        .header nav a {
+            margin-left: 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .auth-links {
+            display: flex;
+            gap: 10px;
+        }
+        .auth-links a {
+            text-decoration: none;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            color: #333;
+        }
+        .auth-links a:hover {
+            background-color: #f0f0f0;
+        }
+        /* 메인 레이아웃 설정 */
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        /* 왼쪽 사이드바 스타일 */
+        .sidebar {
+            width: 200px;
+            padding: 20px;
+            background-color: white;
+            border-right: 1px solid #ddd;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            cursor: pointer;
+        } 
+        .sidebar li:hover {
+            background-color: #c6c6c6
+        }
+        .content {
+            flex-grow: 1;
+            padding-left: 20px;
+        }
+        button {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: black;
+        }
+    </style>
+</head>
+
+
+<body>
+    <!-- 상단바 -->
+    <div class="header">
+        <div class="logo">로고</div>
+        <nav>
+            <a href="jobPosting.html">채용공고</a>
+            <a href="interview.html">면접보기</a>
+            <a href="resume.html">자소서등록</a>
+            <a href="review.html">기업분석</a>
+        </nav>
+        <div class="auth-links">
+            &nbsp;
+            <a href="login.html">Sign in</a>
+            <a href="mypage.html">Mypage</a>
+        </div>
+    </div>
+
+    <!-- 나머지 페이지 내용 -->
+    <div class="container">
+         <!-- 왼쪽 사이드바 -->
+        <div class="sidebar">
+            <ul>
+                <li onclick="showSection('section1')">자기소개서 등록</li>
+                <li onclick="showSection('section2')">자기소개서 조회</li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <div id="section1" class="section">   <!--<div id="resume-upload" class="section visible">-->
+                <h2>자기소개서 등록</h2>
+                <form id="question-form">
+                    <div id="questions-container">
+                        <div class="question-answer">
+                            <textarea name="question" placeholder="질문" style="text-align:center; height: auto; width: 400px;" [(ngModel)]="memo"></textarea>
+                            <textarea name="answer" placeholder="답변" style="text-align:center; height: auto; width: 400px;" [(ngModel)]="memo"></textarea>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addQuestion()">질답 추가</button> <!-- type="button"으로 변경 -->
+                </form>
+            </div>
+              
+            <div id="section2" class="section">    <!--<div id="resume-check" class="section"></div>-->
+                <h2>자기소개서 조회</h2>
+                <p>이력서 조회하기</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // header.html 파일을 불러와서 #header div에 삽입
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header').innerHTML = data;
+            });
+
+        window.onload = function() {
+            showSection('section1');
+        }
+        function showSection(sectionId) {
+            // 모든 섹션을 숨김
+            var sections = document.querySelectorAll('.section');
+            sections.forEach(function (section) {
+                section.classList.remove('active');
+            });
+            // 선택된 섹션만 표시
+            var activeSection = document.getElementById(sectionId);
+            activeSection.classList.add('active');
+        }
+
+        // 질답 추가 버튼 클릭 시 새로운 질문과 답변 입력란을 추가하는 함수
+        function addQuestion() {
+            const container = document.getElementById('questions-container');
+            const newQuestionAnswer = document.createElement('div');
+            newQuestionAnswer.classList.add('question-answer');
+            newQuestionAnswer.innerHTML = `
+                <textarea name="question" placeholder="질문" style="text-align:center; height: auto; width: 400px;" [(ngModel)]="memo"></textarea>
+                <textarea name="answer" placeholder="답변" style="text-align:center; height: auto; width: 400px;" [(ngModel)]="memo"></textarea>
+
+            `;
+            container.appendChild(newQuestionAnswer);
+        }
+    </script>
+
+</body>
+
+</html>
