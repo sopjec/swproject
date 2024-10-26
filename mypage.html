@@ -235,6 +235,11 @@
                 <label for="profileImageUpload" class="custom-file-upload">프로필 사진 변경</label>
                 <input type="file" id="profileImageUpload" accept="image/*" style="display: none;">
 
+                <p> </p>
+                <p>이메일 <span id="account-email">example@example.com</span>
+                    <button id="change-email-button" onclick="changeEmail()" style="margin-left: 10px; padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; background-color: #333; color: white; cursor: pointer;">변경</button>
+                </p>
+
                 <!-- 아이디와 비밀번호 확인 섹션 
                 <div class="authSection"> 
                     <input type="text" name="id" id="id" placeholder="아이디" required/>
@@ -243,9 +248,7 @@
                     <p id="authError" style="color: red; display: none;">아이디 또는 비밀번호가 일치하지 않습니다.</p>
                 </div>
                 -->
-   
-                <p> </p>
-                <P>이메일</P>
+
                 <!-- 서버에서 이메일 데이터 표시 -->
             </div>
 
