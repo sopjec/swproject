@@ -181,7 +181,6 @@
 
                 <div class="video-section">
                     <h2>면접자 화면</h2>
-                    <!-- 면접자 웹캠 화면 -->
                     <video id="user-webcam" autoplay playsinline muted></video>
                 </div>
             </div>
@@ -192,72 +191,7 @@
             </div>
         </div>
     </div>
-
-    <script>
-        // 사이드바 메뉴 활성화
-        function activateMenu(element) {
-            const menuItems = document.querySelectorAll('.sidebar ul li');
-            menuItems.forEach(item => item.classList.remove('active'));
-            element.parentElement.classList.add('active');
-        }
-
-        // 면접 시작, 녹화 및 웹캠 접근
-        let stream;
-        let mediaRecorder;
-        let recordedChunks = [];
-
-        async function startInterview() {
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: true
-                });
-                const userWebcam = document.getElementById('user-webcam');
-                userWebcam.srcObject = stream;
-
-                mediaRecorder = new MediaRecorder(stream);
-                recordedChunks = [];
-
-                mediaRecorder.ondataavailable = function(event) {
-                    if (event.data.size > 0) {
-                        recordedChunks.push(event.data);
-                    }
-                };
-
-                mediaRecorder.start();
-                console.log('면접 시작');
-            } catch (err) {
-                console.error('웹캠 접근 오류: ', err);
-            }
-        }
-
-        function stopRecording() {
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-                console.log('녹화 종료');
-                saveRecording();
-            }
-        }
-
-        function saveRecording() {
-            const blob = new Blob(recordedChunks, {
-                type: 'video/webm'
-            });
-            const url = URL.createObjectURL(blob);
-            const downloadLink = document.createElement('a');
-            downloadLink.href = url;
-            downloadLink.download = 'interview_recording.webm';
-            downloadLink.textContent = '녹화 영상 다운로드';
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-        }
-
-        document.getElementById('start-interview').addEventListener('click', startInterview);
-        document.getElementById('stop-recording').addEventListener('click', stopRecording);
-        document.getElementById('next-question').addEventListener('click', () => {
-            alert('다음 질문으로 이동합니다.');
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 
 </html>
