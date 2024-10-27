@@ -2,79 +2,189 @@
 <html lang="ko">
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <title>Interview Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>면접 보기</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
         }
 
+        /* 상단바 스타일 */
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: white;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: auto;
+        }
+
+        .header nav a {
+            margin-left: 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .auth-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .auth-links a {
+            text-decoration: none;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            color: #333;
+        }
+
+        .auth-links a:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* 메인 레이아웃 설정 */
         .container {
             display: flex;
-            justify-content: space-between;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        /* 왼쪽 사이드바 스타일 */
+        .sidebar {
+            width: 200px;
             padding: 20px;
+            background-color: white;
+            border-right: 1px solid #ddd;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .sidebar li:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* 메인 컨텐츠 */
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-section-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
         }
 
         .video-section {
-            width: 45%;
+            width: 48%;
             text-align: center;
-            position: relative;
         }
 
         video, img {
             width: 100%;
-            max-height: 300px;
-            border: 2px solid #ff69b4;
+            max-height: 350px;
+            border: 2px solid #333;
             border-radius: 8px;
         }
 
         h2 {
             color: #333;
+            margin-bottom: 10px;
         }
 
-        /* Interviewer (left side) */
-        #interviewer-video {
-            margin-bottom: 20px;
-        }
-
-        /* Buttons section under interviewee webcam */
         .button-controls {
             display: flex;
+            gap: 10px;
             justify-content: center;
             margin-top: 20px;
         }
 
         .button-controls button {
-            margin-right: 10px;
             padding: 10px 15px;
-            background-color: #ff69b4;
+            background-color: #333;
             border: none;
             color: white;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
         }
 
         .button-controls button:hover {
-            background-color: #ff1493;
+            background-color: #555;
         }
 
     </style>
 </head>
 
 <body>
+    <!-- 상단바 -->
+    <div class="header">
+        <div class="logo">로고</div>
+        <nav>
+            <a href="jobPosting.html">채용공고</a>
+            <a href="interview.html">면접보기</a>
+            <a href="resume.html">자소서등록</a>
+            <a href="review_main.html">기업분석</a>
+        </nav>
+        <div class="auth-links">
+            <a href="login.html">Sign in</a>
+            <a href="signup.html">Register</a>
+        </div>
+    </div>
 
     <div class="container">
-        <!-- Interviewer section -->
-        <div class="video-section">
-            <h2>면접관 화면</h2>
-            <img id="interviewer-video" src="interviewer.jpg" alt="면접관 화면">
+        <!-- 왼쪽 사이드바 -->
+        <div class="sidebar">
+            <ul>
+                <li><a href="interview.html" onclick="activateMenu(this)">면접 보기</a></li>
+                <li><a href="review.html" onclick="activateMenu(this)">면접 후기</a></li>
+            </ul>
         </div>
 
-        <!-- Interviewee section (User's webcam) -->
-        <div class="video-section">
-            <h2>면접자 화면</h2>
-            <video id="user-webcam" autoplay playsinline muted></video>
+        <!-- 메인 컨텐츠 -->
+        <div class="content">
+            <div class="video-section-container">
+                <div class="video-section">
+                    <h2>면접관 화면</h2>
+                    <!-- 가상 AI 캐릭터 이미지 -->
+                    <img id="interviewer-video" src="ai-character.png" alt="가상 면접관 AI 캐릭터">
+                </div>
+
+                <div class="video-section">
+                    <h2>면접자 화면</h2>
+                    <!-- 면접자 웹캠 화면 -->
+                    <video id="user-webcam" autoplay playsinline muted></video>
+                </div>
+            </div>
             <div class="button-controls">
                 <button id="start-interview">면접 시작</button>
                 <button id="next-question">다음 질문</button>
@@ -84,14 +194,20 @@
     </div>
 
     <script>
-        // Webcam access and media recording
+        // 사이드바 메뉴 활성화
+        function activateMenu(element) {
+            const menuItems = document.querySelectorAll('.sidebar ul li');
+            menuItems.forEach(item => item.classList.remove('active'));
+            element.parentElement.classList.add('active');
+        }
+
+        // 면접 시작, 녹화 및 웹캠 접근
         let stream;
         let mediaRecorder;
         let recordedChunks = [];
 
         async function startInterview() {
             try {
-                // Get access to the user's webcam
                 stream = await navigator.mediaDevices.getUserMedia({
                     video: true,
                     audio: true
@@ -99,7 +215,6 @@
                 const userWebcam = document.getElementById('user-webcam');
                 userWebcam.srcObject = stream;
 
-                // Prepare to record the video
                 mediaRecorder = new MediaRecorder(stream);
                 recordedChunks = [];
 
@@ -137,16 +252,12 @@
             downloadLink.click();
         }
 
-        // Event Listeners for buttons
         document.getElementById('start-interview').addEventListener('click', startInterview);
         document.getElementById('stop-recording').addEventListener('click', stopRecording);
-
-        // Placeholder function for "Next Question" button
         document.getElementById('next-question').addEventListener('click', () => {
             alert('다음 질문으로 이동합니다.');
         });
     </script>
-
 </body>
 
 </html>
