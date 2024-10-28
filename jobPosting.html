@@ -11,13 +11,6 @@
             margin: 0;
             padding: 0;
         }
-        .section {
-            display: none;
-            width: 100%;
-        }
-        .section.active {
-            display: block;
-        }
         /* 상단바 스타일 */
         .header {
             display: flex;
@@ -38,20 +31,13 @@
             text-decoration: none;
             font-size: 16px;
         }
-        .auth-links {
-            display: flex;
-            gap: 10px;
-        }
-        .auth-links a {
-            text-decoration: none;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+        .header .auth-links a {
+            margin-left: 20px;
             color: #333;
+            text-decoration: none;
+            font-size: 16px;
         }
-        .auth-links a:hover {
-            background-color: #f0f0f0;
-        }
+
         /* 메인 레이아웃 설정 */
         .container {
             display: flex;
@@ -59,6 +45,7 @@
             margin: 20px auto;
             padding: 0 20px;
         }
+
         /* 왼쪽 사이드바 스타일 */
         .sidebar {
             width: 200px;
@@ -106,7 +93,7 @@
         .search-bar button:hover {
             background-color: #000;
         }
-        
+
         .filters {
             display: flex;
             gap: 10px;
@@ -156,8 +143,8 @@
         }
     </style>
 </head>
-
 <body>
+
     <!-- 상단바 -->
     <div class="header">
         <div class="logo">로고</div>
@@ -168,9 +155,8 @@
             <a href="review.html">기업분석</a>
         </nav>
         <div class="auth-links">
-            &nbsp;
-            <a href="login.html">Sign in</a>
-            <a href="mypage.html">Mypage</a>
+            <a href="login.html">login</a>
+            <a href="signup.html">Register</a>
         </div>
     </div>
 
@@ -178,8 +164,8 @@
         <!-- 왼쪽 사이드바 -->
         <div class="sidebar">
             <ul>
-                <li onclick="showSection('section1')">기업 채용 공고</li>
-                <li onclick="showSection('section2')">저장된 공고 목록</li>
+                <li><a href="jobPosting.html" onclick="activateMenu(this)">기업 채용 공고</a></li>
+                <li><a href="jobScrap.html" onclick="activateMenu(this)">저장된 공고 목록</a></li>
             </ul>
         </div>
 
@@ -284,27 +270,12 @@
     </div>
 
     <script>
-        // header.html 파일을 불러와서 #header div에 삽입
-        fetch('header.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('header').innerHTML = data;
-            });
-
-        window.onload = function() {
-            showSection('section1');
+        // 사이드바 메뉴 활성화
+        function activateMenu(element) {
+            const menuItems = document.querySelectorAll('.sidebar ul li');
+            menuItems.forEach(item => item.classList.remove('active'));
+            element.parentElement.classList.add('active');
         }
-        function showSection(sectionId) {
-            // 모든 섹션을 숨김
-            var sections = document.querySelectorAll('.section');
-            sections.forEach(function (section) {
-                section.classList.remove('active');
-            });
-            // 선택된 섹션만 표시
-            var activeSection = document.getElementById(sectionId);
-            activeSection.classList.add('active');
-        }
-        
     </script>
 </body>
 </html>
