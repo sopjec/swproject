@@ -11,32 +11,6 @@
             margin: 0;
             padding: 0;
         }
-        /* 상단바 스타일 */
-        .header {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: white;
-            border-bottom: 1px solid #ddd;
-        }
-        .header .logo {
-            font-size: 24px;
-            font-weight: bold;
-            margin-right: auto;
-        }
-        .header nav a {
-            margin-left: 20px;
-            color: #333;
-            text-decoration: none;
-            font-size: 16px;
-        }
-        .header .auth-links a {
-            margin-left: 20px;
-            color: #333;
-            text-decoration: none;
-            font-size: 16px;
-        }
         
         /* 메인 레이아웃 설정 */
         .container {
@@ -158,19 +132,7 @@
 <body>
 
     <!-- 상단바 -->
-    <div class="header">
-        <div class="logo">로고</div>
-        <nav>
-            <a href="jobPosting.html">채용공고</a>
-            <a href="interview.html">면접보기</a>
-            <a href="resume.html">자소서등록</a>
-            <a href="review_main.html">기업분석</a>
-        </nav>
-        <div class="auth-links">
-            <a href="login.html">login</a>
-            <a href="signup.html">Register</a>
-        </div>
-    </div>
+    <iframe src="header.html" style="border:none; width:100%; height:100px;"></iframe>   
 
     <div class="container">
         <!-- 왼쪽 사이드바 -->
