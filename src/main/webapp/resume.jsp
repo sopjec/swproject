@@ -154,17 +154,18 @@
         <div id="section1" class="section active">
             <h2>자기소개서 등록</h2>
             <form id="question-form" action="${pageContext.request.contextPath}/resume" method="post">
-                <div class="title-input">
-                    <input type="text" name="title" placeholder="자기소개서 제목을 입력하세요" id="resume-title">
+                <div class="title-input" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="text" name="title" placeholder="자기소개서 제목을 입력하세요" id="resume-title" style="flex: 1; padding: 10px; font-size: 14px; height: 42px; box-sizing: border-box;">
+                    <button type="button" onclick="submitForm()" style="height: 42px; padding: 0 20px;">등록</button>
                 </div>
                 <div id="questions-container">
-                    <div class="question-answer">
-                        <textarea name="question" placeholder="질문"></textarea>
-                        <textarea name="answer" placeholder="답변"></textarea>
+                    <div class="question-answer" style="display: block; margin-bottom: 20px;">
+                        <textarea name="question" placeholder="질문" style="width: 100%; max-width: 100%; min-height: 80px; padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; overflow: hidden;"></textarea>
+                        <textarea name="answer" placeholder="답변" style="width: 100%; max-width: 100%; min-height: 80px; padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; overflow: hidden; margin-top: 10px;"></textarea>
                     </div>
                 </div>
                 <button type="button" onclick="addQuestion()"> + 질답 추가</button>
-                <button type="submit">등록</button>
+
             </form>
         </div>
 
@@ -198,11 +199,12 @@
         const container = document.getElementById('questions-container');
         const newQuestionAnswer = document.createElement('div');
         newQuestionAnswer.classList.add('question-answer');
+        newQuestionAnswer.style.display = 'block';
+        newQuestionAnswer.style.marginBottom = '20px';
         newQuestionAnswer.innerHTML = `
-            <button type="button" class="remove-btn" onclick="removeQuestion(this)">-</button>
-            <textarea name="question" placeholder="질문"></textarea>
-            <textarea name="answer" placeholder="답변"></textarea>
-        `;
+        <textarea name="question" placeholder="질문" style="width: 100%; max-width: 100%; min-height: 80px; padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; overflow: hidden;"></textarea>
+        <textarea name="answer" placeholder="답변" style="width: 100%; max-width: 100%; min-height: 80px; padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; overflow: hidden; margin-top: 10px;"></textarea>
+    `;
         container.appendChild(newQuestionAnswer);
     }
 
