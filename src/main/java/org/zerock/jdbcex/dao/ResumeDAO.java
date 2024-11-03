@@ -45,16 +45,34 @@ public class ResumeDAO {
     }
 
     public List<String[]> getAllIntroductionTitlesAndUserIds() throws Exception {
-        List<String[]> titlesAndUserIds = new ArrayList<>();
-        String sql = "SELECT title, user_id FROM Introduction";
+        List<String[]> results = new ArrayList<>();
+        String sql = "SELECT id, title, user_id FROM Introduction";
         try (Connection con = DatabaseUtil.getConnection();
              PreparedStatement pstmt = con.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                titlesAndUserIds.add(new String[]{rs.getString("title"), rs.getString("user_id")});
+                String id = String.valueOf(rs.getInt("id"));
+                String title = rs.getString("title");
+                String userId = rs.getString("user_id");
+                results.add(new String[]{id, title, userId});
             }
         }
-        return titlesAndUserIds;
+        return results;
     }
+
+    //디비 속 resume 삭제 메서드
+      public void deleteIntroductions(List<Integer> ids) throws Exception {
+        String sql = "DELETE FROM Introduction WHERE id = ?";
+        try (Connection con = DatabaseUtil.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+            for (int id : ids) {
+                pstmt.setInt(1, id);
+                pstmt.executeUpdate();
+            }
+        }
+
+    }
+
+
 }

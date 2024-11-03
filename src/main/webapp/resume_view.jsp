@@ -114,6 +114,9 @@
         .resume-list th {
             background-color: #f0f0f0;
         }
+        .resume-list th:first-child {
+            width: 50px; /* 체크박스 열의 크기 줄이기 */
+        }
         .resume-actions {
             margin-top: 10px;
         }
@@ -141,42 +144,44 @@
     <div class="sidebar">
         <ul>
             <li><a href="resume.html">자기소개서 등록</a></li>
-            <li><a href="resume_view.html">자기소개서 조회</a></li>
+            <li><a href="resume_view.jsp">자기소개서 조회</a></li>
         </ul>
     </div>
 
-
     <div class="content">
         <h2>자기소개서 조회 및 수정</h2>
-        <div class="resume-list">
-            <table>
-                <thead>
-                <tr>
-                    <th><input type="checkbox" class="checkbox" onclick="toggleAll(this)"></th>
-                    <th>이름</th>
-                    <th>작성자</th>
-                </tr>
-                </thead>
-                <tbody>
-                <%
-                    for (String[] data : titlesAndUserIds) {
-                        String title = data[0];
-                        String userId = data[1];
-                %>
-                <tr>
-                    <td><input type="checkbox" class="checkbox"></td>
-                    <td><%= title %></td>
-                    <td><%= userId %></td>
-                </tr>
-                <%
-                    }
-                %>
-                </tbody>
-            </table>
-            <div class="resume-actions">
-                <button onclick="deleteSelected()">삭제</button>
+        <form method="post" action="deleteResumes">
+            <div class="resume-list">
+                <table>
+                    <thead>
+                    <tr>
+                        <th><input type="checkbox" class="checkbox" onclick="toggleAll(this)"></th>
+                        <th>이름</th>
+                        <th>작성자</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <%
+                        for (String[] data : titlesAndUserIds) {
+                            String id = data[0];
+                            String title = data[1];
+                            String userId = data[2];
+                    %>
+                    <tr>
+                        <td><input type="checkbox" name="ids" value="<%= id %>" class="checkbox"></td>
+                        <td><%= title %></td>
+                        <td><%= userId %></td>
+                    </tr>
+                    <%
+                        }
+                    %>
+                    </tbody>
+                </table>
+                <div class="resume-actions">
+                    <button type="submit">삭제</button>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -185,11 +190,6 @@
     function toggleAll(checkbox) {
         const checkboxes = document.querySelectorAll('.checkbox');
         checkboxes.forEach(cb => cb.checked = checkbox.checked);
-    }
-
-    // 선택된 항목 삭제 (로컬에서 사용하던 기능은 주석 처리)
-    function deleteSelected() {
-        alert("선택된 항목을 삭제하는 기능은 백엔드에서 구현되어야 합니다.");
     }
 </script>
 </body>
