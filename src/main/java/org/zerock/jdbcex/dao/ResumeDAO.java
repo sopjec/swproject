@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ResumeDAO {
 
@@ -40,5 +42,19 @@ public class ResumeDAO {
             int affectedRows = pstmt.executeUpdate();
             System.out.println("Rows inserted into Resume: " + affectedRows);
         }
+    }
+
+    public List<String[]> getAllIntroductionTitlesAndUserIds() throws Exception {
+        List<String[]> titlesAndUserIds = new ArrayList<>();
+        String sql = "SELECT title, user_id FROM Introduction";
+        try (Connection con = DatabaseUtil.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                titlesAndUserIds.add(new String[]{rs.getString("title"), rs.getString("user_id")});
+            }
+        }
+        return titlesAndUserIds;
     }
 }
