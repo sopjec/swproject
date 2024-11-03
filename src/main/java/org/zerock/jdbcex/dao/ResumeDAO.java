@@ -61,18 +61,63 @@ public class ResumeDAO {
         return results;
     }
 
-    //디비 속 resume 삭제 메서드
-      public void deleteIntroductions(List<Integer> ids) throws Exception {
-        String sql = "DELETE FROM Introduction WHERE id = ?";
-        try (Connection con = DatabaseUtil.getConnection();
-             PreparedStatement pstmt = con.prepareStatement(sql)) {
-            for (int id : ids) {
-                pstmt.setInt(1, id);
-                pstmt.executeUpdate();
+    // Introduction과 연결된 Resume 삭제 메서드 추가
+    public void deleteIntroductionsAndResumes(List<Integer> ids) throws Exception {
+        String deleteResumesSql = "DELETE FROM Resume WHERE intro_id = ?";
+        String deleteIntroductionsSql = "DELETE FROM Introduction WHERE id = ?";
+
+        try (Connection con = DatabaseUtil.getConnection()) {
+            // 트랜잭션 시작
+            con.setAutoCommit(false);
+
+            try (PreparedStatement pstmtResume = con.prepareStatement(deleteResumesSql);
+                 PreparedStatement pstmtIntroduction = con.prepareStatement(deleteIntroductionsSql)) {
+
+                // Resume 삭제
+                for (int id : ids) {
+                    pstmtResume.setInt(1, id);
+                    pstmtResume.executeUpdate();
+                }
+
+                // Introduction 삭제
+                for (int id : ids) {
+                    pstmtIntroduction.setInt(1, id);
+                    pstmtIntroduction.executeUpdate();
+                }
+
+                // 트랜잭션 커밋
+                con.commit();
+            } catch (Exception e) {
+                // 오류 발생 시 롤백
+                con.rollback();
+                throw e;
+            } finally {
+                // 트랜잭션 자동 커밋 모드 복원
+                con.setAutoCommit(true);
             }
         }
-
     }
+    public void deleteIntroductions(List<Integer> ids) throws Exception {
+        String deleteResumesSql = "DELETE FROM Resume WHERE intro_id = ?";
+        String deleteIntroductionsSql = "DELETE FROM Introduction WHERE id = ?";
 
+        try (Connection con = DatabaseUtil.getConnection()) {
+            // Resume 테이블에서 관련 레코드 삭제
+            try (PreparedStatement pstmt = con.prepareStatement(deleteResumesSql)) {
+                for (int id : ids) {
+                    pstmt.setInt(1, id);
+                    pstmt.executeUpdate();
+                }
+            }
+
+            // Introduction 테이블에서 삭제
+            try (PreparedStatement pstmt = con.prepareStatement(deleteIntroductionsSql)) {
+                for (int id : ids) {
+                    pstmt.setInt(1, id);
+                    pstmt.executeUpdate();
+                }
+            }
+        }
+    }
 
 }

@@ -24,9 +24,12 @@ public class DeleteResumeServlet extends HttpServlet {
 
             ResumeDAO resumeDAO = new ResumeDAO();
             try {
-                resumeDAO.deleteIntroductions(idList);
+                // 변경된 메서드 호출 (Introduction과 관련된 Resume도 함께 삭제)
+                resumeDAO.deleteIntroductionsAndResumes(idList);
             } catch (Exception e) {
                 e.printStackTrace();
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "삭제 중 오류가 발생했습니다.");
+                return;
             }
         }
         response.sendRedirect("resume_view.jsp");
