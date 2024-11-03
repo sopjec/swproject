@@ -43,9 +43,6 @@
             border-radius: 4px;
             color: #333;
         }
-        .auth-links a:hover {
-            background-color: #f0f0f0;
-        }
         .container {
             display: flex;
             width: 100%;
@@ -64,15 +61,9 @@
             list-style-type: none;
             padding: 0;
         }
-        .sidebar ul li a {
-            text-decoration: none;
-            color: #333;
-            font-size: 16px;
-            display: block;
-            padding: 10px 0;
-        }
-        .sidebar ul li a:hover {
-            background-color: #c6c6c6;
+        .sidebar ul li {
+            margin-bottom: 10px;
+            cursor: pointer;
         }
         .content {
             flex-grow: 1;
@@ -81,18 +72,26 @@
             width: 100%;
             box-sizing: border-box;
         }
-        button {
-            padding: 5px 10px;
-            margin: 5px 0;
-            background-color: #333;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
+        .title-input {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            gap: 10px;
+            max-width: 100%;
         }
-        button:hover {
-            background-color: black;
+        .title-input input {
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            height: 42px;
+            box-sizing: border-box;
+        }
+        .title-input button {
+            height: 42px;
+            padding: 0 20px;
+            box-sizing: border-box;
         }
         .question-answer-wrapper {
             display: flex;
@@ -121,61 +120,53 @@
             overflow: hidden;
             margin-bottom: 5px;
         }
-        .title-input {
-            display: flex;
-            align-items: center;
+        .action-buttons {
             margin-top: 10px;
-            gap: 10px;
-            max-width: 100%;
         }
-        .title-input input {
-            flex: 1;
-            padding: 10px;
-            font-size: 14px;
-            border: 1px solid #ddd;
+        button {
+            padding: 5px 10px;
+            margin: 5px 0;
+            background-color: #333;
+            color: white;
+            border: none;
             border-radius: 4px;
-            height: 42px;
-            box-sizing: border-box;
+            cursor: pointer;
+            font-size: 14px;
         }
-        .title-input button {
-            height: 42px;
-            padding: 0 20px;
-            box-sizing: border-box;
+        button:hover {
+            background-color: black;
         }
     </style>
 </head>
-
 <body>
-    <div class="header">
-        <div class="logo">로고</div>
-        <nav>
-            <a href="jobPosting.html">채용공고</a>
-            <a href="interview.html">면접보기</a>
-            <a href="resume.html">자소서등록</a>
-            <a href="review.html">기업분석</a>
-        </nav>
-        <div class="auth-links">
-            <a href="login.html">Sign in</a>
-            <a href="mypage.html">Mypage</a>
-        </div>
+<div class="header">
+    <div class="logo">로고</div>
+    <nav>
+        <a href="jobPosting.html">채용공고</a>
+        <a href="interview.html">면접보기</a>
+        <a href="resume.html">자소서등록</a>
+        <a href="review.html">기업분석</a>
+    </nav>
+    <div class="auth-links">
+        <a href="login.html">Sign in</a>
+        <a href="mypage.html">Mypage</a>
     </div>
-
-    <div class="container">
-        <div class="sidebar">
-            <ul>
-                <li><a href="resume.html">자기소개서 등록</a></li>
-                <li><a href="resume_view.html">자기소개서 조회</a></li>
-            </ul>
-        </div>
-
-        <div class="content">
+</div>
+<div class="container">
+    <div class="sidebar">
+        <ul>
+            <li onclick="showSection('section1')">자기소개서 등록</li>
+            <li onclick="showSection('section2')">자기소개서 조회</li>
+        </ul>
+    </div>
+    <div class="content">
+        <div id="section1" class="section active">
             <h2>자기소개서 등록</h2>
-            <div class="title-input">
-                <input type="text" placeholder="자기소개서 제목을 입력하세요" id="resume-title">
-                <button type="button" onclick="submitForm()">등록</button>
-            </div>
-
-            <form id="question-form">
+            <form id="question-form" action="${pageContext.request.contextPath}/resume" method="post">
+                <div class="title-input">
+                    <input type="text" name="title" placeholder="자기소개서 제목을 입력하세요" id="resume-title">
+                    <button type="submit">등록</button>
+                </div>
                 <div id="questions-container">
                     <div class="question-answer-wrapper">
                         <input type="checkbox" class="question-checkbox">
@@ -185,58 +176,50 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" onclick="addQuestion()">+ 질답 추가</button>
-                <button type="button" onclick="deleteSelectedQuestions()">삭제</button>
+                <div class="action-buttons">
+                    <button type="button" onclick="addQuestion()">+ 질답 추가</button>
+                    <button type="button" onclick="removeSelectedQuestions()">삭제</button>
+                </div>
             </form>
         </div>
+        <div id="section2" class="section">
+            <h2>자기소개서 조회</h2>
+            <p>이력서 조회하기</p>
+        </div>
     </div>
+</div>
+<script>
+    function showSection(sectionId) {
+        var sections = document.querySelectorAll('.section');
+        sections.forEach(function (section) {
+            section.classList.remove('active');
+        });
+        var activeSection = document.getElementById(sectionId);
+        activeSection.classList.add('active');
+    }
 
-    <script>
-        function submitForm() {
-            alert("등록이 완료되었습니다.");
-        }
+    function addQuestion() {
+        const container = document.getElementById('questions-container');
+        const newQuestionAnswer = document.createElement('div');
+        newQuestionAnswer.classList.add('question-answer-wrapper');
+        newQuestionAnswer.innerHTML = `
+            <input type="checkbox" class="question-checkbox">
+            <div class="question-answer">
+                <textarea name="question" placeholder="질문"></textarea>
+                <textarea name="answer" placeholder="답변"></textarea>
+            </div>
+        `;
+        container.appendChild(newQuestionAnswer);
+    }
 
-        function addQuestion() {
-            const container = document.getElementById('questions-container');
-            const newQuestionAnswerWrapper = document.createElement('div');
-            newQuestionAnswerWrapper.classList.add('question-answer-wrapper');
-            newQuestionAnswerWrapper.innerHTML = `
-                <input type="checkbox" class="question-checkbox">
-                <div class="question-answer">
-                    <textarea name="question" placeholder="질문"></textarea>
-                    <textarea name="answer" placeholder="답변"></textarea>
-                </div>
-            `;
-            container.appendChild(newQuestionAnswerWrapper);
-            initializeTextareas();
-        }
-
-        function initializeTextareas() {
-            const textareas = document.querySelectorAll('textarea');
-            textareas.forEach(textarea => {
-                textarea.style.height = 'auto';
-                textarea.style.overflowY = 'hidden';
-                adjustTextareaHeight(textarea);
-                textarea.addEventListener('input', function() {
-                    adjustTextareaHeight(this);
-                });
-            });
-        }
-
-        function adjustTextareaHeight(element) {
-            element.style.height = 'auto';
-            element.style.height = element.scrollHeight + 'px';
-        }
-
-        function deleteSelectedQuestions() {
-            const checkboxes = document.querySelectorAll('.question-checkbox:checked');
-            checkboxes.forEach(checkbox => {
-                const questionAnswerWrapper = checkbox.closest('.question-answer-wrapper');
-                questionAnswerWrapper.remove();
-            });
-        }
-
-        window.onload = initializeTextareas;
-    </script>
+    function removeSelectedQuestions() {
+        const checkboxes = document.querySelectorAll('.question-checkbox');
+        checkboxes.forEach(function (checkbox) {
+            if (checkbox.checked) {
+                checkbox.parentElement.remove();
+            }
+        });
+    }
+</script>
 </body>
 </html>
