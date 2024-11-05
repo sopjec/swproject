@@ -110,8 +110,8 @@
     <div class="container">
         <div class="sidebar">
             <ul>
-                <li><a href="interview.jsp" onclick="activateMenu(this)">면접 보기</a></li>
-                <li><a href="interview_view.jsp" onclick="activateMenu(this)">면접 기록 조회</a></li>
+                <li><a href="interview.jsp">면접 보기</a></li>
+                <li><a href="interview_view.jsp">면접 기록 조회</a></li>
             </ul>
         </div>
 
