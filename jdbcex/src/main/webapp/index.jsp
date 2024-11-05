@@ -106,50 +106,41 @@
         }
     </style>
 </head>
-
 <body>
-<!-- 상단바 -->
-<div class="header">
-    <div class="logo"></div>
-    <div class="auth-links">
-        <a href="qna.jsp">1:1문의</a>
-        <a href="login.jsp">login</a>
-        <a href="signup.jsp">Register</a>
-    </div>
-</div>
-
-<!-- 메인 컨텐츠 -->
-<div class="main-container">
-    <div class="main-box">
-        <div class="box dark-box">
-            <h3>자기소개서</h3>
-            <ul>
-                <li><a href="resume.jsp">자기소개서 등록</a></li>
-                <li><a href="resume.jsp">자기소개서 조회</a></li>
-            </ul>
-        </div>
-        <div class="box dark-box">
-            <h3>면접하기</h3>
-            <ul>
-                <li><a href="interview.jsp">면접 보러가기</a></li>
-                <li><a href="interview.jsp">면접 녹화기록 조회</a></li>
-            </ul>
-        </div>
-        <div class="box dark-box">
-            <h3>채용공고</h3>
-            <ul>
-                <li><a href="jobPosting.jsp">채용공고 보러가기</a></li>
-                <li><a href="jobScrap.jsp">저장된 공고 목록</a></li>
-            </ul>
-        </div>
-        <div class="box dark-box">
-            <h3>기업분석</h3>
-            <ul>
-                <li><a href="review.jsp">면접후기</a></li>
-            </ul>
+    <!-- 상단바 -->
+    <iframe src="header.jsp" style="border:none; width:100%; height:100px;"></iframe>
+    <!-- 메인 컨텐츠 -->
+    <div class="main-container">
+        <div class="main-box">
+            <div class="box dark-box">
+                <h3>자기소개서</h3>
+                <ul>
+                    <li><a href="resume.jsp">자기소개서 등록</a></li>
+                    <li><a href="resume.jsp">자기소개서 조회</a></li>
+                </ul>
+            </div>
+            <div class="box dark-box">
+                <h3>면접하기</h3>
+                <ul>
+                    <li><a href="interview.jsp">면접 보러가기</a></li>
+                    <li><a href="interview.jsp">면접 녹화기록 조회</a></li>
+                </ul>
+            </div>
+            <div class="box dark-box">
+                <h3>채용공고</h3>
+                <ul>
+                    <li><a href="jobPosting.jsp">채용공고 보러가기</a></li>
+                    <li><a href="jobScrap.jsp">저장된 공고 목록</a></li>
+                </ul>
+            </div>
+            <div class="box dark-box">
+                <h3>기업분석</h3>
+                <ul>
+                    <li><a href="review.jsp">면접후기</a></li>
+                </ul>
+            </div>
         </div>
     </div>
-</div>
 
 </body>
 </html>
