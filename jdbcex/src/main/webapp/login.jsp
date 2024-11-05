@@ -1,112 +1,100 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
+
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 페이지</title>
+
+    <!-- 로그인 페이지에만 적용될 CSS -->
     <style>
-        /* 모달 스타일 */
-        .modal {
-            display: none; /* 기본적으로 숨김 */
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+        /* 전체 페이지 배경 및 기본 스타일 */
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
         }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 30%;
-            text-align: center;
-            border-radius: 8px;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
+        /* 입력 필드 스타일 */
+        input[type="text"],
+        input[type="password"] {
+            width: 95%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
             border-radius: 4px;
-            margin-top: 10px;
+            font-size: 16px;
+            background-color: #fff;
+            color: #333;
         }
-
-        .button:hover {
-            background-color: #0056b3;
+        /* 입력 필드에 포커스가 갔을 때 스타일 */
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #333;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+        /* 로그인 버튼 스타일 */
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        /* 버튼에 마우스를 올렸을 때 배경색 변경 */
+        button:hover {
+            background-color: #000;
+        }
+        /* 메인 페이지 링크 스타일 */
+        .link {
+            display: block;
+            margin-top: 20px;
+            color: #333;
+            text-decoration: none;
+            text-align: center;
+            font-size: 14px;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+        /* 로그인 폼의 스타일 */
+        .container {
+            width: 400px;
+            padding: 40px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 150px auto;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
         }
     </style>
 </head>
+
 <body>
+    <!-- 상단바 -->
+    <iframe src="header.jsp" style="border:none; width:100%; height:100px;"></iframe>
 
-<h2>로그인 페이지</h2>
-<form action="login" method="post">
-    <label for="id">Username:</label>
-    <input type="text" id="id" name="id" required><br>
-    <label for="pwd">Password:</label>
-    <input type="password" id="pwd" name="pwd" required><br>
-    <button type="submit">로그인</button>
-</form>
+    <div class="container">
+        <h1>로그인</h1>
+        <form action="login.jsp" method="POST">
+            <input type="text" name="username" id="input-user-id" placeholder="아이디" required>
+            <input type="password" name="password" id="input-user-password" placeholder="비밀번호" required>
+            <button type="submit">로그인</button>
+        </form>
 
-<!-- 모달 창 구조 -->
-<div id="loginErrorModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <p>로그인에 실패했습니다. 다시 시도해주세요.</p>
-        <a href="login.jsp" class="button">로그인으로 돌아가기</a>
-        <a href="signup.jsp" class="button">회원가입</a>
+        <a href="index.jsp" class="link">계정을 잃어버리셨나요?</a>
+        <a href="signup.jsp" class="link">계정이 없으신가요?</a>
     </div>
-</div>
-
-<% if (request.getAttribute("loginError") != null) { %>
-<script>
-    document.getElementById("loginErrorModal").style.display = "block";
-</script>
-<% } %>
-
-
-<script>
-    // 로그인 실패 시 모달을 보여줌
-    window.onload = function () {
-        var modal = document.getElementById("loginErrorModal");
-        var span = document.getElementsByClassName("close")[0];
-
-        <% if (request.getAttribute("loginError") != null) { %>
-        modal.style.display = "block";
-        <% } %>
-
-        // 모달 닫기
-        span.onclick = function () {
-            modal.style.display = "none";
-        }
-
-        // 모달 바깥 클릭 시 닫기
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-    };
-</script>
 
 </body>
 </html>
