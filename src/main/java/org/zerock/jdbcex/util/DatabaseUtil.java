@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class DatabaseUtil {
 
-    private static final String URL = "jdbc:mariadb://localhost:3007/merijob_db";
+    private static final String URL = "jdbc:mariadb://localhost:3307/merijob_db";
     private static final String USER = "root";
-    private static final String PASSWORD = "abcd980225*";
+    private static final String PASSWORD = "1111";
 
     public static Connection getConnection() {
         try {
