@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자기소개서 조회</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        /* 메인 레이아웃 설정 */
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        /* 메인 컨텐츠 */
+        .content {
+            flex-grow: 1;
+            padding-left: 20px;  
+        }
+        /* 왼쪽 사이드바 스타일 */
+        .sidebar {
+            width: 200px;
+            padding: 20px;
+            background-color: white;
+            border-right: 1px solid #ddd;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .sidebar li:hover {
+            background-color: #e0e0e0;
+        }
+        /*오른쪽 컨텐츠 스타일*/
+        /* 자기소개서 조회 테이블 스타일 */
+        .resume-list table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .resume-list th, .resume-list td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .resume-list th {
+            background-color: #f0f0f0;
+        }
+        .resume-actions {
+            margin-top: 10px;
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <iframe src="header.html" style="border:none; width:100%; height:100px;"></iframe>
+
+    <!-- 메인 콘텐츠 -->
+    <div class="container">
+        <div class="sidebar">
+            <ul>
+                <li><a href="resume.html">자기소개서 등록</a></li>
+                <li><a href="resume_view.html">자기소개서 조회</a></li>
+                <li><a href="resume_analyze.html">자기소개서 분석</a></li>
+            </ul>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="content">
+            <h2>자기소개서 조회</h2>
+        </div>
+    </div>
+
+    <script>
+        // 로컬 스토리지에서 자기소개서 로드 및 표시
+        function loadResumes() {
+            const resumes = JSON.parse(localStorage.getItem('resumes') || '[]');
+            const table = document.getElementById('resumeTable');
+            table.innerHTML = '';
+
+            resumes.forEach((resume, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="checkbox" class="checkbox" data-index="${index}"></td>
+                    <td>${resume.title}</td>
+                    <td>${resume.registerDate || ''}</td>
+                    <td>${resume.modifiedDate || ''}</td>
+                `;
+                table.appendChild(row);
+            });
+        }
+
+        // 모두선택 기능
+        function toggleAll(checkbox) {
+            const checkboxes = document.querySelectorAll('.checkbox');
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+        }
+
+        // 선택된 항목 삭제
+        function deleteSelected() {
+            const resumes = JSON.parse(localStorage.getItem('resumes') || '[]');
+            const checkboxes = document.querySelectorAll('.checkbox[data-index]:checked');
+            const indicesToRemove = Array.from(checkboxes).map(cb => parseInt(cb.getAttribute('data-index')));
+
+            // 인덱스를 기준으로 역순으로 삭제하여 배열 인덱스에 영향이 없도록 함
+            indicesToRemove.sort((a, b) => b - a).forEach(index => {
+                resumes.splice(index, 1);
+            });
+
+            localStorage.setItem('resumes', JSON.stringify(resumes));
+            loadResumes(); // 업데이트된 리스트 로드
+        }
+
+        // 페이지 로드 시 자기소개서 리스트 로드
+        window.onload = loadResumes;
+    </script>
+</body>
+</html>

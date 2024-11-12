@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자기소개서 조회 및 수정</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+        .sidebar {
+            width: 200px;
+            padding: 20px;
+            background-color: white;
+            border-right: 1px solid #ddd;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            display: block;
+            padding: 10px 0;
+        }
+        .sidebar ul li a:hover {
+            background-color: #c6c6c6;
+        }
+        .content {
+            flex-grow: 1;
+            padding-left: 20px;
+            max-width: 100%;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .resume-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            background-color: white;
+        }
+        .resume-item h3 {
+            font-size: 20px;
+            color: #333;
+        }
+        .question-box {
+            margin-bottom: 15px;
+        }
+        .question-box p, .question-box textarea {
+            margin: 5px 0;
+        }
+        .question-box .question, .question-box .answer {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        .question-box .answer {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .edit-button, .save-button {
+            padding: 8px 15px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .edit-button:hover, .save-button:hover {
+            background-color: black;
+        }
+    </style>
+</head>
+
+<body>
+    <iframe src="header.html" style="border:none; width:100%; height:100px;"></iframe>
+
+    <div class="container">
+        <div class="sidebar">
+            <ul>
+                <li><a href="resume.html">자기소개서 등록</a></li>
+                <li><a href="resume_view.html">자기소개서 조회</a></li>
+                <li><a href="resume_analyze.html">자기소개서 분석</a></li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <h2>자기소개서 조회</h2>
+            <div class="resume-item" id="resumeItem">
+                <h3>예시 파일명</h3>
+
+                <!-- 기존에 등록해두었던 질문과 답변 박스 -->
+                <div class="question-box">
+                    <p class="question" contenteditable="false">질문: [질문 내용]</p>
+                    <p class="answer" contenteditable="false">답변: [답변 내용]</p>
+                </div>
+
+                <div class="question-box">
+                    <p class="question" contenteditable="false">질문: [질문 내용]</p>
+                    <p class="answer" contenteditable="false">답변: [답변 내용]</p>
+                </div>
+
+                <!-- 수정하기, 저장하기 버튼 -->
+                <button id="editButton" class="edit-button" onclick="editContent()">수정하기</button>
+                <button id="saveButton" class="save-button" onclick="saveContent()">저장하기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function editContent() {
+            // 클릭 시 질문과 답변을 수정 가능하도록 변경
+            const questions = document.querySelectorAll('.question');
+            const answers = document.querySelectorAll('.answer');
+            questions.forEach(q => q.setAttribute('contenteditable', 'true'));
+            answers.forEach(a => a.setAttribute('contenteditable', 'true'));
+        }
+
+        function saveContent() {
+            // 수정 한 이후에 완료 버튼을 누르면 수정이 불가하도록 만듬, >> 다시 수정하기 버튼을 눌러야 수정이 가능함 ㅋㅋㅋㅋㅋㅋㅋ
+            const questions = document.querySelectorAll('.question');
+            const answers = document.querySelectorAll('.answer');
+            questions.forEach(q => q.setAttribute('contenteditable', 'false'));
+            answers.forEach(a => a.setAttribute('contenteditable', 'false'));
+
+            alert("수정이 완료되었습니다.");
+        }
+    </script>
+
+</body>
+</html>
