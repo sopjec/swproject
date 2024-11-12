@@ -6,25 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>기업 채용 공고</title>
     <style>
+        /* CSS 설정 */
         body {
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
             margin: 0;
             padding: 0;
         }
-        .section {
-            display: none;
-            text-align: center;
-            padding: 30px;
-            width: 100%; 
-        }
-        .section input {
-            display: block;
-            margin: 10px auto;
-            width: 80%; 
-        }
 
-        /* 메인 레이아웃 설정 */
         .container {
             display: flex;
             max-width: 1200px;
@@ -32,82 +21,40 @@
             padding: 0 20px;
         }
 
-        /* 메인 컨텐츠 */
-        .content {
-            flex-grow: 1;
-            padding-left: 20px;  
-        }
-        .content input {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        
-        /* 왼쪽 사이드바 스타일 */
         .sidebar {
             width: 200px;
             padding: 20px;
             background-color: white;
             border-right: 1px solid #ddd;
         }
+
         .sidebar ul {
             list-style-type: none;
             padding: 0;
         }
+
         .sidebar ul li {
             margin-bottom: 10px;
         }
+
         .sidebar ul li a {
             text-decoration: none;
             color: #333;
             font-size: 16px;
             cursor: pointer;
         }
-        .sidebar li:hover {
-            background-color: #e0e0e0;
-        }
 
-        /*오른쪽 콘텐츠 스타일*/
-        .search-bar {
-            display: flex;
-            margin-bottom: 20px;
-        }
-        .search-bar input {
+        .content {
             flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .search-bar button {
-            padding: 10px 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: #333;
-            color: white;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-        .search-bar button:hover {
-            background-color: #000;
+            padding-left: 20px;
         }
 
-        .filters {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .filters select {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        /* 채용 공고 리스트 */
         .job-listing {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
         }
+
         .job-card {
             background-color: white;
             border: 1px solid #ddd;
@@ -116,143 +63,161 @@
             text-align: left;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .job-card h2 {
             font-size: 18px;
             margin-bottom: 10px;
+            color: #333;
         }
+
         .job-card p {
             color: #666;
             font-size: 14px;
+            margin: 5px 0;
         }
+
+        .job-card a {
+            color: blue;
+            text-decoration: underline;
+        }
+
         .pagination {
             text-align: center;
             margin-top: 20px;
         }
-        .pagination a {
-            padding: 10px 15px;
-            margin: 0 5px;
+
+        .pagination button {
+            padding: 8px 12px;
+            margin: 0 4px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            color: #333;
-            text-decoration: none;
+            background-color: #fff;
+            cursor: pointer;
         }
-        .pagination a:hover {
-            background-color: #ddd;
+
+        .pagination button.active {
+            background-color: #333;
+            color: #fff;
         }
     </style>
 </head>
 
 <body>
-    <iframe src="header.jsp" style="border:none; width:100%; height:100px;"></iframe>
+<iframe src="header.jsp" style="border:none; width:100%; height:100px;"></iframe>
 
-    <div class="container">
-        <!-- 왼쪽 사이드바 -->
-        <div class="sidebar">
-            <ul>
-                <li><a href="jobPosting.jsp" >기업 채용 공고</a></li>
-                <li><a href="jobScrap.jsp">저장된 공고 목록</a></li>
-            </ul>
-        </div>
-
-        <!-- 오른쪽 메인 컨텐츠 -->
-        <div class="content">
-            <!-- 검색바 -->
-            <div class="search-bar">
-                <input type="text" placeholder="기업명 및 키워드를 입력해주세요..">
-                <button type="button">검색하기</button>
-            </div>
-
-            <!-- 필터 -->
-            <div class="filters">
-                <select>
-                    <option value="정렬순">정렬순</option>
-                    <option value="최신순">최신순</option>
-                    <option value="인기순">인기순</option>
-                </select>
-                <select>
-                    <option value="업종">업종</option>
-                    <option value="IT">IT</option>
-                    <option value="제조">제조</option>
-                    <option value="디자인">디자인</option>
-                </select>
-                <select>
-                    <option value="지역">지역</option>
-                    <option value="서울/경기도">서울/경기도</option>
-                    <option value="전라남도">전라남도</option>
-                    <option value="충청도">충청도</option>
-                </select>
-            </div>
-
-            <!-- 채용 공고 리스트 -->
-            <div class="job-listing">
-                <div class="job-card">
-                    <h2>A기업</h2>
-                    <p>[채용 공고 내용]</p>
-                    <p>경력: 신입</p>
-                    <p>모집부문: IT</p>
-                    <p>고용형태: 정규직</p>
-                    <p>연봉: 협의</p>
-                    <p>근무지역: 서울</p>
-                </div>
-                <div class="job-card">
-                    <h2>B기업</h2>
-                    <p>[채용 공고 내용]</p>
-                    <p>경력: 경력</p>
-                    <p>모집부문: IT</p>
-                    <p>고용형태: 정규직</p>
-                    <p>연봉: 협의</p>
-                    <p>근무지역: 서울</p>
-                </div>
-                <div class="job-card">
-                    <h2>C기업</h2>
-                    <p>[채용 공고 내용]</p>
-                    <p>경력: 신입</p>
-                    <p>모집부문: IT</p>
-                    <p>고용형태: 정규직</p>
-                    <p>연봉: 협의</p>
-                    <p>근무지역: 경기</p>
-                </div>
-                <div class="job-card">
-                    <h2>D기업</h2>
-                    <p>[채용 공고 내용]</p>
-                    <p>경력: 신입</p>
-                    <p>모집부문: IT</p>
-                    <p>고용형태: 정규직</p>
-                    <p>연봉: 협의</p>
-                    <p>근무지역: 서울</p>
-                </div>
-                <div class="job-card">
-                    <h2>E기업</h2>
-                    <p>[채용 공고 내용]</p>
-                    <p>경력: 경력</p>
-                    <p>모집부문: IT</p>
-                    <p>고용형태: 정규직</p>
-                    <p>연봉: 협의</p>
-                    <p>근무지역: 경기</p>
-                </div>
-                <div class="job-card">
-                    <h2>F기업</h2>
-                    <p>[채용 공고 내용]</p>
-                    <p>경력: 신입</p>
-                    <p>모집부문: IT</p>
-                    <p>고용형태: 정규직</p>
-                    <p>연봉: 협의</p>
-                    <p>근무지역: 서울</p>
-                </div>
-            </div>
-
-            <!-- 페이지네이션 -->
-            <div class="pagination">
-                <a href="#">&laquo; Previous</a>
-                <a href="#">1</a>
-                <a href="#">2</a>
-                <a href="#">3</a>
-                <a href="#">...</a>
-                <a href="#">67</a>
-                <a href="#">Next &raquo;</a>
-            </div>
-        </div>
+<div class="container">
+    <!-- 왼쪽 사이드바 -->
+    <div class="sidebar">
+        <ul>
+            <li><a href="jobPosting.jsp">기업 채용 공고</a></li>
+            <li><a href="jobScrap.jsp">저장된 공고 목록</a></li>
+        </ul>
     </div>
 
+    <!-- 오른쪽 메인 컨텐츠 -->
+    <div class="content">
+        <div class="job-listing">
+            <!-- API로부터 데이터를 받아 동적으로 채워질 영역 -->
+        </div>
+        <div class="pagination">
+            <!-- 페이지 버튼이 여기에 추가됩니다 -->
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript 추가 -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let currentPage = 1; // 현재 페이지 변수
+        const totalPages = 5; // 총 페이지 수 (예시)
+
+        function fetchJobPostings(pageNo) {
+            const serviceKey = "m4%2BOenhwqExP36CL%2F5Pb7tiHlIxAqX75ReTHzMfWzxb%2BpEYUtedtI%2BughHYGWfH%2FXXFk3sIWKu3HIhtbYDQozw%3D%3D";
+            const url = "http://apis.data.go.kr/1051000/recruitment/list?serviceKey=" + serviceKey + "&resultType=json&numOfRows=9&pageNo=" + pageNo + "&ongoingYn=Y";
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok " + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const jobListingContainer = document.querySelector(".job-listing");
+                    jobListingContainer.innerHTML = ""; // 기존 내용 삭제
+
+                    if (data.result && Array.isArray(data.result)) {
+                        const items = data.result;
+
+                        items.forEach(function(item) {
+                            const jobCard = document.createElement("div");
+                            jobCard.classList.add("job-card");
+
+                            const title = document.createElement("h2");
+                            title.textContent = item.instNm ? item.instNm : "기관명 없음";
+
+                            const duty = document.createElement("p");
+                            duty.textContent = "직무: " + (item.ncsCdNmLst ? item.ncsCdNmLst : "직무 정보 없음");
+
+                            const employmentType = document.createElement("p");
+                            employmentType.textContent = "고용 형태: " + (item.hireTypeNmLst ? item.hireTypeNmLst : "고용형태 없음");
+
+                            const region = document.createElement("p");
+                            region.textContent = "근무 지역: " + (item.workRgnNmLst ? item.workRgnNmLst : "근무 지역 정보 없음");
+
+                            const deadline = document.createElement("p");
+                            deadline.textContent = "마감일: " + (item.pbancEndYmd ? item.pbancEndYmd : "마감일 정보 없음");
+
+                            const link = document.createElement("a");
+                            link.href = item.srcUrl ? item.srcUrl : "#";
+                            link.target = "_blank";
+                            link.textContent = "채용 공고 링크";
+
+                            jobCard.appendChild(title);
+                            jobCard.appendChild(duty);
+                            jobCard.appendChild(employmentType);
+                            jobCard.appendChild(region);
+                            jobCard.appendChild(deadline);
+                            jobCard.appendChild(link);
+
+                            jobListingContainer.appendChild(jobCard);
+                        });
+                    } else {
+                        jobListingContainer.innerHTML = "<p>채용 공고를 불러올 수 없습니다.</p>";
+                    }
+
+                    // 페이지네이션 생성
+                    createPagination(totalPages, pageNo);
+                })
+                .catch(error => {
+                    console.error("API 호출 중 오류 발생:", error);
+                    const jobListingContainer = document.querySelector(".job-listing");
+                    jobListingContainer.innerHTML = "<p>채용 공고를 불러오는 중 오류가 발생했습니다.</p>";
+                });
+        }
+
+        function createPagination(totalPages, currentPage) {
+            const paginationContainer = document.querySelector(".pagination");
+            paginationContainer.innerHTML = ""; // 기존 페이지네이션 버튼 삭제
+
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement("button");
+                button.textContent = i;
+                if (i === currentPage) {
+                    button.classList.add("active");
+                }
+
+                button.addEventListener("click", function() {
+                    currentPage = i;
+                    fetchJobPostings(currentPage); // 클릭한 페이지의 데이터 로드
+                });
+
+                paginationContainer.appendChild(button);
+            }
+        }
+
+        fetchJobPostings(currentPage); // 초기 페이지 데이터 로드
+    });
+</script>
 </body>
 </html>
