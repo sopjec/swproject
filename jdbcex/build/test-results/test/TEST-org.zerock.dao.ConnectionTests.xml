@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.zerock.dao.ConnectionTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-10-07T10:10:05" hostname="DESKTOP-BD7RFSO" time="1.609">
-  <properties/>
-  <testcase name="testConnection()" classname="org.zerock.dao.ConnectionTests" time="1.609"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
