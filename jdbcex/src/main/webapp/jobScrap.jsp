@@ -129,11 +129,27 @@
             margin-left: 5px;
         }
     </style>
+    <script>
+        // header.html 파일을 불러오는 함수
+        function loadHeader() {
+            fetch("header.jsp")
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById("header-container").innerHTML = data;
+                })
+                .catch(error => console.error("Error loading header:", error));
+        }
+
+        window.onload = loadHeader; // 페이지가 로드될 때 헤더를 불러옴
+    </script>
 </head>
+
 <body>
 
-<!-- 상단바 -->
-<iframe src="header.jsp" style="border:none; width:100%; height:100px;"></iframe>
+<!-- 헤더가 로드될 위치 -->
+<div id="header-container"></div>
+
+
 <div class="container">
     <!-- 왼쪽 사이드바 -->
     <div class="sidebar">

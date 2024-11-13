@@ -69,7 +69,7 @@
 <body>
 <!-- 상단바 -->
 <div class="header">
-  <div class="logo"></div>
+  <div class="logo"><a href="index.jsp"></a></div>
   <nav>
     <a href="jobPosting.jsp">채용공고</a>
     <a href="interview.jsp">면접보기</a>
