@@ -135,14 +135,14 @@
     <div class="header">
         <div class="logo">로고</div>
         <nav>
-            <a href="jobPosting.html">채용공고</a>
-            <a href="interview.html">면접보기</a>
-            <a href="resume.html">자소서등록</a>
-            <a href="review.html">기업분석</a>
+            <a href="jobPosting.jsp">채용공고</a>
+            <a href="interview.jsp">면접보기</a>
+            <a href="resume.jsp">자소서등록</a>
+            <a href="review.jsp">기업분석</a>
         </nav>
         <div class="auth-links">
-            <a href="login.html">Sign in</a>
-            <a href="mypage.html">Mypage</a>
+            <a href="login.jsp">Sign in</a>
+            <a href="mypage.jsp">Mypage</a>
         </div>
     </div>
 
@@ -150,8 +150,8 @@
         <div class="sidebar">
             <ul>
                 <li><a href="resume.html">자기소개서 등록</a></li>
-                <li><a href="resume_view.html">자기소개서 조회</a></li>
-                <li><a href="resume_analyze.html">자기소개서 분석</a></li>
+                <li><a href="resume">자기소개서 조회</a></li>
+                <li><a href="resume_analyze.jsp">자기소개서 분석</a></li>
             </ul>
         </div>
 

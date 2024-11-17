@@ -132,7 +132,7 @@
             <h3>자기소개서</h3>
             <ul>
                 <li><a href="resume.jsp">자기소개서 등록</a></li>
-                <li><a href="resume.jsp">자기소개서 조회</a></li>
+                <li><a href="resume">자기소개서 조회</a></li>
             </ul>
         </div>
         <div class="box dark-box">

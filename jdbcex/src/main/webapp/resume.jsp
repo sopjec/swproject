@@ -146,98 +146,73 @@
 </head>
 
 <body>
-    <div class="header">
-        <div class="logo">로고</div>
-        <nav>
-            <a href="jobPosting.html">채용공고</a>
-            <a href="interview.html">면접보기</a>
-            <a href="resume.html">자소서등록</a>
-            <a href="review.html">기업분석</a>
-        </nav>
-        <div class="auth-links">
-            <a href="login.html">Sign in</a>
-            <a href="mypage.html">Mypage</a>
-        </div>
+<div class="header">
+    <div class="logo">로고</div>
+    <nav>
+        <a href="jobPosting.jsp">채용공고</a>
+        <a href="interview.jsp">면접보기</a>
+        <a href="resume.jsp">자소서등록</a>
+        <a href="review.jsp">기업분석</a>
+    </nav>
+    <div class="auth-links">
+        <a href="login.jsp">Sign in</a>
+        <a href="mypage.jsp">Mypage</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <ul>
+            <li><a href="resume.jsp">자기소개서 등록</a></li>
+            <li><a href="resume">자기소개서 조회</a></li>
+            <li><a href="resume_analyze.jsp">자기소개서 분석</a></li>
+        </ul>
     </div>
 
-    <div class="container">
-        <div class="sidebar">
-            <ul>
-                <li><a href="resume.html">자기소개서 등록</a></li>
-                <li><a href="resume_view.html">자기소개서 조회</a></li>
-                <li><a href="resume_analyze.html">자기소개서 분석</a></li>
-            </ul>
-        </div>
-
-        <div class="content">
-            <h2>자기소개서 등록</h2>
+    <div class="content">
+        <h2>자기소개서 등록</h2>
+        <form id="question-form" action="resume" method="POST">
             <div class="title-input">
-                <input type="text" placeholder="자기소개서 제목을 입력하세요" id="resume-title">
-                <button type="button" onclick="submitForm()">등록</button>
+                <input type="text" placeholder="자기소개서 제목을 입력하세요" name="title" required>
             </div>
-
-            <form id="question-form">
-                <div id="questions-container">
-                    <div class="question-answer-wrapper">
-                        <input type="checkbox" class="question-checkbox">
-                        <div class="question-answer">
-                            <textarea name="question" placeholder="질문"></textarea>
-                            <textarea name="answer" placeholder="답변"></textarea>
-                        </div>
+            <div id="questions-container">
+                <div class="question-answer-wrapper">
+                    <input type="checkbox" class="question-checkbox">
+                    <div class="question-answer">
+                        <textarea name="question" placeholder="질문" required></textarea>
+                        <textarea name="answer" placeholder="답변" required></textarea>
                     </div>
                 </div>
-                <button type="button" onclick="addQuestion()">+ 질답 추가</button>
-                <button type="button" onclick="deleteSelectedQuestions()">삭제</button>
-            </form>
-        </div>
+            </div>
+            <button type="button" onclick="addQuestion()">+ 질답 추가</button>
+            <button type="button" onclick="deleteSelectedQuestions()">선택 삭제</button>
+            <button type="submit">등록</button>
+        </form>
     </div>
+</div>
 
-    <script>
-        function submitForm() {
-            alert("등록이 완료되었습니다.");
-        }
-
-        function addQuestion() {
-            const container = document.getElementById('questions-container');
-            const newQuestionAnswerWrapper = document.createElement('div');
-            newQuestionAnswerWrapper.classList.add('question-answer-wrapper');
-            newQuestionAnswerWrapper.innerHTML = `
+<script>
+    function addQuestion() {
+        const container = document.getElementById('questions-container');
+        const newQuestionAnswerWrapper = document.createElement('div');
+        newQuestionAnswerWrapper.classList.add('question-answer-wrapper');
+        newQuestionAnswerWrapper.innerHTML = `
                 <input type="checkbox" class="question-checkbox">
                 <div class="question-answer">
-                    <textarea name="question" placeholder="질문"></textarea>
-                    <textarea name="answer" placeholder="답변"></textarea>
+                    <textarea name="question" placeholder="질문" required></textarea>
+                    <textarea name="answer" placeholder="답변" required></textarea>
                 </div>
             `;
-            container.appendChild(newQuestionAnswerWrapper);
-            initializeTextareas();
-        }
+        container.appendChild(newQuestionAnswerWrapper);
+    }
 
-        function initializeTextareas() {
-            const textareas = document.querySelectorAll('textarea');
-            textareas.forEach(textarea => {
-                textarea.style.height = 'auto';
-                textarea.style.overflowY = 'hidden';
-                adjustTextareaHeight(textarea);
-                textarea.addEventListener('input', function() {
-                    adjustTextareaHeight(this);
-                });
-            });
-        }
-
-        function adjustTextareaHeight(element) {
-            element.style.height = 'auto';
-            element.style.height = element.scrollHeight + 'px';
-        }
-
-        function deleteSelectedQuestions() {
-            const checkboxes = document.querySelectorAll('.question-checkbox:checked');
-            checkboxes.forEach(checkbox => {
-                const questionAnswerWrapper = checkbox.closest('.question-answer-wrapper');
-                questionAnswerWrapper.remove();
-            });
-        }
-
-        window.onload = initializeTextareas;
-    </script>
+    function deleteSelectedQuestions() {
+        const checkboxes = document.querySelectorAll('.question-checkbox:checked');
+        checkboxes.forEach(checkbox => {
+            const questionAnswerWrapper = checkbox.closest('.question-answer-wrapper');
+            questionAnswerWrapper.remove();
+        });
+    }
+</script>
 </body>
 </html>

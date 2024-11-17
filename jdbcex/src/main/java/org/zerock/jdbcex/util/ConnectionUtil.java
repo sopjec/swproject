@@ -16,12 +16,20 @@ public enum ConnectionUtil {
         try {
             // JDBC 드라이버 수동 로드
             Class.forName("org.mariadb.jdbc.Driver");
+            System.out.println("MariaDB JDBC Driver 로드 성공");
         } catch (ClassNotFoundException e) {
+            System.err.println("MariaDB JDBC Driver 로드 실패: " + e.getMessage());
             throw new RuntimeException("MariaDB JDBC Driver not found", e);
         }
 
-        // 데이터베이스 연결 생성
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+        try {
+            // 데이터베이스 연결 생성
+            Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            System.out.println("데이터베이스 연결 성공: " + URL);
+            return connection;
+        } catch (SQLException e) {
+            System.err.println("데이터베이스 연결 실패: " + e.getMessage());
+            throw e;
+        }
     }
-
 }

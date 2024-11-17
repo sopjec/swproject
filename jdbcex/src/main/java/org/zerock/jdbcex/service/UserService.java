@@ -15,6 +15,10 @@ public class UserService {
         return userDAO.registerUser(user);
     }
 
+    public boolean updateProfileImage(String userId, String profileUrl) {
+        return userDAO.updateProfileImage(userId, profileUrl);
+    }
+
     public UserDTO loginUser(String id, String pwd) {
         return userDAO.loginUser(id, pwd);
     }
