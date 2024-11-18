@@ -41,6 +41,10 @@ dependencies {
 
   testCompileOnly("org.projectlombok:lombok:1.18.28")
   testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
+
+
+  implementation 'org.json:json:20210307'
+
 }
 
 

@@ -90,6 +90,18 @@ public class ResumeDAO {
         return null;
     }
 
+    public void updateTitle(int resumeId, String title) throws Exception {
+        String sql = "UPDATE resume SET title = ? WHERE id = ?";
+        try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, title);
+            pstmt.setInt(2, resumeId);
+            pstmt.executeUpdate();
+        }
+    }
+
+
 
     public List<ResumeDTO> getAllResumesByUserId(String userId) throws Exception {
         String sql = "SELECT id, title, user_id FROM resume WHERE user_id = ?";

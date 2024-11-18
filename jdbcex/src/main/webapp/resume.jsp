@@ -143,22 +143,25 @@
             box-sizing: border-box;
         }
     </style>
+    <script>
+        // header.html 파일을 불러오는 함수
+        function loadHeader() {
+            fetch("header.jsp")
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById("header-container").innerHTML = data;
+                })
+                .catch(error => console.error("Error loading header:", error));
+        }
+
+        window.onload = loadHeader; // 페이지가 로드될 때 헤더를 불러옴
+    </script>
 </head>
 
 <body>
-<div class="header">
-    <div class="logo">로고</div>
-    <nav>
-        <a href="jobPosting.jsp">채용공고</a>
-        <a href="interview.jsp">면접보기</a>
-        <a href="resume.jsp">자소서등록</a>
-        <a href="review.jsp">기업분석</a>
-    </nav>
-    <div class="auth-links">
-        <a href="login.jsp">Sign in</a>
-        <a href="mypage.jsp">Mypage</a>
-    </div>
-</div>
+
+<!-- 헤더가 로드될 위치 -->
+<div id="header-container"></div>
 
 <div class="container">
     <div class="sidebar">
