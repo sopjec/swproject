@@ -153,9 +153,9 @@
                 .catch(error => console.error("Error loading header:", error));
         }
 
-        window.onload = loadHeader;
 
         window.onload = function() {
+            loadHeader();
             initializeTextareas(); // 모든 textarea에 대해 높이 조절 기능 설정
         };
 
