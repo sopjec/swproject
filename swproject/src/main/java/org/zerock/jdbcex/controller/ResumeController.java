@@ -26,7 +26,7 @@ public class ResumeController extends HttpServlet {
     private final ResumeQnaService resumeQnaService = new ResumeQnaService();
 
     private static final String GPT_API_URL = "https://api.openai.com/v1/chat/completions";
-    private static final String GPT_API_KEY = "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"; // OpenAI API 키 입력
+    private static final String GPT_API_KEY = ""; // OpenAI API 키 입력
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
