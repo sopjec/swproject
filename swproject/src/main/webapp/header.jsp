@@ -22,7 +22,6 @@
     /* 상단바 스타일 */
     .header {
       display: flex;
-      justify-content: flex-end;
       align-items: center;
       padding: 10px 20px;
       background-color: white;
@@ -35,17 +34,18 @@
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
-      margin-right: auto;
+      margin-right: 20px; /* 로고와 nav 사이 간격 */
+    }
+    .header nav {
+      flex-grow: 1; /* nav가 남은 공간 차지 */
+      margin-right: 20px;
     }
     .header nav a {
+      float: right;
       margin-left: 20px;
       color: #333;
       text-decoration: none;
       font-size: 16px;
-    }
-
-    nav {
-      padding-right: 15px;
     }
 
     /* 프로필 사진과 사용자 ID 스타일 */
@@ -90,11 +90,13 @@
 <body>
 <!-- 상단바 -->
 <div class="header">
-  <div class="logo"><a href="index.jsp"></a></div>
+  <a href="index.jsp">
+    <div class="logo"></div>
+  </a>
   <nav>
-    <a href="jobPosting.jsp">채용공고</a>
-    <a href="interview.jsp">면접보기</a>
     <a href="resume.jsp">자소서등록</a>
+    <a href="interview.jsp">면접보기</a>
+    <a href="jobPosting.jsp">채용공고</a>
     <a href="review.jsp">면접 후기</a>
   </nav>
   <div class="auth-links">

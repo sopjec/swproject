@@ -118,7 +118,7 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
-            overflow: hidden;
+            overflow: hidden; /* 스크롤 숨김 */
             margin-bottom: 5px;
         }
         .title-input {
@@ -144,7 +144,6 @@
         }
     </style>
     <script>
-        // header.html 파일을 불러오는 함수
         function loadHeader() {
             fetch("header.jsp")
                 .then(response => response.text())
@@ -154,20 +153,60 @@
                 .catch(error => console.error("Error loading header:", error));
         }
 
-        window.onload = loadHeader; // 페이지가 로드될 때 헤더를 불러옴
+        window.onload = loadHeader;
+
+        window.onload = function() {
+            initializeTextareas(); // 모든 textarea에 대해 높이 조절 기능 설정
+        };
+
+        function addQuestion() {
+            const container = document.getElementById('questions-container');
+            const newQuestionAnswerWrapper = document.createElement('div');
+            newQuestionAnswerWrapper.classList.add('question-answer-wrapper');
+            newQuestionAnswerWrapper.innerHTML = `
+                <input type="checkbox" class="question-checkbox">
+                <div class="question-answer">
+                    <textarea name="question" placeholder="질문" required></textarea>
+                    <textarea name="answer" placeholder="답변" required></textarea>
+                </div>
+            `;
+            container.appendChild(newQuestionAnswerWrapper);
+            initializeTextareas(); // 추가된 textarea에도 높이 조절 기능 적용
+        }
+
+        function deleteSelectedQuestions() {
+            const checkboxes = document.querySelectorAll('.question-checkbox:checked');
+            checkboxes.forEach(checkbox => {
+                const questionAnswerWrapper = checkbox.closest('.question-answer-wrapper');
+                questionAnswerWrapper.remove();
+            });
+        }
+
+        function initializeTextareas() {
+            const textareas = document.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                adjustTextareaHeight(textarea); // 처음 로드 시 높이 조정
+                textarea.addEventListener('input', function() {
+                    adjustTextareaHeight(this); // 입력할 때마다 높이 조정
+                });
+            });
+        }
+
+        function adjustTextareaHeight(element) {
+            element.style.height = 'auto'; // 높이를 초기화하여 스크롤 높이를 정확히 계산
+            element.style.height = element.scrollHeight + 'px'; // 내용에 맞게 높이 조정
+        }
     </script>
 </head>
 
 <body>
-
-<!-- 헤더가 로드될 위치 -->
 <div id="header-container"></div>
 
 <div class="container">
     <div class="sidebar">
         <ul>
             <li><a href="resume.jsp">자기소개서 등록</a></li>
-            <li><a href="resume">자기소개서 조회</a></li>
+            <li><a href="resume_view.jsp">자기소개서 조회</a></li>
             <li><a href="resume_analyze.jsp">자기소개서 분석</a></li>
         </ul>
     </div>
@@ -193,29 +232,5 @@
         </form>
     </div>
 </div>
-
-<script>
-    function addQuestion() {
-        const container = document.getElementById('questions-container');
-        const newQuestionAnswerWrapper = document.createElement('div');
-        newQuestionAnswerWrapper.classList.add('question-answer-wrapper');
-        newQuestionAnswerWrapper.innerHTML = `
-                <input type="checkbox" class="question-checkbox">
-                <div class="question-answer">
-                    <textarea name="question" placeholder="질문" required></textarea>
-                    <textarea name="answer" placeholder="답변" required></textarea>
-                </div>
-            `;
-        container.appendChild(newQuestionAnswerWrapper);
-    }
-
-    function deleteSelectedQuestions() {
-        const checkboxes = document.querySelectorAll('.question-checkbox:checked');
-        checkboxes.forEach(checkbox => {
-            const questionAnswerWrapper = checkbox.closest('.question-answer-wrapper');
-            questionAnswerWrapper.remove();
-        });
-    }
-</script>
 </body>
 </html>
