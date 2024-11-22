@@ -81,6 +81,21 @@
             text-decoration: underline;
         }
 
+        .scrap-button {
+            background-color: #f1c40f;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .scrap-button:hover {
+            background-color: #d4ac0d;
+        }
+
         .pagination {
             text-align: center;
             margin-top: 20px;
@@ -186,7 +201,34 @@
                             const link = document.createElement("a");
                             link.href = item.srcUrl ? item.srcUrl : "#";
                             link.target = "_blank";
-                            link.textContent = "채용 공고 링크";
+                            link.textContent = "공고보러가기";
+
+                            const scrapButton = document.createElement("button");
+                            scrapButton.classList.add("scrap-button");
+                            scrapButton.textContent = "⭐ 스크랩";
+                            scrapButton.dataset.scrapKey = item.recrutPblntSn;
+
+                            scrapButton.addEventListener("click", function () {
+                                fetch("/scrap", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/x-www-form-urlencoded",
+                                    },
+                                    body: `scrapKey=${scrapButton.dataset.scrapKey}`,
+                                })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error("스크랩 실패");
+                                        }
+                                        return response.text();
+                                    })
+                                    .then(data => {
+                                        alert(data);
+                                    })
+                                    .catch(error => {
+                                        console.error("스크랩 요청 중 오류:", error);
+                                    });
+                            });
 
                             jobCard.appendChild(title);
                             jobCard.appendChild(duty);
@@ -194,6 +236,7 @@
                             jobCard.appendChild(region);
                             jobCard.appendChild(deadline);
                             jobCard.appendChild(link);
+                            jobCard.appendChild(scrapButton);
 
                             jobListingContainer.appendChild(jobCard);
                         });
