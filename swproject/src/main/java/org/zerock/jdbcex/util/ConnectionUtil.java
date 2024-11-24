@@ -8,10 +8,9 @@ public enum ConnectionUtil {
 
     INSTANCE, jdbc;
 
-    private static final String URL = "jdbc:mariadb://localhost:3306/merijob_db";
-    //private static final String URL = "jdbc:mariadb://localhost:3306/merijob_db?useUnicode=true&characterEncoding=UTF-8&useSSL=false";
+    private static final String URL = "jdbc:mariadb://localhost:3307/merijob_db?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC";
     private static final String USER = "root";
-    private static final String PASSWORD = "1024";
+    private static final String PASSWORD = "1111";
 
     public Connection getConnection() throws SQLException {
         try {
@@ -25,7 +24,7 @@ public enum ConnectionUtil {
 
         try {
             // 데이터베이스 연결 생성
-            Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            Connection connection = DriverManager.  getConnection(URL, USER, PASSWORD);
             System.out.println("데이터베이스 연결 성공: " + URL);
             return connection;
         } catch (SQLException e) {

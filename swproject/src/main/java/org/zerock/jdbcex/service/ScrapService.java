@@ -28,11 +28,15 @@ public class ScrapService {
         scrapDAO.deleteScrap(userId, scrapKey);
     }
 
-    public List<Map<String, String>> fetchScrapDetails(List<String> scrapKeys) {
+    public List<Map<String, String>> fetchScrapDetails(String userId) {
+        List<Map<String, String>> scrapDetails = new ArrayList<>();
         String serviceKey = "m4%2BOenhwqExP36CL%2F5Pb7tiHlIxAqX75ReTHzMfWzxb%2BpEYUtedtI%2BughHYGWfH%2FXXFk3sIWKu3HIhtbYDQozw%3D%3D";
         String baseUrl = "http://apis.data.go.kr/1051000/recruitment/details?serviceKey=" + serviceKey;
 
-        List<Map<String, String>> scrapDetails = new ArrayList<>();
+        // 로그인 된 유저의 scrap_key 리스트 가져오기
+        List<String> scrapKeys = scrapDAO.getScrapKeys(userId);
+
+        // scrap_key별로 API 호출
         for (String scrapKey : scrapKeys) {
             try {
                 String apiUrl = baseUrl + "&scrapKey=" + scrapKey;
@@ -43,6 +47,7 @@ public class ScrapService {
                 e.printStackTrace();
             }
         }
+
         return scrapDetails;
     }
 }
