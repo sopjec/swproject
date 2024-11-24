@@ -113,8 +113,8 @@
         try {
             const response = await fetch('/scrap');
             if (response.status === 401) {
-                // 로그인 필요 시 모달창 띄우기
-                modal.style.display = "block";
+                // 로그인 필요 시 처리
+                alert('로그인이 필요합니다.');
                 return;
             }
             if (!response.ok) throw new Error('Failed to fetch scrap list');
@@ -132,24 +132,22 @@
                 const jobCard = document.createElement('div');
                 jobCard.className = 'job-card';
                 jobCard.innerHTML = `
-                    <div>
-                        <h3>${item.instNm || '기관명 없음'}</h3>
-                        <p>직무: ${item.ncsCdNmLst || '정보 없음'}</p>
-                        <p>고용 형태: ${item.hireTypeNmLst || '정보 없음'}</p>
-                        <p>근무 지역: ${item.workRgnNmLst || '정보 없음'}</p>
-                        <p>마감일: ${item.pbancEndYmd || '정보 없음'}</p>
-                        <a href="${item.srcUrl || '#'}" target="_blank">공고보러가기</a>
-                    </div>
-                    <button class="delete-button" onclick="deleteScrap('${item.scrapKey}')">삭제</button>
-                `;
+                <div>
+                    <h3>${item.instNm || '기관명 없음'}</h3>
+                    <p>직무: ${item.ncsCdNmLst || '정보 없음'}</p>
+                    <p>고용 형태: ${item.hireTypeNmLst || '정보 없음'}</p>
+                    <p>근무 지역: ${item.workRgnNmLst || '정보 없음'}</p>
+                    <p>마감일: ${item.pbancEndYmd || '정보 없음'}</p>
+                    <a href="${item.srcUrl || '#'}" target="_blank">공고 보러가기</a>
+                </div>
+            `;
                 container.appendChild(jobCard);
             });
         } catch (error) {
             console.error('Error loading scrap list:', error);
-            const container = document.getElementById('scrap-container');
-            container.innerHTML = '<p>스크랩된 공고를 불러오는 중 오류가 발생했습니다.</p>';
         }
     }
+
 
     async function deleteScrap(scrapKey) {
         try {

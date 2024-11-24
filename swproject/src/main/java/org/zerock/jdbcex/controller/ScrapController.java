@@ -20,8 +20,8 @@ public class ScrapController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
-        response.setContentType("application/json; charset=UTF-8"); // JSON 형식과 UTF-8 인코딩 설정
-        response.setCharacterEncoding("UTF-8"); // 문자 인코딩 UTF-8로 설정
+        response.setContentType("application/json; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
 
         // 로그인 확인
         if (session == null || session.getAttribute("loggedInUser") == null) {
@@ -30,19 +30,20 @@ public class ScrapController extends HttpServlet {
             return;
         }
 
+        // 로그인 된 유저의 ID 가져오기
         UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
+        String userId = loggedInUser.getId();
 
-        // DB에서 스크랩 키 가져오기
-        List<String> scrapKeys = scrapService.getScrapKeys(loggedInUser.getId());
-
-        // API를 호출하여 스크랩된 공고 상세 정보를 가져오기
-        List<Map<String, String>> scrapDetails = scrapService.fetchScrapDetails(scrapKeys);
-
-        // 결과 반환
-        response.setContentType("application/json; charset=UTF-8");
-        new ObjectMapper().writeValue(response.getWriter(), scrapDetails);
+        try {
+            // scrap_key를 이용해 API 호출 결과 가져오기
+            List<Map<String, String>> scrapDetails = scrapService.fetchScrapDetails(userId);
+            new ObjectMapper().writeValue(response.getWriter(), scrapDetails);
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("스크랩 정보를 가져오는 데 실패했습니다.");
+            e.printStackTrace();
+        }
     }
-
     // 스크랩 추가 (POST 요청)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {

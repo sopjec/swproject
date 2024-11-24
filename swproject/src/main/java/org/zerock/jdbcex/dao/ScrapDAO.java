@@ -10,21 +10,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScrapDAO {
-    private static final String GET_SCRAP_KEYS_SQL = "SELECT scrap_key FROM scrap WHERE user_id = ?";
     private static final String DELETE_SCRAP_SQL = "DELETE FROM scrap WHERE user_id = ? AND scrap_key = ?";
 
     public List<String> getScrapKeys(String userId) {
         List<String> scrapKeys = new ArrayList<>();
+
+        String sql = "SELECT scrap_key FROM scrap WHERE user_id = ?";
+
         try (Connection connection = ConnectionUtil.INSTANCE.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(GET_SCRAP_KEYS_SQL)) {
-            stmt.setString(1, userId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                scrapKeys.add(rs.getString("scrap_key"));
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
+            pstmt.setString(1, userId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    scrapKeys.add(rs.getString("scrap_key"));
+                }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return scrapKeys;
     }
 
