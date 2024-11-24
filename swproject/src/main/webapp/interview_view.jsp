@@ -102,30 +102,18 @@
         }
 
     </style>
-    <script>
-        // header.html 파일을 불러오는 함수
-        function loadHeader() {
-            fetch("header.jsp")
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById("header-container").innerHTML = data;
-                })
-                .catch(error => console.error("Error loading header:", error));
-        }
 
-        window.onload = loadHeader; // 페이지가 로드될 때 헤더를 불러옴
-    </script>
 </head>
 
 <body>
 
-<!-- 헤더가 로드될 위치 -->
-<div id="header-container"></div>
+<!-- 헤더 JSP 파일 포함 -->
+<jsp:include page="header.jsp" />
 
     <div class="container">
         <div class="sidebar">
             <ul>
-                <li><a href="interview.jsp">면접 보기</a></li>
+                <li><a href="/resume?action=interview">면접 보기</a></li>
                 <li><a href="interview_view.jsp">면접 기록 조회</a></li>
             </ul>
         </div>

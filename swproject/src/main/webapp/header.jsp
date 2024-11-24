@@ -97,7 +97,7 @@
   </div>
   <nav>
     <a href="resume.jsp">자소서관리</a>
-    <a href="interview.jsp">가상면접</a>
+    <a href="/resume?action=interview">가상면접</a>
     <a href="jobPosting.jsp">채용공고</a>
     <a href="review.jsp">커뮤니티</a> <!--면접후기 이름 수정-->
   </nav>
@@ -113,7 +113,7 @@
     <img src="<%= (profileImagePath != null && !profileImagePath.isEmpty()) ? profileImagePath : "default-profile.png" %>"
          alt="Profile Picture" class="profile-pic">
     <a href="mypage.jsp" class="username"><%= userId %>님</a> <!-- 아이디 클릭 시 mypage.jsp로 이동 -->
-    <a href="logout.jsp">로그아웃</a>
+    <a href="logout">로그아웃</a>
     <%
     } else {
     %>
