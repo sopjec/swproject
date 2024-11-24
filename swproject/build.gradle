@@ -24,45 +24,32 @@ tasks.withType(JavaCompile) {
 }
 
 dependencies {
-  // Spring Boot 관련 의존성
-  implementation 'org.springframework.boot:spring-boot-starter-web:2.7.5' // Spring Boot 웹
-  implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.7.5' // Spring Boot JPA
-  runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.1.4' // MariaDB 드라이버
-  testImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.5' // Spring Boot 테스트
+  implementation 'org.springframework.boot:spring-boot-starter-web:2.7.5'
+  implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.7.5'
+  runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
 
-  // Javax 및 Jakarta 관련
-  compileOnly('javax.servlet:javax.servlet-api:4.0.1')
+  compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
   providedCompile 'jakarta.servlet:jakarta.servlet-api:5.0.0'
 
-  // 로깅 관련
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.17.2'
+  testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+
+  implementation 'com.zaxxer:HikariCP:5.0.0'
+  implementation 'org.modelmapper:modelmapper:3.0.0'
+
+  implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.17.2'
   implementation 'org.apache.logging.log4j:log4j-api:2.14.1'
   implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
 
-  // Model Mapper
-  implementation("org.modelmapper:modelmapper:3.0.0")
+  compileOnly "org.projectlombok:lombok:1.18.28"
+  annotationProcessor "org.projectlombok:lombok:1.18.28"
+  testCompileOnly "org.projectlombok:lombok:1.18.28"
+  testAnnotationProcessor "org.projectlombok:lombok:1.18.28"
 
-  // HikariCP
-  implementation("com.zaxxer:HikariCP:5.0.0")
-
-  // Lombok
-  compileOnly("org.projectlombok:lombok:1.18.28")
-  annotationProcessor("org.projectlombok:lombok:1.18.28")
-  testCompileOnly("org.projectlombok:lombok:1.18.28")
-  testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
-
-  // JSTL
-  implementation 'javax.servlet:jstl:1.2'
-
-  // jBCrypt 
-  implementation 'org.mindrot:jbcrypt:0.4'
-
-  // JUnit
-  testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
-  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
-
-  implementation("org.mariadb.jdbc:mariadb-java-client:2.7.5")
-
+  implementation 'org.json:json:20210307'
+  implementation 'com.google.code.gson:gson:2.8.9'
+  implementation 'org.apache.httpcomponents.client5:httpclient5:5.2'
+  implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 }
 
 test {
