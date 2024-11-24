@@ -12,18 +12,23 @@
             margin: 0;
             padding: 20px;
         }
-        .job-item {
+        .job-card {
             border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 10px;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #fff;
             display: flex;
             justify-content: space-between;
+        }
+        .job-card div {
+            max-width: 80%;
         }
         .delete-button {
             background-color: #ff4d4d;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 8px 15px;
             border-radius: 4px;
             cursor: pointer;
         }
@@ -123,23 +128,26 @@
                 return;
             }
 
-            scrapList.forEach(scrap => {
-                const jobItem = document.createElement('div');
-                jobItem.className = 'job-item';
-                jobItem.innerHTML = `
-                        <div>
-                            <h3>${scrap.instNm || '기관명 없음'}</h3>
-                            <p>직무: ${scrap.ncsCdNmLst || '정보 없음'}</p>
-                            <p>고용 형태: ${scrap.hireTypeNmLst || '정보 없음'}</p>
-                            <p>근무 지역: ${scrap.workRgnNmLst || '정보 없음'}</p>
-                            <p>마감일: ${scrap.pbancEndYmd || '정보 없음'}</p>
-                        </div>
-                        <button class="delete-button" onclick="deleteScrap('${scrap.scrapKey}')">삭제</button>
-                    `;
-                container.appendChild(jobItem);
+            scrapList.forEach(item => {
+                const jobCard = document.createElement('div');
+                jobCard.className = 'job-card';
+                jobCard.innerHTML = `
+                    <div>
+                        <h3>${item.instNm || '기관명 없음'}</h3>
+                        <p>직무: ${item.ncsCdNmLst || '정보 없음'}</p>
+                        <p>고용 형태: ${item.hireTypeNmLst || '정보 없음'}</p>
+                        <p>근무 지역: ${item.workRgnNmLst || '정보 없음'}</p>
+                        <p>마감일: ${item.pbancEndYmd || '정보 없음'}</p>
+                        <a href="${item.srcUrl || '#'}" target="_blank">공고보러가기</a>
+                    </div>
+                    <button class="delete-button" onclick="deleteScrap('${item.scrapKey}')">삭제</button>
+                `;
+                container.appendChild(jobCard);
             });
         } catch (error) {
             console.error('Error loading scrap list:', error);
+            const container = document.getElementById('scrap-container');
+            container.innerHTML = '<p>스크랩된 공고를 불러오는 중 오류가 발생했습니다.</p>';
         }
     }
 
@@ -148,7 +156,7 @@
             const response = await fetch('/scrap', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(scrapKey),
+                body: JSON.stringify({ scrapKey }),
             });
             if (response.status === 401) {
                 // 로그인 필요 시 모달창 띄우기
