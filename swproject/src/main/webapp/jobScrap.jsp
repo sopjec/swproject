@@ -80,6 +80,10 @@
     </style>
 </head>
 <body>
+
+<!-- 헤더 JSP 파일 포함 -->
+<jsp:include page="header.jsp" />
+
 <h1>저장된 채용 공고 목록</h1>
 <div id="scrap-container">
     <p>공고를 불러오는 중입니다...</p>
@@ -89,7 +93,6 @@
 <div id="login-modal" class="modal">
     <div class="modal-content">
         <p>로그인이 필요합니다.</p>
-        <button class="close-btn" id="close-modal">닫기</button>
         <button class="login-btn" id="go-login">로그인 페이지로 이동</button>
     </div>
 </div>

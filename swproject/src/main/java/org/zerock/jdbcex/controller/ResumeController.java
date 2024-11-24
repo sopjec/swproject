@@ -23,7 +23,7 @@ public class ResumeController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
-            resp.sendRedirect("login.html");
+            resp.sendRedirect("login.jsp");
             return;
         }
 
@@ -66,7 +66,7 @@ public class ResumeController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
-            resp.sendRedirect("login.html");
+            resp.sendRedirect("login.jsp");
             return;
         }
 
@@ -74,9 +74,20 @@ public class ResumeController extends HttpServlet {
         String userId = loggedInUser.getId();
 
         try {
-            List<ResumeDTO> resumes = resumeService.getResumesByUserId(userId);
-            req.setAttribute("resumes", resumes);
-            req.getRequestDispatcher("resume_view.jsp").forward(req, resp);
+            // 요청 URI에 따라 다른 동작
+            String action = req.getParameter("action");
+
+            if ("view".equals(action)) {
+                List<ResumeDTO> resumes = resumeService.getResumesByUserId(userId);
+                req.setAttribute("resumes", resumes);
+                req.getRequestDispatcher("resume_view.jsp").forward(req, resp);
+            } else if ("interview".equals(action)) {
+                List<ResumeDTO> resumes = resumeService.getResumesByUserId(userId);
+                req.setAttribute("resumes", resumes);
+                req.getRequestDispatcher("interview_resume_select.jsp").forward(req, resp);
+            } else {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 요청입니다.");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "데이터 조회 중 오류가 발생했습니다.");

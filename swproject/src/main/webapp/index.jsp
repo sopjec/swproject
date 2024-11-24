@@ -139,7 +139,7 @@
         <div class="box dark-box">
             <h3>가상면접</h3>
             <ul>
-                <li><a href="interview.jsp">면접 보러가기</a></li>
+                <li><a href="/resume?action=interview">면접 보러가기</a></li>
                 <li><a href="interview.jsp">면접 녹화기록 조회</a></li>
             </ul>
         </div>
