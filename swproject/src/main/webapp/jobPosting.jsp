@@ -55,15 +55,6 @@
             gap: 20px;
         }
 
-        .job-card {
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: left;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
         .job-card h2 {
             font-size: 18px;
             margin-bottom: 10px;
@@ -80,20 +71,39 @@
             color: blue;
             text-decoration: underline;
         }
-
         .scrap-button {
-            background-color: #f1c40f;
-            border: none;
-            border-radius: 4px;
-            color: white;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 10px;
+            position: absolute; /* 부모 요소를 기준으로 위치 설정 */
+            top: 10px; /* 카드 상단에서의 거리 */
+            right: 10px; /* 카드 오른쪽에서의 거리 */
+            background-color: white; /* 기본 배경색 */
+            color: #f1c40f; /* 아이콘 색상 */
+            border: none; /* 테두리 제거 */
+            width: 30px; /* 버튼 너비 */
+            height: 30px; /* 버튼 높이 */
+            display: flex; /* 아이콘 중앙 정렬을 위해 flex 사용 */
+            justify-content: center; /* 가로 중앙 정렬 */
+            align-items: center; /* 세로 중앙 정렬 */
+            font-size: 18px; /* 아이콘 크기 */
+            cursor: pointer; /* 클릭 가능한 커서 */
+        }
+
+        .scrap-button.scraped {
+            background-color: #f1c40f; /* 이미 스크랩된 상태일 때 배경색 */
+            color: white; /* 스크랩된 상태일 때 텍스트/아이콘 색상 */
         }
 
         .scrap-button:hover {
-            background-color: #d4ac0d;
+            opacity: 0.8; /* 호버 시 약간 투명도 추가 */
+        }
+
+        .job-card {
+            position: relative; /* 버튼 배치를 위해 부모를 relative로 설정 */
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: left;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .pagination {
@@ -114,6 +124,54 @@
             background-color: #333;
             color: #fff;
         }
+
+        /* 모달창 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .modal-content p {
+            margin: 20px 0;
+            font-size: 16px;
+        }
+
+        .close-btn, .login-btn {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .login-btn {
+            background-color: #007bff;
+            margin-top: 10px;
+        }
+
+        .close-btn:hover, .login-btn:hover {
+            opacity: 0.8;
+        }
+
     </style>
     <script>
         // header.html 파일을 불러오는 함수
@@ -153,13 +211,37 @@
             <!-- 페이지 버튼이 여기에 추가됩니다 -->
         </div>
     </div>
+
+    <!-- 모달창 HTML 추가 -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <p>로그인이 필요합니다.</p>
+            <button class="close-btn" id="close-modal">닫기</button>
+            <button class="login-btn" id="go-login">로그인 페이지로 이동</button>
+        </div>
+    </div>
+
 </div>
 
-<!-- JavaScript 추가 -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         let currentPage = 1; // 현재 페이지 변수
         const totalPages = 5; // 총 페이지 수 (예시)
+
+        // 모달창 요소
+        const modal = document.getElementById("login-modal");
+        const closeModal = document.getElementById("close-modal");
+        const goLogin = document.getElementById("go-login");
+
+        // 모달창 닫기 이벤트
+        closeModal.addEventListener("click", function () {
+            modal.style.display = "none";
+        });
+
+        // 로그인 페이지로 이동 이벤트
+        goLogin.addEventListener("click", function () {
+            window.location.href = "login.jsp";
+        });
 
         function fetchJobPostings(pageNo) {
             const serviceKey = "m4%2BOenhwqExP36CL%2F5Pb7tiHlIxAqX75ReTHzMfWzxb%2BpEYUtedtI%2BughHYGWfH%2FXXFk3sIWKu3HIhtbYDQozw%3D%3D";
@@ -179,7 +261,7 @@
                     if (data.result && Array.isArray(data.result)) {
                         const items = data.result;
 
-                        items.forEach(function(item) {
+                        items.forEach(function (item) {
                             const jobCard = document.createElement("div");
                             jobCard.classList.add("job-card");
 
@@ -205,29 +287,55 @@
 
                             const scrapButton = document.createElement("button");
                             scrapButton.classList.add("scrap-button");
-                            scrapButton.textContent = "⭐ 스크랩";
+                            scrapButton.textContent = "⭐";
                             scrapButton.dataset.scrapKey = item.recrutPblntSn;
+                            console.log(scrapButton.dataset.scrapKey)
 
                             scrapButton.addEventListener("click", function () {
+                                const scrapKey = scrapButton.dataset.scrapKey; // dataset에서 scrapKey 가져오기
+
+                                console.log("Scrap Key: ", scrapKey); // 디버깅용 로그 추가
+
+                                if (!scrapKey) {
+                                    alert("스크랩 키가 비어 있습니다.");
+                                    return;
+                                }
+
+                                // 서버에 스크랩 요청
                                 fetch("/scrap", {
                                     method: "POST",
                                     headers: {
-                                        "Content-Type": "application/x-www-form-urlencoded",
+                                        "Content-Type": "application/json",
                                     },
-                                    body: `scrapKey=${scrapButton.dataset.scrapKey}`,
+                                    body: JSON.stringify(scrapKey),
                                 })
                                     .then(response => {
+                                        if (response.status === 401) {
+                                            modal.style.display = "block"; // 모달창 띄움
+                                            return null;
+                                        }
                                         if (!response.ok) {
                                             throw new Error("스크랩 실패");
                                         }
-                                        return response.text();
+                                        return response.text(); // 성공 메시지
                                     })
                                     .then(data => {
-                                        alert(data);
+                                        if (data) {
+                                            alert(data); // 성공 메시지 처리
+                                        }
                                     })
                                     .catch(error => {
                                         console.error("스크랩 요청 중 오류:", error);
                                     });
+                            });
+
+                            // 모달창 닫기 및 로그인 페이지 이동 이벤트
+                            closeModal.addEventListener("click", function () {
+                                modal.style.display = "none";
+                            });
+
+                            goLogin.addEventListener("click", function () {
+                                window.location.href = "login.jsp"; // 로그인 페이지로 이동
                             });
 
                             jobCard.appendChild(title);
@@ -265,7 +373,7 @@
                     button.classList.add("active");
                 }
 
-                button.addEventListener("click", function() {
+                button.addEventListener("click", function () {
                     currentPage = i;
                     fetchJobPostings(currentPage); // 클릭한 페이지의 데이터 로드
                 });
@@ -277,5 +385,6 @@
         fetchJobPostings(currentPage); // 초기 페이지 데이터 로드
     });
 </script>
+
 </body>
 </html>
