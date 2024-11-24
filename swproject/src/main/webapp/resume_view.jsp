@@ -14,25 +14,6 @@
             margin: 0;
             padding: 0;
         }
-        .header {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: white;
-            border-bottom: 1px solid #ddd;
-        }
-        .header .logo {
-            font-size: 24px;
-            font-weight: bold;
-            margin-right: auto;
-        }
-        .header nav a {
-            margin-left: 20px;
-            color: #333;
-            text-decoration: none;
-            font-size: 16px;
-        }
         .auth-links a {
             text-decoration: none;
             padding: 10px 15px;
@@ -103,7 +84,6 @@
 </head>
 
 <body>
-
 <!-- 헤더가 로드될 위치 -->
 <div id="header-container"></div>
 

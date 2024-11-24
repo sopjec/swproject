@@ -129,14 +129,15 @@
 <div class="main-container">
     <div class="main-box">
         <div class="box dark-box">
-            <h3>자기소개서</h3>
+            <h3>자소서 관리</h3>
             <ul>
                 <li><a href="resume.jsp">자기소개서 등록</a></li>
                 <li><a href="resume">자기소개서 조회</a></li>
+                <li><a href="resume">자기소개서 분석</a></li>
             </ul>
         </div>
         <div class="box dark-box">
-            <h3>면접하기</h3>
+            <h3>가상면접</h3>
             <ul>
                 <li><a href="interview.jsp">면접 보러가기</a></li>
                 <li><a href="interview.jsp">면접 녹화기록 조회</a></li>
@@ -150,9 +151,9 @@
             </ul>
         </div>
         <div class="box dark-box">
-            <h3>기업분석</h3>
+            <h3>커뮤니티</h3>
             <ul>
-                <li><a href="review.jsp">면접후기</a></li>
+                <li><a href="review.jsp">기업 면접 후기</a></li>
             </ul>
         </div>
     </div>

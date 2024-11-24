@@ -22,6 +22,7 @@
     /* 상단바 스타일 */
     .header {
       display: flex;
+      justify-content: flex-end;
       align-items: center;
       padding: 10px 20px;
       background-color: white;
@@ -30,22 +31,21 @@
     .logo {
       width: 100px;
       height: 50px;
-      background-image: url('logo.png'); /* 로고 이미지 경로 */
+      /*background-image: url('logo.png'); /* 로고 이미지 경로 */
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
-      margin-right: 20px; /* 로고와 nav 사이 간격 */
-    }
-    .header nav {
-      flex-grow: 1; /* nav가 남은 공간 차지 */
-      margin-right: 20px;
+      margin-right: auto;
     }
     .header nav a {
-      float: right;
       margin-left: 20px;
       color: #333;
       text-decoration: none;
       font-size: 16px;
+    }
+
+    nav {
+      padding-right: 15px;
     }
 
     /* 프로필 사진과 사용자 ID 스타일 */
@@ -90,14 +90,16 @@
 <body>
 <!-- 상단바 -->
 <div class="header">
-  <a href="index.jsp">
-    <div class="logo"></div>
-  </a>
+  <div class="logo">
+    <a href="index.jsp">
+      <img id="logo-img" src="logo.png" alt="Logo" style="width: 100%; height: 100%;">
+    </a>
+  </div>
   <nav>
-    <a href="resume.jsp">자소서등록</a>
-    <a href="interview.jsp">면접보기</a>
+    <a href="resume.jsp">자소서관리</a>
+    <a href="interview.jsp">가상면접</a>
     <a href="jobPosting.jsp">채용공고</a>
-    <a href="review.jsp">면접 후기</a>
+    <a href="review.jsp">커뮤니티</a> <!--면접후기 이름 수정-->
   </nav>
   <div class="auth-links">
     <%
@@ -115,7 +117,7 @@
     <%
     } else {
     %>
-    <a href="login.jsp">Sign in</a>
+    <a href="login.jsp">log in</a>
     <a href="mypage.jsp">Mypage</a>
     <%
       }

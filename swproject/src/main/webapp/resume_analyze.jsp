@@ -13,25 +13,6 @@
             padding: 0;
             overflow-x: hidden;
         }
-        .header {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: white;
-            border-bottom: 1px solid #ddd;
-        }
-        .header .logo {
-            font-size: 24px;
-            font-weight: bold;
-            margin-right: auto;
-        }
-        .header nav a {
-            margin-left: 20px;
-            color: #333;
-            text-decoration: none;
-            font-size: 16px;
-        }
         .auth-links {
             display: flex;
             gap: 10px;
@@ -145,16 +126,14 @@
 </head>
 
 <body>
-
 <!-- 헤더가 로드될 위치 -->
 <div id="header-container"></div>
 
-
-    <div class="container">
+<div class="container">
         <div class="sidebar">
             <ul>
-                <li><a href="resume.html">자기소개서 등록</a></li>
-                <li><a href="resume">자기소개서 조회</a></li>
+                <li><a href="resume.jsp">자기소개서 등록</a></li>
+                <li><a href="resume_view.jsp">자기소개서 조회</a></li>
                 <li><a href="resume_analyze.jsp">자기소개서 분석</a></li>
             </ul>
         </div>

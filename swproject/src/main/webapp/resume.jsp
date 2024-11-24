@@ -1,3 +1,4 @@
+<!--정상적인 자소서 파일, 등록방식 변경 전-->
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -13,25 +14,6 @@
             padding: 0;
             overflow-x: hidden;
         }
-        .header {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: white;
-            border-bottom: 1px solid #ddd;
-        }
-        .header .logo {
-            font-size: 24px;
-            font-weight: bold;
-            margin-right: auto;
-        }
-        .header nav a {
-            margin-left: 20px;
-            color: #333;
-            text-decoration: none;
-            font-size: 16px;
-        }
         .auth-links {
             display: flex;
             gap: 10px;
@@ -46,6 +28,7 @@
         .auth-links a:hover {
             background-color: #f0f0f0;
         }
+        /* 메인 레이아웃 설정 */
         .container {
             display: flex;
             width: 100%;
@@ -54,6 +37,7 @@
             padding: 0 20px;
             box-sizing: border-box;
         }
+        /* 왼쪽 사이드바 스타일 */
         .sidebar {
             width: 200px;
             padding: 20px;
@@ -118,7 +102,7 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
-            overflow: hidden; /* 스크롤 숨김 */
+            overflow: hidden;
             margin-bottom: 5px;
         }
         .title-input {
@@ -144,6 +128,7 @@
         }
     </style>
     <script>
+        // header.html 파일을 불러오는 함수
         function loadHeader() {
             fetch("header.jsp")
                 .then(response => response.text())
@@ -153,53 +138,12 @@
                 .catch(error => console.error("Error loading header:", error));
         }
 
-
-        window.onload = function() {
-            loadHeader();
-            initializeTextareas(); // 모든 textarea에 대해 높이 조절 기능 설정
-        };
-
-        function addQuestion() {
-            const container = document.getElementById('questions-container');
-            const newQuestionAnswerWrapper = document.createElement('div');
-            newQuestionAnswerWrapper.classList.add('question-answer-wrapper');
-            newQuestionAnswerWrapper.innerHTML = `
-                <input type="checkbox" class="question-checkbox">
-                <div class="question-answer">
-                    <textarea name="question" placeholder="질문" required></textarea>
-                    <textarea name="answer" placeholder="답변" required></textarea>
-                </div>
-            `;
-            container.appendChild(newQuestionAnswerWrapper);
-            initializeTextareas(); // 추가된 textarea에도 높이 조절 기능 적용
-        }
-
-        function deleteSelectedQuestions() {
-            const checkboxes = document.querySelectorAll('.question-checkbox:checked');
-            checkboxes.forEach(checkbox => {
-                const questionAnswerWrapper = checkbox.closest('.question-answer-wrapper');
-                questionAnswerWrapper.remove();
-            });
-        }
-
-        function initializeTextareas() {
-            const textareas = document.querySelectorAll('textarea');
-            textareas.forEach(textarea => {
-                adjustTextareaHeight(textarea); // 처음 로드 시 높이 조정
-                textarea.addEventListener('input', function() {
-                    adjustTextareaHeight(this); // 입력할 때마다 높이 조정
-                });
-            });
-        }
-
-        function adjustTextareaHeight(element) {
-            element.style.height = 'auto'; // 높이를 초기화하여 스크롤 높이를 정확히 계산
-            element.style.height = element.scrollHeight + 'px'; // 내용에 맞게 높이 조정
-        }
+        window.onload = loadHeader; // 페이지가 로드될 때 헤더를 불러옴
     </script>
 </head>
 
 <body>
+<!-- 헤더가 로드될 위치 -->
 <div id="header-container"></div>
 
 <div class="container">
@@ -211,6 +155,7 @@
         </ul>
     </div>
 
+    <!-- 메인 컨텐츠 -->
     <div class="content">
         <h2>자기소개서 등록</h2>
         <form id="question-form" action="resume" method="POST">
@@ -232,5 +177,29 @@
         </form>
     </div>
 </div>
+
+<script>
+    function addQuestion() {
+        const container = document.getElementById('questions-container');
+        const newQuestionAnswerWrapper = document.createElement('div');
+        newQuestionAnswerWrapper.classList.add('question-answer-wrapper');
+        newQuestionAnswerWrapper.innerHTML = `
+                <input type="checkbox" class="question-checkbox">
+                <div class="question-answer">
+                    <textarea name="question" placeholder="질문" required></textarea>
+                    <textarea name="answer" placeholder="답변" required></textarea>
+                </div>
+            `;
+        container.appendChild(newQuestionAnswerWrapper);
+    }
+
+    function deleteSelectedQuestions() {
+        const checkboxes = document.querySelectorAll('.question-checkbox:checked');
+        checkboxes.forEach(checkbox => {
+            const questionAnswerWrapper = checkbox.closest('.question-answer-wrapper');
+            questionAnswerWrapper.remove();
+        });
+    }
+</script>
 </body>
 </html>

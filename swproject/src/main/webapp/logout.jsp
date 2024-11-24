@@ -10,5 +10,5 @@
     // 세션 무효화
     session.invalidate();
     // 메인 페이지로 이동
-    response.sendRedirect("index.jsp");
+    response.sendRedirect("main.jsp");
 %>

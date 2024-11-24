@@ -154,7 +154,7 @@
     <div class="container">
         <div class="sidebar">
             <ul>
-                <li><a href="review.jsp">면접후기</a></li>
+                <li><a href="review.jsp">기업 면접 후기</a></li>
             </ul>
         </div>
     

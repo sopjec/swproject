@@ -55,6 +55,15 @@
             gap: 20px;
         }
 
+        .job-card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: left;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
         .job-card h2 {
             font-size: 18px;
             margin-bottom: 10px;
@@ -124,54 +133,6 @@
             background-color: #333;
             color: #fff;
         }
-
-        /* 모달창 스타일 */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
-        .modal-content {
-            background-color: #fff;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 300px;
-            text-align: center;
-            border-radius: 8px;
-        }
-
-        .modal-content p {
-            margin: 20px 0;
-            font-size: 16px;
-        }
-
-        .close-btn, .login-btn {
-            background-color: #333;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .login-btn {
-            background-color: #007bff;
-            margin-top: 10px;
-        }
-
-        .close-btn:hover, .login-btn:hover {
-            opacity: 0.8;
-        }
-
     </style>
     <script>
         // header.html 파일을 불러오는 함수
@@ -261,7 +222,7 @@
                     if (data.result && Array.isArray(data.result)) {
                         const items = data.result;
 
-                        items.forEach(function (item) {
+                        items.forEach(function(item) {
                             const jobCard = document.createElement("div");
                             jobCard.classList.add("job-card");
 
@@ -329,15 +290,6 @@
                                     });
                             });
 
-                            // 모달창 닫기 및 로그인 페이지 이동 이벤트
-                            closeModal.addEventListener("click", function () {
-                                modal.style.display = "none";
-                            });
-
-                            goLogin.addEventListener("click", function () {
-                                window.location.href = "login.jsp"; // 로그인 페이지로 이동
-                            });
-
                             jobCard.appendChild(title);
                             jobCard.appendChild(duty);
                             jobCard.appendChild(employmentType);
@@ -373,7 +325,7 @@
                     button.classList.add("active");
                 }
 
-                button.addEventListener("click", function () {
+                button.addEventListener("click", function() {
                     currentPage = i;
                     fetchJobPostings(currentPage); // 클릭한 페이지의 데이터 로드
                 });
@@ -385,6 +337,5 @@
         fetchJobPostings(currentPage); // 초기 페이지 데이터 로드
     });
 </script>
-
 </body>
 </html>
