@@ -122,77 +122,92 @@
         }
 
         .question-group {
-            flex-grow: 1;
-            border: 1px solid #DDD;
+            border: 1px solid #ddd;
             border-radius: 8px;
             padding: 20px;
+            background: #fff;
             margin-bottom: 20px;
-            background-color: #FFF;
-            box-sizing: border-box;
         }
 
         .question-content h3 {
-            margin: 10px 0;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
+            margin-bottom: 10px;
         }
 
-        .question-content input {
+        .question-content input[type="text"] {
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
-            font-size: 14px;
-            border: 1px solid #DDD;
+            border: 1px solid #ddd;
             border-radius: 4px;
+            box-sizing: border-box;
         }
 
         .question-content textarea {
             width: 100%;
-            height: 100px;
+            height: 120px;
             padding: 10px;
-            margin-top: 3px;
-            margin-bottom: 10px;
-            font-size: 14px;
-            border: 1px solid #DDD;
+            border: 1px solid #ddd;
             border-radius: 4px;
             resize: none;
-        }
-
-        .question-content button {
-            padding: 8px 12px;
-            background-color: #343434;
-            color: #FFF;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 3px;
-        }
-
-        .question-content button:hover {
-            background-color: #343434;
+            margin-bottom: 10px;
+            box-sizing: border-box;
         }
 
         .char-count {
-            font-size: 10px;
+            font-size: 12px;
             color: #888;
             text-align: right;
-            margin-top: -5px;
+            margin-bottom: 10px;
         }
 
-        /* 하단 고정 영역 */
-        .footer-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
+        .coaching-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .coaching-buttons button {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #f8f8f8;
+            cursor: pointer;
+            font-size: 14px;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .coaching-buttons button:hover {
+            background: #eee;
+        }
+
+        .result-box {
             width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            color: #333;
+            height: 100px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        /* 고정된 하단 영역 스타일 */
+        .footer-bar {
+            position: fixed; /* 화면 고정 */
+            bottom: 0; /* 하단에 위치 */
+            left: 0; /* 왼쪽 정렬 */
+            width: 100%; /* 전체 화면 너비 */
             background-color: #f1f1f1;
             border-top: 1px solid #ddd;
+            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
+            z-index: 1000; /* 다른 요소 위에 위치 */
             box-sizing: border-box;
-            z-index: 100;
         }
 
         .footer-bar button {
@@ -202,15 +217,31 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
         }
 
         .footer-bar button:hover {
-            background-color: #343434;
+            background-color: #575757;
         }
     </style>
+    <script>
+        // header.html 파일을 불러오는 함수
+        function loadHeader() {
+            fetch("header.jsp")
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById("header-container").innerHTML = data;
+                })
+                .catch(error => console.error("Error loading header:", error));
+        }
+
+        window.onload = loadHeader; // 페이지가 로드될 때 헤더를 불러옴
+    </script>
 </head>
+
 <body>
+<!-- 헤더가 로드될 위치 -->
+<div id="header-container"></div>
+
 <div class="container">
     <!-- 사이드바 -->
     <div class="sidebar">
@@ -220,21 +251,20 @@
             <li><a href="resume_analyze.jsp">자기소개서 분석</a></li>
         </ul>
     </div>
+
     <!-- 메인 콘텐츠 -->
     <div class="content">
-        <!-- 자소서 제목 입력 -->
         <div class="title-input">
             <input type="text" placeholder="자기소개서 제목을 입력하세요" id="resumeTitle">
         </div>
+
         <div id="container">
-            <!-- 숫자 박스와 +, - 버튼 -->
             <div id="controls-container" class="controls">
                 <div class="number-box selected" id="box1" onclick="selectQuestion(1)">1</div>
                 <div class="control-box" id="addQuestion">+</div>
                 <div class="control-box" id="removeQuestion" style="display: none;">-</div>
             </div>
 
-            <!-- 문항 리스트 -->
             <div id="question-list" style="flex-grow: 1;">
                 <div class="question-group" id="question1">
                     <div class="question-content">
@@ -242,7 +272,11 @@
                         <input type="text" placeholder="지원 동기, 입사 후 포부와 같은 문항을 입력해 주세요">
                         <textarea name="answer" placeholder="내용을 입력해 주세요" maxlength="500" oninput="updateCharCount(this)"></textarea>
                         <div class="char-count">0 / 500 자 (공백 포함)</div>
-                        <button>문항 예시보기</button>
+                        <div class="coaching-buttons">
+                            <button onclick="getSpellCheck(this)">맞춤법 검사 받기</button>
+                            <button onclick="getAICoaching(this)">자기소개서 코칭 받기</button>
+                        </div>
+                        <div class="result-box" name="resultBox"></div>
                     </div>
                 </div>
             </div>
@@ -252,23 +286,31 @@
 
 <!-- 하단 고정 버튼 -->
 <div class="footer-bar">
-    <span>작성 후 완료 버튼을 눌러주세이.</span>
+    <span>작성 후 완료 버튼을 눌러주세요.</span>
     <button id="saveButton">작성완료</button>
 </div>
 
 <script>
-    let totalQuestions = 1;
-    let selectedQuestion = 1;
+    let totalQuestions = 1; // 전체 문항 수
+    let selectedQuestion = 1; // 현재 선택된 문항 번호
 
+    // 숫자박스 선택 함수
     function selectQuestion(number) {
+        // 모든 숫자박스에서 선택 해제
         document.querySelectorAll(".number-box").forEach(box => box.classList.remove("selected"));
+
+        // 선택된 숫자박스 강조
         const selectedBox = document.getElementById(`box${number}`);
         selectedBox.classList.add("selected");
+
+        // 선택된 문항 번호 저장
         selectedQuestion = number;
     }
 
+    //문항 추가 기능
     document.getElementById("addQuestion").addEventListener("click", () => {
         totalQuestions++;
+        //새로운 숫자 박스 생성
         const newNumberBox = document.createElement("div");
         newNumberBox.classList.add("number-box");
         newNumberBox.id = `box${totalQuestions}`;
@@ -276,35 +318,98 @@
         newNumberBox.onclick = () => selectQuestion(totalQuestions);
         document.getElementById("controls-container").insertBefore(newNumberBox, document.getElementById("addQuestion"));
 
+        //새로운 문항 박스 생성
         const newQuestion = document.createElement("div");
         newQuestion.classList.add("question-group");
         newQuestion.id = `question${totalQuestions}`;
+        //문항 박스 내용
         newQuestion.innerHTML = `
-            <div class="question-content">
-                <h3>${totalQuestions}번 문항</h3>
-                <input type="text" placeholder="지원 동기, 입사 후 포부와 같은 문항을 입력해 주세요">
-                <textarea name="answer" placeholder="내용을 입력해 주세요" maxlength="500" oninput="updateCharCount(this)"></textarea>
-                <div class="char-count">0 / 500 자 (공백 포함)</div>
-                <button>문항 예시보기</button>
-            </div>
-        `;
-        document.getElementById("question-list").appendChild(newQuestion);
-        document.getElementById("removeQuestion").style.display = "flex";
+                <div class="question-content">
+                    <h3>${totalQuestions}번 문항</h3>
+                    <input type="text" placeholder="지원 동기, 입사 후 포부와 같은 문항을 입력해 주세요">
+                    <textarea name="answer" placeholder="내용을 입력해 주세요" maxlength="500" oninput="updateCharCount(this)"></textarea>
+                    <div class="char-count">0 / 500 자 (공백 포함)</div>
+                    <div class="coaching-buttons">
+                        <button onclick="getSpellCheck(this)">맞춤법 검사 받기</button>
+                        <button onclick="getAICoaching(this)">자기소개서 코칭 받기</button>
+                    </div>
+                    <div class="result-box" name="resultBox"></div>
+                </div>`;
+
+        document.getElementById("question-list").appendChild(newQuestion); // 문학 박스 추가
+        document.getElementById("removeQuestion").style.display = "flex"; // 삭제 버튼 활성화
+        selectQuestion(totalQuestions);
     });
 
+    // 문항 삭제 기능
     document.getElementById("removeQuestion").addEventListener("click", () => {
         if (totalQuestions > 1) {
-            document.getElementById(`question${totalQuestions}`).remove();
-            document.getElementById(`box${totalQuestions}`).remove();
-            totalQuestions--;
-            if (totalQuestions === 1) document.getElementById("removeQuestion").style.display = "none";
+            // 선택된 숫자박스와 문항박스 삭제
+            const selectedBox = document.getElementById(`box${selectedQuestion}`);
+            const selectedQuestionBox = document.getElementById(`question${selectedQuestion}`);
+
+            if (selectedBox && selectedQuestionBox) {
+                selectedBox.remove();
+                selectedQuestionBox.remove();
+
+                // 번호 재정렬
+                const numberBoxes = document.querySelectorAll(".number-box");
+                const questionGroups = document.querySelectorAll(".question-group");
+
+                numberBoxes.forEach((box, index) => {
+                    box.id = `box${index + 1}`;
+                    box.textContent = index + 1;
+                    box.onclick = () => selectQuestion(index + 1); // 번호에 따라 다시 클릭 이벤트 연결
+                });
+
+                questionGroups.forEach((group, index) => {
+                    group.id = `question${index + 1}`;
+                    group.querySelector("h3").textContent = `${index + 1}번 문항`;
+                });
+
+                totalQuestions--;
+
+                // 선택된 문항이 삭제된 이후 다른 문항 선택
+                selectedQuestion = totalQuestions >= selectedQuestion ? selectedQuestion : totalQuestions;
+                if (selectedQuestion > 0) {
+                    selectQuestion(selectedQuestion); // 다음 문항 선택
+                }
+
+                // 문항이 하나도 남지 않으면 삭제 버튼 비활성화
+                if (totalQuestions === 1) {
+                    document.getElementById("removeQuestion").style.display = "none";
+                }
+            }
         }
     });
 
+    // 글자 수 업데이트
     function updateCharCount(textarea) {
         const charCountElement = textarea.parentElement.querySelector(".char-count");
         charCountElement.textContent = `${textarea.value.length} / ${textarea.maxLength} 자 (공백 포함)`;
     }
+
+    // 초기 숫자 박스 선택 상태 설정
+    document.querySelector(".number-box").classList.add("selected");
+
+    //글자수 세기
+    function updateCharCount(textarea) {
+        const charCountElement = textarea.parentElement.querySelector(".char-count");
+        charCountElement.textContent = `${textarea.value.length} / ${textarea.maxLength} 자 (공백 포함)`;
+    }
+
+    //맞춤법 버튼
+    function getSpellCheck(button) {
+        const resultBox = button.parentElement.nextElementSibling;
+        resultBox.textContent = "맞춤법 검사 결과: 맞춤법이 올바릅니다.";
+    }
+
+    //자소서 분석 코칭ㅇ긴응
+    function getAICoaching(button) {
+        const resultBox = button.parentElement.nextElementSibling;
+        resultBox.textContent = "AI 코칭 결과: 자기소개서 내용이 훌륭합니다!";
+    }
+
 </script>
 </body>
 </html>
