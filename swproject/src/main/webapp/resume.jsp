@@ -252,7 +252,7 @@
 
 <!-- 하단 고정 버튼 -->
 <div class="footer-bar">
-    <span>작성 후 완료 버튼을 눌러주세이.</span> 
+    <span>작성 후 완료 버튼을 눌러주세이.</span>
     <button id="saveButton">작성완료</button>
 </div>
 
