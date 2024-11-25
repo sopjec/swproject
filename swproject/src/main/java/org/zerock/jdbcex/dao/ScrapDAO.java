@@ -12,35 +12,36 @@ import java.util.List;
 public class ScrapDAO {
     private static final String DELETE_SCRAP_SQL = "DELETE FROM scrap WHERE user_id = ? AND scrap_key = ?";
 
+    // 스크랩 키 가져오기
     public List<String> getScrapKeys(String userId) {
         List<String> scrapKeys = new ArrayList<>();
+        String query = "SELECT DISTINCT scrap_key FROM scrap WHERE user_id = ?";
 
-        String sql = "SELECT scrap_key FROM scrap WHERE user_id = ?";
+        try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
 
-        try (Connection connection = ConnectionUtil.INSTANCE.getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
-
-            pstmt.setString(1, userId);
+            pstmt.setString(1, userId); // 로그인된 사용자 ID 조건 추가
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     scrapKeys.add(rs.getString("scrap_key"));
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return scrapKeys;
     }
 
+
     public void deleteScrap(String userId, String scrapKey) {
-        try (Connection connection = ConnectionUtil.INSTANCE.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(DELETE_SCRAP_SQL)) {
-            stmt.setString(1, userId);
-            stmt.setString(2, scrapKey);
-            stmt.executeUpdate();
-        } catch (Exception e) {
+        String query = "DELETE FROM scrap WHERE user_id = ? AND scrap_key = ?";
+
+        try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, userId);
+            pstmt.setString(2, scrapKey);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

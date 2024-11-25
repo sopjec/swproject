@@ -11,39 +11,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @WebServlet("/scrap") // scrap으로 매핑된 하나의 컨트롤러
 public class ScrapController extends HttpServlet {
     private final ScrapService scrapService = new ScrapService();
 
-    // 스크랩 목록 조회 (GET 요청)
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession(false);
-        response.setContentType("application/json; charset=UTF-8");
-        response.setCharacterEncoding("UTF-8");
-
-        // 로그인 확인
-        if (session == null || session.getAttribute("loggedInUser") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("로그인이 필요합니다.");
-            return;
-        }
-
-        // 로그인 된 유저의 ID 가져오기
-        UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
-        String userId = loggedInUser.getId();
-
-        try {
-            // scrap_key를 이용해 API 호출 결과 가져오기
-            List<Map<String, String>> scrapDetails = scrapService.fetchScrapDetails(userId);
-            new ObjectMapper().writeValue(response.getWriter(), scrapDetails);
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("스크랩 정보를 가져오는 데 실패했습니다.");
-            e.printStackTrace();
-        }
-    }
     // 스크랩 추가 (POST 요청)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -88,6 +61,38 @@ public class ScrapController extends HttpServlet {
             e.printStackTrace();
         }
     }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            HttpSession session = req.getSession(false);
+            if (session == null || session.getAttribute("loggedInUser") == null) {
+                resp.sendRedirect("login.jsp");
+                return;
+            }
+
+            UserDTO user = (UserDTO) session.getAttribute("loggedInUser");
+            String userId = user.getId();
+
+            String keyword = req.getParameter("keyword");
+            String region = req.getParameter("region");
+            String employmentType = req.getParameter("employmentType");
+
+            List<Map<String, String>> jobs = scrapService.fetchScrapJobs(userId);
+            List<Map<String, String>> filteredJobs = jobs.stream()
+                    .filter(job -> (keyword == null || job.get("title").contains(keyword)) &&
+                            (region == null || job.get("region").contains(region)) &&
+                            (employmentType == null || job.get("employmentType").contains(employmentType)))
+                    .collect(Collectors.toList());
+
+            req.setAttribute("jobData", filteredJobs);
+            req.getRequestDispatcher("/jobScrap.jsp").forward(req, resp);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     // 스크랩 삭제 (DELETE 요청)
     @Override

@@ -147,7 +147,7 @@
             <h3>채용공고</h3>
             <ul>
                 <li><a href="jobPosting.jsp">채용공고 보러가기</a></li>
-                <li><a href="jobScrap.jsp">저장된 공고 목록</a></li>
+                <li><a href="scrap">저장된 공고 목록</a></li>
             </ul>
         </div>
         <div class="box dark-box">
