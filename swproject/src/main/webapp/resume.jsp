@@ -242,7 +242,7 @@
 
     <!-- 메인 콘텐츠 -->
     <div class="content">
-        <form action="" method="POST">
+        <form action="resume" method="POST">
             <div class="title-input">
                 <input type="text" name="resumeTitle" id = "resumeTitle" placeholder="자기소개서 제목을 입력하세요">
             </div>
@@ -311,20 +311,21 @@
         //새로운 문항 박스 생성
         const newQuestion = document.createElement("div");
         newQuestion.classList.add("question-group");
-        newQuestion.id = `question${totalQuestions}`;
-        //문항 박스 내용
-        newQuestion.innerHTML = `
-                <div class="question-content">
-                    <h3>${totalQuestions}번 문항</h3>
-                    <input type="text" placeholder="지원 동기, 입사 후 포부와 같은 문항을 입력해 주세요">
-                    <textarea name="answer" placeholder="내용을 입력해 주세요" maxlength="500" oninput="updateCharCount(this)"></textarea>
-                    <div class="char-count">0 / 500 자 (공백 포함)</div>
-                    <div class="coaching-buttons">
-                        <button onclick="getSpellCheck(this)">맞춤법 검사 받기</button>
-                        <button onclick="getAICoaching(this)">자기소개서 코칭 받기</button>
-                    </div>
-                    <div class="result-box" name="resultBox" id ="resultBox${totalQuestions}"></div>
-                </div>`;
+        newQuestion.id = "question"+totalQuestions;
+
+        newQuestion.innerHTML =
+            "<div class='question-content'>" +
+            "<h3>" + totalQuestions + "번 문항</h3>" +
+            "<input type='text' name='question' placeholder='지원 동기, 입사 후 포부와 같은 문항을 입력해 주세요'>" +
+            "<textarea name='answer' placeholder='내용을 입력해 주세요' maxlength='500' oninput='updateCharCount(this)'></textarea>" +
+            "<div class='char-count'>0 / 500 자 (공백 포함)</div>" +
+            "<div class='coaching-buttons'>" +
+            "<button onclick='getSpellCheck(this)'>맞춤법 검사 받기</button>" +
+            "<button onclick='getAICoaching(this)'>자기소개서 코칭 받기</button>" +
+            "</div>" +
+            "<div class='result-box' name='resultBox' id='resultBox" + totalQuestions + "'></div>" +
+            "</div>";
+
 
         document.getElementById("question-list").appendChild(newQuestion); // 문학 박스 추가
         document.getElementById("removeQuestion").style.display = "flex"; // 삭제 버튼 활성화
@@ -411,6 +412,7 @@
             .then(data => {
                 if (data && data.replacedText) {
                     // 결과를 Result Box에 출력
+                    console.log("Response Text:", data.replacedText);
                     const questionGroup = button.closest('.question-group'); // 현재 버튼이 포함된 문항 찾기
                     const resultBoxId = questionGroup.querySelector('.result-box').id; // Result Box ID 가져오기
 

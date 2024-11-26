@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-
 @WebServlet("/resume_detail")
 public class ResumeDetailController extends HttpServlet {
 
@@ -34,6 +33,9 @@ public class ResumeDetailController extends HttpServlet {
 
             // resume_qna 질문/답변 조회
             List<ResumeQnaDTO> qnaList = resumeQnaService.getQnaByResumeId(resumeId);
+
+            // 알림 메시지 전달
+            req.setAttribute("message", "자기소개서가 저장되었습니다.");
 
             req.setAttribute("title", title);
             req.setAttribute("qnaList", qnaList);

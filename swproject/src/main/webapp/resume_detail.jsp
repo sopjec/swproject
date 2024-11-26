@@ -109,6 +109,7 @@
         </div>
         <hr>
         <% List<ResumeQnaDTO> qnaList = (List<ResumeQnaDTO>) request.getAttribute("qnaList"); %>
+        <% System.out.println(qnaList); %>
         <% if (qnaList != null) {
             for (ResumeQnaDTO qna : qnaList) { %>
         <div class="question-box">
