@@ -17,56 +17,39 @@ import java.net.URL;
 
 @WebServlet("/spellcheck")
 public class SpellCheckController extends HttpServlet {
-
     private static final String GPT_API_URL = "https://api.openai.com/v1/chat/completions";
-    private static final String GPT_API_KEY = "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"; // OpenAI API 키 입력
+    private static final String GPT_API_KEY = System.getenv("GPT_API_KEY");
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        // 디버깅: 초기 요청 상태 로그
-        System.out.println("[DEBUG] Received POST request at /spellcheck");
-
         req.setCharacterEncoding("UTF-8");
         resp.setContentType("application/json; charset=UTF-8");
 
-        // 세션 확인
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
-            System.out.println("[DEBUG] Session not found or user not logged in");
             resp.sendRedirect("login.jsp");
             return;
         }
 
-        // 요청 본문 읽기
+        // 입력 JSON 파싱
         String body = req.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
-        System.out.println("[DEBUG] Request body: " + body);
-
-        JsonObject inputJson;
-        String inputText;
-        try {
-            inputJson = new com.google.gson.JsonParser().parse(body).getAsJsonObject();
-            inputText = inputJson.get("text").getAsString();
-        } catch (Exception e) {
-            System.out.println("[ERROR] Failed to parse request body: " + e.getMessage());
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("{\"error\":\"Invalid request body\"}");
-            return;
-        }
+        JsonObject inputJson = new com.google.gson.JsonParser().parse(body).getAsJsonObject();
+        String inputText = inputJson.get("text").getAsString();
 
         if (inputText == null || inputText.trim().isEmpty()) {
-            System.out.println("[DEBUG] Empty or null input text");
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().write("{\"error\":\"No input text provided\"}");
             return;
         }
 
         try {
-            // OpenAI API 요청 구성
+            // OpenAI 요청 JSON 생성
             JsonObject requestBody = new JsonObject();
             requestBody.addProperty("model", "gpt-4-turbo");
             requestBody.addProperty("max_tokens", 100);
 
             JsonArray messages = new JsonArray();
+
             JsonObject systemMessage = new JsonObject();
             systemMessage.addProperty("role", "system");
             systemMessage.addProperty("content", "자기소개서에 적합한 어휘이면서, 문맥에 맞고 의미는 변하지 않도록 하며, 고급스럽고 직무에 적합한 단어로 교체해줘");
@@ -74,14 +57,15 @@ public class SpellCheckController extends HttpServlet {
 
             JsonObject userMessage = new JsonObject();
             userMessage.addProperty("role", "user");
-            userMessage.addProperty("content", inputText);
+            userMessage.addProperty("content", inputText); // inputText를 순수 텍스트로 추가
             messages.add(userMessage);
 
             requestBody.add("messages", messages);
 
+            // 요청 로그
             System.out.println("[DEBUG] Sending request to GPT API with body: " + requestBody);
 
-            // HTTP 요청
+            // OpenAI API 호출
             URL url = new URL(GPT_API_URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
@@ -105,8 +89,6 @@ public class SpellCheckController extends HttpServlet {
                         responseBuilder.append(responseLine.trim());
                     }
 
-                    System.out.println("[DEBUG] GPT API response: " + responseBuilder);
-
                     JsonObject responseJson = new com.google.gson.JsonParser().parse(responseBuilder.toString()).getAsJsonObject();
                     String replacedText = responseJson
                             .getAsJsonArray("choices")
@@ -121,15 +103,14 @@ public class SpellCheckController extends HttpServlet {
                     resp.getWriter().write(resultJson.toString());
                 }
             } else {
-                System.out.println("[ERROR] GPT API call failed with status code: " + responseCode);
-                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.setStatus(HttpURLConnection.HTTP_INTERNAL_ERROR);
                 resp.getWriter().write("{\"error\":\"GPT API 호출 실패\"}");
             }
         } catch (Exception e) {
-            System.out.println("[ERROR] Exception during GPT API call: " + e.getMessage());
             e.printStackTrace();
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"error\":\"GPT API 호출 실패\"}");
+            resp.setStatus(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            resp.getWriter().write("{\"error\":\"서버 내부 오류\"}");
         }
     }
+
 }

@@ -400,10 +400,10 @@
 
         console.log("answer : " + answerText);
 
-        fetch(`${request.getContextPath()}/spellcheck`, {
-            method: 'POST', // 어휘 교체 요청
+        fetch('/spellcheck', {
+            method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json; charset=UTF-8'
             },
             body: JSON.stringify({ text: answerText }) // 답변 텍스트 전송
         })
