@@ -262,7 +262,7 @@
                             <textarea id = "answer" name="answer" placeholder="내용을 입력해 주세요" maxlength="500" oninput="updateCharCount(this)"></textarea>
                             <div class="char-count">0 / 500 자 (공백 포함)</div>
                             <div class="coaching-buttons">
-                                <button onclick="getSpellCheck(this)">맞춤법 검사 받기</button>
+                                <button onclick="getSpellCheck(this, event)">맞춤법 검사 받기</button>
                                 <button onclick="getAICoaching(this)">자기소개서 코칭 받기</button>
                             </div>
                             <div class="result-box" name="resultBox" id = "resultBox1"></div>
@@ -320,7 +320,7 @@
             "<textarea name='answer' placeholder='내용을 입력해 주세요' maxlength='500' oninput='updateCharCount(this)'></textarea>" +
             "<div class='char-count'>0 / 500 자 (공백 포함)</div>" +
             "<div class='coaching-buttons'>" +
-            "<button onclick='getSpellCheck(this)'>맞춤법 검사 받기</button>" +
+            "<button onclick='getSpellCheck(this, event)'>맞춤법 검사 받기</button>" +
             "<button onclick='getAICoaching(this)'>자기소개서 코칭 받기</button>" +
             "</div>" +
             "<div class='result-box' name='resultBox' id='resultBox" + totalQuestions + "'></div>" +
@@ -391,18 +391,16 @@
     }
 
     // 맞춤법 검사 및 어휘 교체
-    function getSpellCheck(button) {
-        // 버튼 기준으로 현재 문항의 Question Group 찾기
+    function getSpellCheck(button, event) {
+        event.preventDefault(); // 기본 폼 제출 동작 방지
         const questionGroup = button.closest('.question-group');
-
-        // 해당 Question Group 안에서 textarea 찾기
         const answerTextarea = questionGroup.querySelector('textarea');
-        const answerText = answerTextarea.value; // 답변 내용 가져오기
+        const answerText = answerTextarea.value;
 
         console.log("answer : " + answerText);
 
         fetch('/spellcheck', {
-            method: 'PUT',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json; charset=UTF-8'
             },

@@ -17,11 +17,12 @@ import java.net.URL;
 
 @WebServlet("/spellcheck")
 public class SpellCheckController extends HttpServlet {
+
     private static final String GPT_API_URL = "https://api.openai.com/v1/chat/completions";
     private static final String GPT_API_KEY = System.getenv("GPT_API_KEY");
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         // 요청 및 응답 기본 설정
         req.setCharacterEncoding("UTF-8");
         resp.setContentType("application/json; charset=UTF-8");
@@ -63,7 +64,7 @@ public class SpellCheckController extends HttpServlet {
 
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", "system");
-        systemMessage.addProperty("content", "자기소개서에 적합한 어휘이면서, 문맥에 맞고 의미는 변하지 않도록 하며, 고급스럽고 직무에 적합한 단어로 교체해줘");
+        systemMessage.addProperty("content", "자기소개서에 적합한 어휘이면서, 단어만 고급스럽고 직무에 적합한 단어로 교체해줘");
         messages.add(systemMessage);
 
         JsonObject userMessage = new JsonObject();
