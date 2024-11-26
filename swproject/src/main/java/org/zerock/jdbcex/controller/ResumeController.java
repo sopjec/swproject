@@ -1,5 +1,7 @@
 package org.zerock.jdbcex.controller;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.zerock.jdbcex.dto.ResumeDTO;
 import org.zerock.jdbcex.dto.ResumeQnaDTO;
 import org.zerock.jdbcex.dto.UserDTO;
@@ -9,8 +11,12 @@ import org.zerock.jdbcex.service.ResumeService;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 @WebServlet("/resume")
@@ -19,8 +25,13 @@ public class ResumeController extends HttpServlet {
     private final ResumeService resumeService = new ResumeService();
     private final ResumeQnaService resumeQnaService = new ResumeQnaService();
 
+    private static final String GPT_API_URL = "https://api.openai.com/v1/chat/completions";
+    private static final String GPT_API_KEY = "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"; // OpenAI API 키 입력
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // 요청 데이터 인코딩 설정
+        req.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
             resp.sendRedirect("login.jsp");
@@ -31,7 +42,9 @@ public class ResumeController extends HttpServlet {
         UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
         String userId = loggedInUser.getId(); // UserDTO의 userId 필드 사용
 
-        String title = req.getParameter("title");
+        String title = req.getParameter("resumeTitle");
+        System.out.println("받은 제목: " + title); // 디버그 출력
+
         String[] questions = req.getParameterValues("question");
         String[] answers = req.getParameterValues("answer");
 

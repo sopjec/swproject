@@ -68,30 +68,18 @@
             cursor: pointer;
         }
     </style>
-    <script>
-        // header.html 파일을 불러오는 함수
-        function loadHeader() {
-            fetch("header.jsp")
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById("header-container").innerHTML = data;
-                })
-                .catch(error => console.error("Error loading header:", error));
-        }
 
-        window.onload = loadHeader; // 페이지가 로드될 때 헤더를 불러옴
-    </script>
 </head>
 
 <body>
-<!-- 헤더가 로드될 위치 -->
-<div id="header-container"></div>
+
+<jsp:include page="header.jsp"/>
 
 <div class="container">
     <div class="sidebar">
         <ul>
             <li><a href="resume.jsp">자기소개서 등록</a></li>
-            <li><a href="resume">자기소개서 조회</a></li>
+            <li><a href="resume_view">자기소개서 조회</a></li>
             <li><a href="resume_analyze.jsp">자기소개서 분석</a></li>
         </ul>
     </div>

@@ -1,6 +1,5 @@
 package org.zerock.jdbcex.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.zerock.jdbcex.dto.UserDTO;
 import org.zerock.jdbcex.service.ScrapService;
 
