@@ -121,18 +121,6 @@
         }
     </style>
 
-    <script>
-        function loadHeader() {
-            fetch("header.jsp")
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById("header-container").innerHTML = data;
-                })
-                .catch(error => console.error("Error loading header:", error));
-        }
-
-        window.onload = loadHeader;
-    </script>
 </head>
 
 <body>
@@ -146,8 +134,8 @@
     }
 %>
 
-<!-- 헤더가 로드될 위치 -->
-<div id="header-container"></div>
+<jsp:include page="header.jsp"/>
+
 
 <div class="container">
     <div class="sidebar">
@@ -155,7 +143,7 @@
             <li><a href="mypage.jsp">내계정</a></li>
             <li><a href="resume">자기소개서 조회</a></li>
             <li><a href="interview_view.jsp">면접 녹화 기록 조회</a></li>
-            <li><a href="jobScrap.jsp">저장된 공고 목록</a></li>
+            <li><a href="jobposting/jobScrap.jsp">저장된 공고 목록</a></li>
         </ul>
     </div>
 

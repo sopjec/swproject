@@ -94,15 +94,6 @@
         }
     </style>
     <script>
-        // header.html 파일을 불러오는 함수
-        function loadHeader() {
-            fetch("header.jsp")
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById("header-container").innerHTML = data;
-                })
-                .catch(error => console.error("Error loading header:", error));
-        }
 
         // 오늘 날짜를 생년월일 기본값으로 설정하는 함수
         function setTodayDate() {
@@ -119,8 +110,8 @@
 
 <body>
 
-<!-- 헤더가 로드될 위치 -->
-<div id="header-container"></div>
+
+<jsp:include page="header.jsp"/>
 
 <div class="signup-container">
     <h2>회원가입</h2>

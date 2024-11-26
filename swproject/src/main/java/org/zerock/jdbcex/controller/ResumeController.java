@@ -1,5 +1,7 @@
 package org.zerock.jdbcex.controller;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.zerock.jdbcex.dto.ResumeDTO;
 import org.zerock.jdbcex.dto.ResumeQnaDTO;
 import org.zerock.jdbcex.dto.UserDTO;
@@ -9,8 +11,12 @@ import org.zerock.jdbcex.service.ResumeService;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 @WebServlet("/resume")
@@ -21,19 +27,30 @@ public class ResumeController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
             resp.sendRedirect("login.jsp");
             return;
         }
 
-        // UserDTO 객체에서 userId 가져오기
+        // 사용자 정보 확인
         UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
-        String userId = loggedInUser.getId(); // UserDTO의 userId 필드 사용
+        String userId = loggedInUser.getId(); // User ID 가져오기
 
-        String title = req.getParameter("title");
+        // 제목 가져오기
+        String title = req.getParameter("resumeTitle");
+        System.out.println("제목: " + title);
+
+        // 여러 개의 질문과 답변 가져오기
         String[] questions = req.getParameterValues("question");
         String[] answers = req.getParameterValues("answer");
+
+        if (questions == null || answers == null || questions.length != answers.length) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "질문과 답변 데이터가 올바르지 않습니다.");
+            return;
+        }
 
         try {
             // Resume 저장
@@ -42,18 +59,16 @@ public class ResumeController extends HttpServlet {
             resume.setUserId(userId);
             resumeService.addResume(resume);
 
-            // 질문/답변 저장
-            if (questions != null && answers != null) {
-                for (int i = 0; i < questions.length; i++) {
-                    ResumeQnaDTO qna = new ResumeQnaDTO();
-                    qna.setResumeId(resume.getId());
-                    qna.setQuestion(questions[i]);
-                    qna.setAnswer(answers[i]);
-                    resumeQnaService.addQna(qna);
-                }
+            // QnA 저장
+            for (int i = 0; i < questions.length; i++) {
+                ResumeQnaDTO qna = new ResumeQnaDTO();
+                qna.setResumeId(resume.getId());
+                qna.setQuestion(questions[i]);
+                qna.setAnswer(answers[i]);
+                resumeQnaService.addQna(qna);
             }
 
-            resp.sendRedirect("resume_view.jsp");
+            resp.sendRedirect("resume_view");
         } catch (Exception e) {
             e.printStackTrace();
             req.setAttribute("errorMessage", "데이터 저장 중 오류가 발생했습니다.");

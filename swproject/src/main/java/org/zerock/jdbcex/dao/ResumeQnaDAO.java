@@ -23,6 +23,7 @@ public class ResumeQnaDAO {
             pstmt.setString(3, qna.getAnswer());
             pstmt.executeUpdate();
         }
+
     }
 
     public List<ResumeQnaDTO> getQnaByResumeId(int resumeId) throws Exception {
@@ -40,6 +41,8 @@ public class ResumeQnaDAO {
                     qna.setQuestion(rs.getString("question"));
                     qna.setAnswer(rs.getString("answer"));
                     qnaList.add(qna);
+                    System.out.println(qna.getQuestion());
+                    System.out.println(qna.getAnswer());
                 }
             }
         }
