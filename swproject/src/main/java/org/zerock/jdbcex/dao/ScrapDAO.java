@@ -14,22 +14,21 @@ public class ScrapDAO {
 
     // 스크랩 키 가져오기
     public List<String> getScrapKeys(String userId) {
-        List<String> scrapKeys = new ArrayList<>();
-        String query = "SELECT DISTINCT scrap_key FROM scrap WHERE user_id = ?";
+        List<String> scrapedKeys = new ArrayList<>();
+        String sql = "SELECT scrap_key FROM scrap WHERE user_id = ?";
 
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            pstmt.setString(1, userId); // 로그인된 사용자 ID 조건 추가
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, userId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    scrapKeys.add(rs.getString("scrap_key"));
+                    scrapedKeys.add(rs.getString("scrap_key"));
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return scrapKeys;
+        return scrapedKeys;
     }
 
 
