@@ -29,8 +29,10 @@ public class SpellCheckController extends HttpServlet {
 
         // 세션 확인 (로그인 여부 체크)
         HttpSession session = req.getSession(false);
+        // 로그인 확인
         if (session == null || session.getAttribute("loggedInUser") == null) {
-            resp.sendRedirect("login.jsp");
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.getWriter().write("세션이 만료 되었습니다.");
             return;
         }
 
@@ -64,7 +66,7 @@ public class SpellCheckController extends HttpServlet {
 
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", "system");
-        systemMessage.addProperty("content", "자기소개서에 적합한 어휘이면서, 단어만 고급스럽고 직무에 적합한 단어로 교체해줘");
+        systemMessage.addProperty("content", "자기소개서에 적합한 어휘이면서, 고급스럽고 직무에 적합한 단어로 교체해줘");
         messages.add(systemMessage);
 
         JsonObject userMessage = new JsonObject();
