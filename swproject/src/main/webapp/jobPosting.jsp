@@ -241,9 +241,9 @@
     <!-- 모달창 -->
     <div id="login-modal" class="modal">
         <div class="modal-content">
-            <p>세션이 만료되었습니다.</p>
+            <p>로그인이 필요한 서비스입니다.</p>
             <button class="close-btn" id="close-modal">닫기</button>
-            <button class="login-btn" id="go-login">로그인 페이지로 이동</button>
+            <button class="login-btn" id="go-login">로그인 하러가기</button>
         </div>
     </div>
 
@@ -300,7 +300,6 @@
         <div class="pagination"></div>
     </div>
 </div>
-
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         let currentPage = 1; // 현재 페이지
@@ -309,6 +308,7 @@
         let totalItems = 0; // 전체 공고 수
         let allItems = []; // 전체 데이터를 저장할 배열
         let filteredItems = []; // 필터링된 데이터를 저장할 배열
+        let scrapedKeys = []; // 서버에서 가져온 스크랩된 키
 
         const modal = document.getElementById("login-modal");
         const closeModal = document.getElementById("close-modal");
@@ -317,46 +317,38 @@
         closeModal.addEventListener("click", () => modal.style.display = "none");
         goLogin.addEventListener("click", () => window.location.href = "login.jsp");
 
+        // 스크랩 상태 가져오기
+        function fetchScrapStatus() {
+            return fetch("/scrapStatus")
+                .then(response => {
+                    if (response.ok) {
+                        return response.json(); // 스크랩된 키 목록 반환
+                    }
+                    return []; // 로그인되지 않은 경우 빈 배열 반환
+                })
+                .catch(error => {
+                    console.error("스크랩 상태 가져오기 실패:", error);
+                    return [];
+                });
+        }
+
         // 전체 데이터 가져오기
         function fetchAllJobPostings() {
             const serviceKey = "m4%2BOenhwqExP36CL%2F5Pb7tiHlIxAqX75ReTHzMfWzxb%2BpEYUtedtI%2BughHYGWfH%2FXXFk3sIWKu3HIhtbYDQozw%3D%3D";
-            const url = "http://apis.data.go.kr/1051000/recruitment/list?serviceKey=" + serviceKey + "&resultType=json&numOfRows=1000&pageNo=1&ongoingYn=Y"; // 최대 1000개 불러오기
+            const url = "http://apis.data.go.kr/1051000/recruitment/list?serviceKey=" + serviceKey + "&resultType=json&numOfRows=1000&pageNo=1&ongoingYn=Y";
 
-            fetch(url)
+            return fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     if (data.result && Array.isArray(data.result)) {
                         allItems = data.result;
                         filteredItems = [...allItems]; // 필터링 초기화
                         totalItems = filteredItems.length;
-                        createPagination();
-                        showItems(currentPage);
                     } else {
                         console.error("데이터를 가져올 수 없습니다.");
                     }
                 })
                 .catch(error => console.error("API 호출 실패:", error));
-        }
-
-        // 클라이언트 측 필터링
-        function applyFilters() {
-            const keyword = document.getElementById("search-keyword").value.trim();
-            const region = document.getElementById("region-filter").value.trim();
-            const employmentType = document.getElementById("employment-type-filter").value.trim();
-            const jobType = document.getElementById("job-type-filter").value.trim();
-
-            filteredItems = allItems.filter(item => {
-                const matchesKeyword = !keyword || (item.instNm && item.instNm.includes(keyword));
-                const matchesRegion = !region || (item.workRgnNmLst && item.workRgnNmLst.includes(region));
-                const matchesEmploymentType = !employmentType || (item.hireTypeNmLst && item.hireTypeNmLst.includes(employmentType));
-                const matchesJobType = !jobType || (item.ncsCdNmLst && item.ncsCdNmLst.includes(jobType));
-                return matchesKeyword && matchesRegion && matchesEmploymentType && matchesJobType;
-            });
-
-            totalItems = filteredItems.length;
-            currentPage = 1; // 필터 적용 시 첫 페이지로 초기화
-            createPagination();
-            showItems(currentPage);
         }
 
         // 페이지네이션 생성
@@ -379,7 +371,7 @@
             });
             paginationContainer.appendChild(prevButton);
 
-            // 동적으로 페이지 번호 생성
+            // 페이지 번호 생성
             const startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
             const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
@@ -421,110 +413,131 @@
             const itemsToShow = filteredItems.slice(startIndex, endIndex);
 
             if (itemsToShow.length > 0) {
-                // 스크랩된 항목의 ID를 서버에서 가져옴
-                fetch("/scrapStatus")
-                    .then(response => response.json())
-                    .then(scrapStatus => {
-                        itemsToShow.forEach(item => {
-                            const jobCard = document.createElement("div");
-                            jobCard.classList.add("job-card");
+                itemsToShow.forEach(item => {
+                    const jobCard = document.createElement("div");
+                    jobCard.classList.add("job-card");
 
-                            const title = document.createElement("h2");
-                            title.textContent = item.instNm || "기관명 없음";
+                    const title = document.createElement("h2");
+                    title.textContent = item.instNm || "기관명 없음";
 
-                            const duty = document.createElement("p");
-                            duty.textContent = "직무: " + (item.ncsCdNmLst || "정보 없음");
+                    const duty = document.createElement("p");
+                    duty.textContent = "직무: " + (item.ncsCdNmLst || "정보 없음");
 
-                            const employmentType = document.createElement("p");
-                            employmentType.textContent = "고용 형태: " + (item.hireTypeNmLst || "정보 없음");
+                    const employmentType = document.createElement("p");
+                    employmentType.textContent = "고용 형태: " + (item.hireTypeNmLst || "정보 없음");
 
-                            const region = document.createElement("p");
-                            region.textContent = "근무 지역: " + (item.workRgnNmLst || "정보 없음");
+                    const region = document.createElement("p");
+                    region.textContent = "근무 지역: " + (item.workRgnNmLst || "정보 없음");
 
-                            const deadline = document.createElement("p");
-                            deadline.textContent = "마감일: " + (item.pbancEndYmd || "정보 없음");
+                    const deadline = document.createElement("p");
+                    deadline.textContent = "마감일: " + (item.pbancEndYmd || "정보 없음");
 
-                            const link = document.createElement("a");
-                            link.href = item.srcUrl || "#";
-                            link.target = "_blank";
-                            link.textContent = "공고보러가기";
+                    const link = document.createElement("a");
+                    link.href = item.srcUrl || "#";
+                    link.target = "_blank";
+                    link.textContent = "공고보러가기";
 
-                            // 스크랩 버튼
-                            const scrapButton = document.createElement("button");
-                            scrapButton.classList.add("scrap-button");
-                            scrapButton.dataset.scrapKey = item.recrutPblntSn;
+                    // 스크랩 버튼
+                    const scrapButton = document.createElement("button");
+                    scrapButton.classList.add("scrap-button");
+                    scrapButton.dataset.scrapKey = item.recrutPblntSn;
 
-                            // 스크랩 상태에 따라 별표 설정
-                            const isScraped = scrapStatus.includes(item.recrutPblntSn);
-                            scrapButton.textContent = isScraped ? "⭐" : "☆";
+                    // 스크랩 상태에 따라 별표 설정
+                    const isScraped = scrapedKeys.includes(item.recrutPblntSn);
+                    scrapButton.textContent = isScraped ? "⭐" : "☆";
 
-                            scrapButton.addEventListener("click", function () {
-                                const scrapKey = scrapButton.dataset.scrapKey;
+                    scrapButton.addEventListener("click", function () {
+                        const scrapKey = scrapButton.dataset.scrapKey;
 
-                                if (scrapButton.textContent === "☆") {
-                                    // 스크랩 추가
-                                    fetch("/scrap", {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify(scrapKey)
-                                    })
-                                        .then(response => {
-                                            if (!response.ok) throw new Error("스크랩 실패");
-                                            return response.text();
-                                        })
-                                        .then(data => {
-                                            if (data) {
-                                                scrapButton.textContent = "⭐"; // 채워진 별표로 변경
-                                                alert("스크랩이 추가되었습니다.");
-                                            }
-                                        })
-                                        .catch(error => console.error("스크랩 요청 실패:", error));
+                        fetch("/checkSession")
+                            .then(response => {
+                                if (response.status === 401) {
+                                    modal.style.display = "block"; // 로그인 모달 표시
                                 } else {
-                                    // 스크랩 삭제
-                                    fetch("/scrap", {
-                                        method: "DELETE",
-                                        headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify(scrapKey)
-                                    })
-                                        .then(response => {
-                                            if (!response.ok) throw new Error("스크랩 삭제 실패");
-                                            return response.text();
+                                    if (scrapButton.textContent === "☆") {
+                                        // 스크랩 추가
+                                        fetch("/scrap", {
+                                            method: "POST",
+                                            headers: { "Content-Type": "application/json" },
+                                            body: JSON.stringify(scrapKey)
                                         })
-                                        .then(data => {
-                                            if (data) {
-                                                scrapButton.textContent = "☆"; // 빈 별표로 변경
-                                                alert("스크랩이 삭제되었습니다.");
-                                            }
+                                            .then(response => {
+                                                if (response.ok) {
+                                                    scrapButton.textContent = "⭐";
+                                                    scrapedKeys.push(scrapKey);
+                                                } else {
+                                                    alert("스크랩 추가 실패");
+                                                }
+                                            })
+                                            .catch(error => console.error("스크랩 추가 실패:", error));
+                                    } else {
+                                        // 스크랩 삭제
+                                        fetch("/scrap", {
+                                            method: "DELETE",
+                                            headers: { "Content-Type": "application/json" },
+                                            body: JSON.stringify(scrapKey)
                                         })
-                                        .catch(error => console.error("스크랩 삭제 요청 실패:", error));
+                                            .then(response => {
+                                                if (response.ok) {
+                                                    scrapButton.textContent = "☆";
+                                                    scrapedKeys = scrapedKeys.filter(key => key !== scrapKey);
+                                                } else {
+                                                    alert("스크랩 삭제 실패");
+                                                }
+                                            })
+                                            .catch(error => console.error("스크랩 삭제 실패:", error));
+                                    }
                                 }
-                            });
+                            })
+                            .catch(error => console.error("세션 확인 실패:", error));
+                    });
 
-                            jobCard.appendChild(title);
-                            jobCard.appendChild(duty);
-                            jobCard.appendChild(employmentType);
-                            jobCard.appendChild(region);
-                            jobCard.appendChild(deadline);
-                            jobCard.appendChild(link);
-                            jobCard.appendChild(scrapButton);
+                    jobCard.appendChild(title);
+                    jobCard.appendChild(duty);
+                    jobCard.appendChild(employmentType);
+                    jobCard.appendChild(region);
+                    jobCard.appendChild(deadline);
+                    jobCard.appendChild(link);
+                    jobCard.appendChild(scrapButton);
 
-                            jobListingContainer.appendChild(jobCard);
-                        });
-                    })
-                    .catch(error => console.error("스크랩 상태 가져오기 실패:", error));
+                    jobListingContainer.appendChild(jobCard);
+                });
             } else {
                 jobListingContainer.innerHTML = "<p>조건에 맞는 공고가 없습니다.</p>";
             }
-
         }
 
-        // 초기 데이터 가져오기
-        fetchAllJobPostings();
+        // 초기 데이터 로드
+        Promise.all([fetchAllJobPostings(), fetchScrapStatus()])
+            .then(([, scrapKeysResponse]) => {
+                scrapedKeys = scrapKeysResponse;
+                createPagination();
+                showItems(currentPage);
+            })
+            .catch(error => console.error("초기 데이터 로드 실패:", error));
 
         // 필터 적용 버튼 이벤트
-        document.getElementById("apply-filters").addEventListener("click", applyFilters);
-    });
+        document.getElementById("apply-filters").addEventListener("click", function () {
+            const keyword = document.getElementById("search-keyword").value.trim();
+            const region = document.getElementById("region-filter").value.trim();
+            const employmentType = document.getElementById("employment-type-filter").value.trim();
+            const jobType = document.getElementById("job-type-filter").value.trim();
 
+            filteredItems = allItems.filter(item => {
+                const matchesKeyword = !keyword || (item.instNm && item.instNm.includes(keyword));
+                const matchesRegion = !region || (item.workRgnNmLst && item.workRgnNmLst.includes(region));
+                const matchesEmploymentType = !employmentType || (item.hireTypeNmLst && item.hireTypeNmLst.includes(employmentType));
+                const matchesJobType = !jobType || (item.ncsCdNmLst && item.ncsCdNmLst.includes(jobType));
+                return matchesKeyword && matchesRegion && matchesEmploymentType && matchesJobType;
+            });
+
+            totalItems = filteredItems.length;
+            currentPage = 1;
+            createPagination();
+            showItems(currentPage);
+        });
+    });
 </script>
+
 </body>
 </html>

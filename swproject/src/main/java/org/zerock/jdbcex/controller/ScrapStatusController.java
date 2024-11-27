@@ -10,10 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 @WebServlet("/scrapStatus")
-class ScrapStatusController extends HttpServlet {
+public class ScrapStatusController extends HttpServlet {
 
     private ScrapService scrapService = new ScrapService();
 
@@ -22,19 +23,25 @@ class ScrapStatusController extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Unauthorized");
             return;
         }
 
         UserDTO user = (UserDTO) session.getAttribute("loggedInUser");
-        List<String> scrapedKeys = null;
+        List<String> scrapedKeys;
+
         try {
             scrapedKeys = scrapService.getScrapedKeys(user.getId());
+            System.out.println("스크랩된 공고 키: " + scrapedKeys); // 디버깅 로그 추가
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
         }
 
+        // 올바른 JSON 응답 반환
         response.setContentType("application/json; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
         new ObjectMapper().writeValue(response.getWriter(), scrapedKeys);
     }
-
 }
