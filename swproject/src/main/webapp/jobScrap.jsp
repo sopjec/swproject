@@ -7,9 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>스크랩된 채용 공고</title>
     <style>
+        /* 공통 스타일 */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f7f9fc;
+            background-color: #f9f9fc;
             margin: 0;
             padding: 0;
         }
@@ -133,37 +134,6 @@
             background-color: #007bff;
             color: white;
         }
-
-        /* 모달 */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.4);
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            width: 300px;
-            text-align: center;
-        }
-
-        .modal-content button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -180,64 +150,148 @@
         <div class="filters">
             <input type="text" id="search-keyword" placeholder="검색어 입력">
             <select id="region-filter">
-                <option value="">지역 선택</option>
-                <option value="서울">서울</option>
-                <option value="부산">부산</option>
+                <option value="" ${region == null || region == '' ? 'selected' : ''}>지역 선택</option>
+                <option value="서울" ${region == '서울' ? 'selected' : ''}>서울</option>
+                <option value="부산" ${region == '부산' ? 'selected' : ''}>부산</option>
+                <option value="대구" ${region == '대구' ? 'selected' : ''}>대구</option>
+                <option value="인천" ${region == '인천' ? 'selected' : ''}>인천</option>
+                <option value="광주" ${region == '광주' ? 'selected' : ''}>광주</option>
+                <option value="대전" ${region == '대전' ? 'selected' : ''}>대전</option>
+                <option value="울산" ${region == '울산' ? 'selected' : ''}>울산</option>
+                <option value="세종" ${region == '세종' ? 'selected' : ''}>세종</option>
+                <option value="경기" ${region == '경기' ? 'selected' : ''}>경기</option>
+                <option value="강원" ${region == '강원' ? 'selected' : ''}>강원</option>
+                <option value="충북" ${region == '충북' ? 'selected' : ''}>충북</option>
+                <option value="충남" ${region == '충남' ? 'selected' : ''}>충남</option>
+                <option value="전북" ${region == '전북' ? 'selected' : ''}>전북</option>
+                <option value="전남" ${region == '전남' ? 'selected' : ''}>전남</option>
+                <option value="경북" ${region == '경북' ? 'selected' : ''}>경북</option>
+                <option value="경남" ${region == '경남' ? 'selected' : ''}>경남</option>
+                <option value="제주" ${region == '제주' ? 'selected' : ''}>제주</option>
             </select>
+
+            <select id="employment-type-filter">
+                <option value="" ${employmentType == null || employmentType == '' ? 'selected' : ''}>고용 형태 선택</option>
+                <option value="인턴" ${employmentType == '인턴' ? 'selected' : ''}>인턴</option>
+                <option value="정규직" ${employmentType == '정규직' ? 'selected' : ''}>정규직</option>
+                <option value="비정규직" ${employmentType == '비정규직' ? 'selected' : ''}>비정규직</option>
+                <option value="무기계약직" ${employmentType == '무기계약직' ? 'selected' : ''}>무기계약직</option>
+            </select>
+
+            <select id="job-type-filter">
+                <option value="" ${jobType == null || jobType == '' ? 'selected' : ''}>직무 선택</option>
+                <option value="경영.회계.사무" ${jobType == '경영.회계.사무' ? 'selected' : ''}>경영.회계.사무</option>
+                <option value="경비" ${jobType == '경비' ? 'selected' : ''}>경비</option>
+                <option value="청소" ${jobType == '청소' ? 'selected' : ''}>청소</option>
+                <option value="교육.자연.사회과학" ${jobType == '교육.자연.사회과학' ? 'selected' : ''}>교육.자연.사회과학</option>
+                <option value="보건" ${jobType == '보건' ? 'selected' : ''}>보건</option>
+                <option value="의료" ${jobType == '의료' ? 'selected' : ''}>의료</option>
+                <option value="음식서비스" ${jobType == '음식서비스' ? 'selected' : ''}>음식서비스</option>
+                <option value="정보통신" ${jobType == '정보통신' ? 'selected' : ''}>정보통신</option>
+                <option value="운전" ${jobType == '운전' ? 'selected' : ''}>운전</option>
+                <option value="운송" ${jobType == '운송' ? 'selected' : ''}>운송</option>
+                <option value="사회복지" ${jobType == '사회복지' ? 'selected' : ''}>사회복지</option>
+                <option value="종교" ${jobType == '종교' ? 'selected' : ''}>종교</option>
+                <option value="에너지" ${jobType == '에너지' ? 'selected' : ''}>에너지</option>
+                <option value="안전" ${jobType == '안전' ? 'selected' : ''}>안전</option>
+            </select>
+
             <button id="apply-filters">필터 적용</button>
         </div>
 
-        <!-- 채용 공고 리스트 -->
         <div class="job-listing">
-            <c:forEach var="job" items="${jobData}">
-                <div class="job-card">
-                    <h2>${job.title}</h2>
-                    <p>직무: ${job.duty}</p>
-                    <p>고용 형태: ${job.employmentType}</p>
-                    <p>근무 지역: ${job.region}</p>
-                    <p>마감일: ${job.deadline}</p>
-                    <a href="${job.url}" target="_blank">공고 보러가기</a>
-                </div>
-            </c:forEach>
+            <c:choose>
+                <c:when test="${empty jobData}">
+                    <p style="text-align: center; color: #666; font-size: 16px; margin-top: 20px;">
+                        스크랩된 채용공고가 없습니다.
+                    </p>
+                </c:when>
+                <c:otherwise>
+                    <c:forEach var="job" items="${jobData}">
+                        <div class="job-card">
+                            <p style="display: none">${job.scrapKey}</p>
+                            <h2>${job.title}</h2>
+                            <p>직무: ${job.duty}</p>
+                            <p>고용 형태: ${job.employmentType}</p>
+                            <p>근무 지역: ${job.region}</p>
+                            <p>마감일: ${job.deadline}</p>
+                            <a href="${job.url}" target="_blank">공고 보러가기</a>
+                            <button class="delete-button" onclick="deleteScrap('${job.scrapKey}')">x</button>
+                        </div>
+                    </c:forEach>
+                </c:otherwise>
+            </c:choose>
         </div>
+
         <!-- 페이지네이션 -->
         <div class="pagination">
-            <button>1</button>
-            <button>2</button>
+            <c:forEach var="page" begin="1" end="${totalPages}">
+                <button>${page}</button>
+            </c:forEach>
         </div>
     </div>
 </div>
-
-<!-- 모달 -->
-<div id="login-modal" class="modal">
-    <div class="modal-content">
-        <p>로그인이 필요합니다.</p>
-        <button id="login-btn">로그인</button>
-    </div>
-</div>
-
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const modal = document.getElementById("login-modal");
-        const loginBtn = document.getElementById("login-btn");
+        const closeModal = document.getElementById("close-modal");
+        const goLogin = document.getElementById("go-login");
 
-        // 모달 표시
-        function showLoginModal() {
-            modal.style.display = "block";
-        }
+        // "닫기" 버튼 클릭 이벤트
+        closeModal.addEventListener("click", function () {
+            modal.style.display = "none";
+        });
 
-        // 로그인 페이지로 이동
-        loginBtn.addEventListener("click", function () {
+        // "로그인 하러가기" 버튼 클릭 이벤트
+        goLogin.addEventListener("click", function () {
             window.location.href = "login.jsp";
         });
 
-        // 필터 적용 버튼 클릭 시
-        document.getElementById("apply-filters").addEventListener("click", function () {
-            const keyword = document.getElementById("search-keyword").value;
+        // 필터 적용 버튼 클릭 이벤트
+        const applyFilters = document.getElementById("apply-filters");
+        applyFilters.addEventListener("click", function () {
+            const keyword = document.getElementById("search-keyword").value.trim();
             const region = document.getElementById("region-filter").value;
-            window.location.href = `/scrap?keyword=${keyword}&region=${region}`;
+            const employmentType = document.getElementById("employment-type-filter").value;
+            const jobType = document.getElementById("job-type-filter").value;
+
+            const queryParams = new URLSearchParams();
+            if (keyword) queryParams.append("keyword", keyword);
+            if (region) queryParams.append("region", region);
+            if (employmentType) queryParams.append("employmentType", employmentType);
+            if (jobType) queryParams.append("jobType", jobType);
+
+            const baseUrl = "/scrap";
+            window.location.href = baseUrl + "?" + queryParams.toString();
         });
     });
+
+    // 스크랩 삭제 함수 (글로벌 범위)
+    function deleteScrap(scrapKey) {
+        if (!confirm("해당 스크랩을 삭제하시겠습니까?")) {
+            return;
+        }
+
+        fetch("/scrap", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(scrapKey)
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert("스크랩이 삭제되었습니다.");
+                    location.reload(); // 페이지를 새로고침하여 목록 갱신
+                } else {
+                    return response.text().then(text => { throw new Error(text); });
+                }
+            })
+            .catch(error => {
+                alert("스크랩 삭제 중 오류가 발생했습니다: " + error.message);
+            });
+    }
 </script>
+
 </body>
 </html>

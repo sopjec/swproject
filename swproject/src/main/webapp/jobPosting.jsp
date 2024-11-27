@@ -234,14 +234,14 @@
     <div class="sidebar">
         <ul>
             <li><a href="jobPosting.jsp">기업 채용 공고</a></li>
-            <li><a href="jobScrap.jsp">저장된 공고 목록</a></li>
+            <li><a href="scrap">저장된 공고 목록</a></li>
         </ul>
     </div>
 
     <!-- 모달창 -->
     <div id="login-modal" class="modal">
         <div class="modal-content">
-            <p>로그인이 필요합니다.</p>
+            <p>세션이 만료되었습니다.</p>
             <button class="close-btn" id="close-modal">닫기</button>
             <button class="login-btn" id="go-login">로그인 페이지로 이동</button>
         </div>
@@ -421,70 +421,101 @@
             const itemsToShow = filteredItems.slice(startIndex, endIndex);
 
             if (itemsToShow.length > 0) {
-                itemsToShow.forEach(item => {
-                    const jobCard = document.createElement("div");
-                    jobCard.classList.add("job-card");
+                // 스크랩된 항목의 ID를 서버에서 가져옴
+                fetch("/scrapStatus")
+                    .then(response => response.json())
+                    .then(scrapStatus => {
+                        itemsToShow.forEach(item => {
+                            const jobCard = document.createElement("div");
+                            jobCard.classList.add("job-card");
 
-                    const title = document.createElement("h2");
-                    title.textContent = item.instNm || "기관명 없음";
+                            const title = document.createElement("h2");
+                            title.textContent = item.instNm || "기관명 없음";
 
-                    const duty = document.createElement("p");
-                    duty.textContent = "직무: " + (item.ncsCdNmLst || "정보 없음");
+                            const duty = document.createElement("p");
+                            duty.textContent = "직무: " + (item.ncsCdNmLst || "정보 없음");
 
-                    const employmentType = document.createElement("p");
-                    employmentType.textContent = "고용 형태: " + (item.hireTypeNmLst || "정보 없음");
+                            const employmentType = document.createElement("p");
+                            employmentType.textContent = "고용 형태: " + (item.hireTypeNmLst || "정보 없음");
 
-                    const region = document.createElement("p");
-                    region.textContent = "근무 지역: " + (item.workRgnNmLst || "정보 없음");
+                            const region = document.createElement("p");
+                            region.textContent = "근무 지역: " + (item.workRgnNmLst || "정보 없음");
 
-                    const deadline = document.createElement("p");
-                    deadline.textContent = "마감일: " + (item.pbancEndYmd || "정보 없음");
+                            const deadline = document.createElement("p");
+                            deadline.textContent = "마감일: " + (item.pbancEndYmd || "정보 없음");
 
-                    const link = document.createElement("a");
-                    link.href = item.srcUrl || "#";
-                    link.target = "_blank";
-                    link.textContent = "공고보러가기";
+                            const link = document.createElement("a");
+                            link.href = item.srcUrl || "#";
+                            link.target = "_blank";
+                            link.textContent = "공고보러가기";
 
-                    const scrapButton = document.createElement("button");
-                    scrapButton.classList.add("scrap-button");
-                    scrapButton.textContent = "⭐";
-                    scrapButton.dataset.scrapKey = item.recrutPblntSn;
+                            // 스크랩 버튼
+                            const scrapButton = document.createElement("button");
+                            scrapButton.classList.add("scrap-button");
+                            scrapButton.dataset.scrapKey = item.recrutPblntSn;
 
-                    scrapButton.addEventListener("click", function () {
-                        const scrapKey = scrapButton.dataset.scrapKey;
+                            // 스크랩 상태에 따라 별표 설정
+                            const isScraped = scrapStatus.includes(item.recrutPblntSn);
+                            scrapButton.textContent = isScraped ? "⭐" : "☆";
 
-                        fetch("/scrap", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(scrapKey)
-                        })
-                            .then(response => {
-                                if (response.status === 401) {
-                                    modal.style.display = "block";
-                                    return null;
+                            scrapButton.addEventListener("click", function () {
+                                const scrapKey = scrapButton.dataset.scrapKey;
+
+                                if (scrapButton.textContent === "☆") {
+                                    // 스크랩 추가
+                                    fetch("/scrap", {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify(scrapKey)
+                                    })
+                                        .then(response => {
+                                            if (!response.ok) throw new Error("스크랩 실패");
+                                            return response.text();
+                                        })
+                                        .then(data => {
+                                            if (data) {
+                                                scrapButton.textContent = "⭐"; // 채워진 별표로 변경
+                                                alert("스크랩이 추가되었습니다.");
+                                            }
+                                        })
+                                        .catch(error => console.error("스크랩 요청 실패:", error));
+                                } else {
+                                    // 스크랩 삭제
+                                    fetch("/scrap", {
+                                        method: "DELETE",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify(scrapKey)
+                                    })
+                                        .then(response => {
+                                            if (!response.ok) throw new Error("스크랩 삭제 실패");
+                                            return response.text();
+                                        })
+                                        .then(data => {
+                                            if (data) {
+                                                scrapButton.textContent = "☆"; // 빈 별표로 변경
+                                                alert("스크랩이 삭제되었습니다.");
+                                            }
+                                        })
+                                        .catch(error => console.error("스크랩 삭제 요청 실패:", error));
                                 }
-                                if (!response.ok) throw new Error("스크랩 실패");
-                                return response.text();
-                            })
-                            .then(data => {
-                                if (data) alert(data);
-                            })
-                            .catch(error => console.error("스크랩 요청 실패:", error));
-                    });
+                            });
 
-                    jobCard.appendChild(title);
-                    jobCard.appendChild(duty);
-                    jobCard.appendChild(employmentType);
-                    jobCard.appendChild(region);
-                    jobCard.appendChild(deadline);
-                    jobCard.appendChild(link);
-                    jobCard.appendChild(scrapButton);
+                            jobCard.appendChild(title);
+                            jobCard.appendChild(duty);
+                            jobCard.appendChild(employmentType);
+                            jobCard.appendChild(region);
+                            jobCard.appendChild(deadline);
+                            jobCard.appendChild(link);
+                            jobCard.appendChild(scrapButton);
 
-                    jobListingContainer.appendChild(jobCard);
-                });
+                            jobListingContainer.appendChild(jobCard);
+                        });
+                    })
+                    .catch(error => console.error("스크랩 상태 가져오기 실패:", error));
             } else {
                 jobListingContainer.innerHTML = "<p>조건에 맞는 공고가 없습니다.</p>";
             }
+
         }
 
         // 초기 데이터 가져오기

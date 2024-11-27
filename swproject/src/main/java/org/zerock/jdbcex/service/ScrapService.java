@@ -58,6 +58,7 @@ public class ScrapService {
                     // 응답 데이터 파싱 및 저장
                     if (!resultNode.isMissingNode()) {
                         Map<String, String> jobData = new HashMap<>();
+                        jobData.put("scrapKey", scrapKey);
                         jobData.put("title", resultNode.path("instNm").asText("기관명 없음"));
                         jobData.put("duty", resultNode.path("ncsCdNmLst").asText("정보 없음"));
                         jobData.put("employmentType", resultNode.path("hireTypeNmLst").asText("정보 없음"));
@@ -76,6 +77,10 @@ public class ScrapService {
         }
 
         return jobList;
+    }
+
+    public List<String> getScrapedKeys(String userId) throws Exception {
+        return scrapDAO.getScrapKeys(userId);
     }
 
     public void deleteScrap(String userId, String scrapKey) {

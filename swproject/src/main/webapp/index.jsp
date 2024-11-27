@@ -104,26 +104,107 @@
             text-decoration: underline;
             /* 마우스 호버 시 밑줄 */
         }
-    </style>
-    <script>
-        // header.html 파일을 불러오는 함수
-        function loadHeader() {
-            fetch("header.jsp")
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById("header-container").innerHTML = data;
-                })
-                .catch(error => console.error("Error loading header:", error));
+
+        /* 모달창 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
         }
 
-        window.onload = loadHeader; // 페이지가 로드될 때 헤더를 불러옴
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .modal-content p {
+            margin: 20px 0;
+            font-size: 16px;
+        }
+
+        .close-btn, .login-btn {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .login-btn {
+            background-color: #007bff;
+            margin-top: 10px;
+        }
+
+        .close-btn:hover, .login-btn:hover {
+            opacity: 0.8;
+        }
+
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const modal = document.getElementById("login-modal");
+            const closeModal = document.getElementById("close-modal");
+            const goLogin = document.getElementById("go-login");
+
+            closeModal.addEventListener("click", () => {
+                modal.style.display = "none";
+            });
+
+            goLogin.addEventListener("click", () => {
+                window.location.href = "login.jsp";
+            });
+
+            function checkSessionAndNavigate(url) {
+                const xhr = new XMLHttpRequest();
+                xhr.open("GET", "/checkSession", true);
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.isLoggedIn) {
+                            // 세션이 있으면 URL로 이동
+                            window.location.href = url;
+                        } else {
+                            // 세션이 없으면 모달창 표시
+                            modal.style.display = "block";
+                        }
+                    } else {
+                        console.error("세션 확인 중 오류 발생");
+                    }
+                };
+                xhr.send();
+            }
+
+            // 페이지 내에서 사용하는 함수도 이벤트 리스너 안에 포함
+            window.checkSessionAndNavigate = checkSessionAndNavigate;
+        });
+
     </script>
 </head>
 
 <body>
 
-<!-- 헤더가 로드될 위치 -->
-<div id="header-container"></div>
+<jsp:include page="header.jsp"/>
+<!-- 모달창 -->
+<div id="login-modal" class="modal">
+    <div class="modal-content">
+        <p>로그인이 필요한 서비스 입니다.</p>
+        <button class="close-btn" id="close-modal">닫기</button>
+        <button class="login-btn" id="go-login">로그인 하러가기</button>
+    </div>
+</div>
 
 <!-- 메인 컨텐츠 -->
 <div class="main-container">
@@ -131,23 +212,23 @@
         <div class="box dark-box">
             <h3>자소서 관리</h3>
             <ul>
-                <li><a href="resume.jsp">자기소개서 등록</a></li>
-                <li><a href="resume_view">자기소개서 조회</a></li>
-                <li><a href="resume">자기소개서 분석</a></li>
+                <li><a href="#" onclick="checkSessionAndNavigate('resume.jsp'); return false;">자기소개서 등록</a></li>
+                <li><a href="#" onclick="checkSessionAndNavigate('resume_view'); return false;">자기소개서 조회</a></li>
+                <li><a href="#" onclick="checkSessionAndNavigate('resume'); return false;">자기소개서 분석</a></li>
             </ul>
         </div>
         <div class="box dark-box">
             <h3>가상면접</h3>
             <ul>
-                <li><a href="/resume?action=interview">면접 보러가기</a></li>
-                <li><a href="interview.jsp">면접 녹화기록 조회</a></li>
+                <li><a href="#" onclick="checkSessionAndNavigate('/resume?action=interview'); return false;">면접 보러가기</a></li>
+                <li><a href="#" onclick="checkSessionAndNavigate('interview.jsp'); return false;">면접 녹화기록 조회</a></li>
             </ul>
         </div>
         <div class="box dark-box">
             <h3>채용공고</h3>
             <ul>
                 <li><a href="jobPosting.jsp">채용공고 보러가기</a></li>
-                <li><a href="scrap">저장된 공고 목록</a></li>
+                <li><a href="#" onclick="checkSessionAndNavigate('scrap'); return false;">저장된 공고 목록</a></li>
             </ul>
         </div>
         <div class="box dark-box">
