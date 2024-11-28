@@ -71,7 +71,7 @@ public class ScrapController extends HttpServlet {
             if (session == null || session.getAttribute("loggedInUser") == null) {
                 resp.setContentType("application/json; charset=UTF-8");
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                resp.getWriter().write("{\"message\":\"로그인이 필요합니다.\"}");
+                resp.sendRedirect("login.jsp"); // login.jsp로 리다이렉트
                 return;
             }
 
@@ -88,8 +88,8 @@ public class ScrapController extends HttpServlet {
             int page = req.getParameter("page") != null ? Integer.parseInt(req.getParameter("page")) : 1;
             int pageSize = 9; // 한 페이지에 표시할 공고 수
 
-            // 데이터 가져오기
-            List<Map<String, String>> jobData = scrapService.fetchScrapJobs(userId, page, pageSize);
+            // 데이터 가져오기+
+            List<Map<String, String>> jobData = scrapService.fetchScrapJobs(userId, page, pageSize, keyword, region, employmentType, jobType);
 
             req.setAttribute("jobData", jobData);
             req.setAttribute("currentPage", page);

@@ -548,7 +548,8 @@
         document.getElementById("apply-filters").addEventListener("click", function () {
             const keyword = document.getElementById("search-keyword").value.trim();
             const region = document.getElementById("region-filter").value.trim();
-            const employmentType = document.getElementById("employment-type-filter").value.trim();
+            const employmentType = document.getElementById("em" +
+                "ployment-type-filter").value.trim();
             const jobType = document.getElementById("job-type-filter").value.trim();
 
             filteredItems = allItems.filter(item => {
