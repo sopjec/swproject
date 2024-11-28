@@ -31,6 +31,23 @@ public class ScrapDAO {
         return scrapedKeys;
     }
 
+    public int getScrapCount(String userId) throws SQLException {
+        String query = "SELECT COUNT(*) AS total FROM scrap WHERE user_id = ?";
+        int totalScraps = 0;
+
+        try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, userId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    totalScraps = rs.getInt("total");
+                }
+            }
+        }
+        return totalScraps;
+    }
 
     public void deleteScrap(String userId, String scrapKey) {
         String query = "DELETE FROM scrap WHERE user_id = ? AND scrap_key = ?";
@@ -58,4 +75,6 @@ public class ScrapDAO {
             return rowsInserted > 0; // 삽입 성공 여부 반환
         }
     }
+
+
 }
