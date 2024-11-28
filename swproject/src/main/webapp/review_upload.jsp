@@ -41,9 +41,6 @@
             cursor: pointer;
         }
 
-
-
-
         /* 오른쪽 메인 컨텐츠 */
         .content {
             flex-grow: 1;
@@ -64,9 +61,6 @@
             height: 300px;
             vertical-align: top;
         }
-
-
-
 
         .search-bar {
             display: flex;
@@ -137,7 +131,6 @@
             background-color: #f2f2f2;
         }
 
-
         .pagination {
             text-align: center;
             margin-top: 20px;
@@ -175,18 +168,17 @@
             &nbsp;
             <h3>기본 정보 입력</h3>
 
-            <table>
-                <thead></thead>
-                <tbody>
+            <form action="reviewUpload" method="post"> <!-- Servlet의 URL 매핑 -->
+                <table>
+                    <tbody>
                     <tr>
                         <td width ="150">기업명</td>
-                        <td><input type="companyname" name="companyname" id="input-company-name" placeholder="회사명" required></td>
+                        <td><input type="text" name="user_id" id="input-user-id" placeholder="회사명" required></td>
                     </tr>
                     <tr>
                         <td>직무직업</td>
                         <td>
-                            <select>                                
-                                <option value="업종">직무·직업 전체</option>
+                            <select name="job">
                                 <option value="IT개발">IT개발</option>
                                 <option value="마케팅·홍보">마케팅·홍보</option>
                                 <option value="기획·전략">기획·전략</option>
@@ -202,7 +194,7 @@
                     <tr>
                         <td>면접 당시 경력</td>
                         <td>
-                            <select>
+                            <select name="experience">
                                 <option value="신입">신입</option>
                                 <option value="경력">경력</option>
                             </select>
@@ -211,8 +203,7 @@
                     <tr>
                         <td>지역</td>
                         <td>
-                            <select>
-                                <option value="지역">지역</option>
+                            <select name="industry">
                                 <option value="서울">서울</option>
                                 <option value="경기도">경기도</option>
                                 <option value="강원도">강원도</option>
@@ -225,18 +216,14 @@
                             </select>
                         </td>
                     </tr>
-                </tbody>
-            </table>
-            
-            <h3>면접 내용 입력</h3>
-           
-            <form action="/submit" method="post">
-            <input type="text" name="interview-review" id="input-interview-review" placeholder="면접 내용 입력" required>
+                    <tr>
+                        <td>면접 내용</td>
+                        <td><textarea name="content" rows="5" cols="50" placeholder="면접 내용을 입력하세요" required></textarea></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button type="submit" class="register-button">등록하기</button>
             </form>
-            <button class="register-button">등록하기</button>
-
-
         </div>
-    </div>
-</body>
+    </body>
 </html>
