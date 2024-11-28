@@ -27,6 +27,7 @@ public class UserDAO {
             return rowsInserted > 0;
 
         } catch (SQLException e) {
+            System.out.println("User Data: " + user);
             e.printStackTrace();
             return false;
         }
