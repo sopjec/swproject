@@ -300,6 +300,7 @@
         <div class="pagination"></div>
     </div>
 </div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         let currentPage = 1; // 현재 페이지
@@ -309,6 +310,8 @@
         let allItems = []; // 전체 데이터를 저장할 배열
         let filteredItems = []; // 필터링된 데이터를 저장할 배열
         let scrapedKeys = []; // 서버에서 가져온 스크랩된 키
+        const scrapLink = document.querySelector(".sidebar a[href='scrap']"); // 스크랩 링크 선택
+
 
         const modal = document.getElementById("login-modal");
         const closeModal = document.getElementById("close-modal");
@@ -316,6 +319,30 @@
 
         closeModal.addEventListener("click", () => modal.style.display = "none");
         goLogin.addEventListener("click", () => window.location.href = "login.jsp");
+
+        // 세션 확인 함수
+        function checkSession() {
+            return fetch("/checkSession")
+                .then(response => response.json())
+                .then(data => data.isLoggedIn)
+                .catch(error => {
+                    console.error("세션 확인 실패:", error);
+                    return false;
+                });
+        }
+
+        // 스크랩 링크 클릭 이벤트
+        scrapLink.addEventListener("click", function (event) {
+            event.preventDefault(); // 기본 링크 동작 방지
+
+            checkSession().then(isLoggedIn => {
+                if (!isLoggedIn) {
+                    modal.style.display = "block"; // 로그인 모달 표시
+                } else {
+                    window.location.href = "scrap"; // 로그인된 경우 정상적으로 이동
+                }
+            });
+        });
 
         // 스크랩 상태 가져오기
         function fetchScrapStatus() {
@@ -441,17 +468,17 @@
                     const scrapButton = document.createElement("button");
                     scrapButton.classList.add("scrap-button");
                     scrapButton.dataset.scrapKey = item.recrutPblntSn;
+                    const isScraped = scrapedKeys.some(key => String(key) === String(item.recrutPblntSn));
 
-                    // 스크랩 상태에 따라 별표 설정
-                    const isScraped = scrapedKeys.includes(item.recrutPblntSn);
                     scrapButton.textContent = isScraped ? "⭐" : "☆";
 
                     scrapButton.addEventListener("click", function () {
                         const scrapKey = scrapButton.dataset.scrapKey;
 
                         fetch("/checkSession")
-                            .then(response => {
-                                if (response.status === 401) {
+                            .then(response => response.json())
+                            .then(data => {
+                                if (!data.isLoggedIn) {
                                     modal.style.display = "block"; // 로그인 모달 표시
                                 } else {
                                     if (scrapButton.textContent === "☆") {
@@ -511,6 +538,7 @@
         Promise.all([fetchAllJobPostings(), fetchScrapStatus()])
             .then(([, scrapKeysResponse]) => {
                 scrapedKeys = scrapKeysResponse;
+                console.log(scrapedKeys);
                 createPagination();
                 showItems(currentPage);
             })
