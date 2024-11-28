@@ -59,12 +59,13 @@
 
         .job-listing {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(3, 1fr); /* 3열 구성 */
             gap: 20px;
             margin-top: 20px;
         }
 
         .job-card {
+            position: relative; /* 상대 위치로 설정 */
             background-color: white;
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -96,24 +97,29 @@
             text-decoration: none;
         }
 
-        .filters {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        #search-keyword, .filters select, #apply-filters {
-            padding: 10px;
-            font-size: 14px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        #apply-filters {
-            background-color: #007bff;
-            color: white;
+        /* 삭제 버튼 (x) 스타일 */
+        .delete-button {
+            position: absolute; /* 절대 위치로 설정 */
+            top: 10px; /* 상단에서 10px */
+            right: 10px; /* 오른쪽에서 10px */
+            background-color: #ff6b6b; /* 빨간색 배경 */
+            color: white; /* 흰색 텍스트 */
             border: none;
+            border-radius: 50%; /* 동그랗게 */
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
             cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .delete-button:hover {
+            background-color: #e84141; /* hover 시 더 어두운 빨간색 */
+            transform: scale(1.1); /* 살짝 커짐 */
         }
 
         .pagination {
@@ -134,7 +140,63 @@
             background-color: #007bff;
             color: white;
         }
+        /* 검색창 및 필터 컨테이너 스타일 */
+        .filters {
+            display: flex;
+            justify-content: space-between; /* 가로로 균등 배치 */
+            align-items: center; /* 세로 중앙 정렬 */
+            width: 100%; /* 전체 너비 */
+            margin-bottom: 20px; /* 하단 여백 */
+            gap: 10px; /* 필터 간 간격 */
+        }
+
+        /* 검색창 스타일 */
+        #search-keyword {
+            flex: 3; /* 가장 넓게 차지 */
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 필터 드롭다운 스타일 */
+        .filters select {
+            flex: 1; /* 동일한 너비 */
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            appearance: none; /* 기본 화살표 제거 */
+            cursor: pointer;
+            text-align: center;
+        }
+
+        /* 필터 적용 버튼 스타일 */
+        #apply-filters {
+            flex: 1; /* 동일한 너비 */
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff; /* 파란색 버튼 */
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        /* 버튼 호버 효과 */
+        #apply-filters:hover {
+            background-color: #0056b3; /* 어두운 파란색 */
+            transform: translateY(-2px); /* 약간 위로 올라가는 효과 */
+        }
+
+
     </style>
+
 </head>
 <body>
 <jsp:include page="header.jsp" />
@@ -223,12 +285,16 @@
             </c:choose>
         </div>
 
-        <!-- 페이지네이션 -->
         <div class="pagination">
             <c:forEach var="page" begin="1" end="${totalPages}">
-                <button>${page}</button>
+                <button
+                        data-page="${page}"
+                        class="${page == currentPage ? 'active' : ''}">
+                        ${page}
+                </button>
             </c:forEach>
         </div>
+
     </div>
 </div>
 <script>
@@ -236,6 +302,19 @@
         const modal = document.getElementById("login-modal");
         const closeModal = document.getElementById("close-modal");
         const goLogin = document.getElementById("go-login");
+        const paginationButtons = document.querySelectorAll(".pagination button");
+
+        paginationButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const selectedPage = this.getAttribute("data-page");
+                const queryParams = new URLSearchParams(window.location.search);
+
+                queryParams.set("page", selectedPage);
+
+                const baseUrl = "/scrap";
+                window.location.href = baseUrl + "?" + queryParams.toString();
+            });
+        });
 
         // "닫기" 버튼 클릭 이벤트
         closeModal.addEventListener("click", function () {
@@ -255,15 +334,20 @@
             const employmentType = document.getElementById("employment-type-filter").value;
             const jobType = document.getElementById("job-type-filter").value;
 
+            // 쿼리 매개변수 생성
             const queryParams = new URLSearchParams();
             if (keyword) queryParams.append("keyword", keyword);
             if (region) queryParams.append("region", region);
             if (employmentType) queryParams.append("employmentType", employmentType);
             if (jobType) queryParams.append("jobType", jobType);
 
-            const baseUrl = "/scrap";
-            window.location.href = baseUrl + "?" + queryParams.toString();
+            const baseUrl = "/scrap"; // 필터 적용 시 이동할 URL
+            const targetUrl = baseUrl + "?" + queryParams.toString();
+
+            // URL로 페이지 이동
+            window.location.href = targetUrl;
         });
+
     });
 
     // 스크랩 삭제 함수 (글로벌 범위)

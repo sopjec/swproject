@@ -61,15 +61,17 @@ public class ScrapController extends HttpServlet {
         }
     }
 
+    // GET 요청 - 스크랩된 데이터 표시
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         try {
             HttpSession session = req.getSession(false);
+
             // 로그인 확인
             if (session == null || session.getAttribute("loggedInUser") == null) {
+                resp.setContentType("application/json; charset=UTF-8");
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                resp.getWriter().write("세션이 만료 되었습니다.");
+                resp.getWriter().write("{\"message\":\"로그인이 필요합니다.\"}");
                 return;
             }
 
@@ -82,31 +84,34 @@ public class ScrapController extends HttpServlet {
             String employmentType = req.getParameter("employmentType");
             String jobType = req.getParameter("jobType");
 
+            // 페이지네이션 파라미터
+            int page = req.getParameter("page") != null ? Integer.parseInt(req.getParameter("page")) : 1;
+            int pageSize = 9; // 한 페이지에 표시할 공고 수
+
             // 데이터 가져오기
-            List<Map<String, String>> allJobs = scrapService.fetchScrapJobs(userId);
+            List<Map<String, String>> jobData = scrapService.fetchScrapJobs(userId, page, pageSize);
 
-            List<Map<String, String>> filteredJobs = allJobs.stream()
-                    .filter(job -> (keyword == null || keyword.trim().isEmpty() || job.get("title").toLowerCase().contains(keyword.toLowerCase())) &&
-                            (region == null || region.trim().isEmpty() || job.get("region").contains(region)) &&
-                            (employmentType == null || employmentType.trim().isEmpty() || job.get("employmentType").contains(employmentType)) &&
-                            (jobType == null || jobType.trim().isEmpty() || job.get("duty").contains(jobType)))
-                    .collect(Collectors.toList());
+            req.setAttribute("jobData", jobData);
+            req.setAttribute("currentPage", page);
+            req.setAttribute("totalPages", (int) Math.ceil((double) scrapService.getScrapCount(userId) / pageSize));
 
-
-            // 필터 값을 JSP에 전달
-            req.setAttribute("jobData", filteredJobs);
-            req.setAttribute("keyword", keyword); // 검색어
-            req.setAttribute("region", region); // 지역
-            req.setAttribute("employmentType", employmentType); // 고용 형태
-            req.setAttribute("jobType", jobType); // 직무
-
-            // JSP에 전달
-            req.setAttribute("jobData", filteredJobs);
             req.getRequestDispatcher("/jobScrap.jsp").forward(req, resp);
         } catch (Exception e) {
             e.printStackTrace();
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "데이터를 처리하는 중 오류가 발생했습니다.");
         }
+    }
+
+    // 요청에서 scrapKey 추출
+    private String extractScrapKey(HttpServletRequest request) throws IOException {
+        StringBuilder jsonString = new StringBuilder();
+        try (BufferedReader reader = request.getReader()) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonString.append(line);
+            }
+        }
+        return jsonString.toString().replaceAll("\"", "").trim();
     }
 
 

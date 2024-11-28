@@ -27,56 +27,53 @@ public class ScrapService {
     }
 
 
-    public List<Map<String, String>> fetchScrapJobs(String userId) throws Exception {
-        // DAO에서 스크랩된 키 가져오기
+    public List<Map<String, String>> fetchScrapJobs(String userId, int page, int pageSize) throws Exception {
         List<String> scrapKeys = scrapDAO.getScrapKeys(userId);
+
+        // 페이지네이션 처리
+        int startIndex = (page - 1) * pageSize;
+        int endIndex = Math.min(startIndex + pageSize, scrapKeys.size());
+        List<String> paginatedKeys = scrapKeys.subList(startIndex, endIndex);
+
         List<Map<String, String>> jobList = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        for (String scrapKey : scrapKeys) {
+        for (String scrapKey : paginatedKeys) {
             String urlString = API_URL + "?serviceKey=" + SERVICE_KEY + "&resultType=json&sn=" + scrapKey;
-            HttpURLConnection conn = null;
 
             try {
-                // API 호출
-                URL url = new URL(urlString);
-                conn = (HttpURLConnection) url.openConnection();
+                HttpURLConnection conn = (HttpURLConnection) new URL(urlString).openConnection();
                 conn.setRequestMethod("GET");
-                conn.setConnectTimeout(10000); // 타임아웃 설정
+                conn.setConnectTimeout(10000);
                 conn.setReadTimeout(10000);
 
-                if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    System.err.println("Failed API Call for Scrap Key: " + scrapKey);
-                    continue; // API 호출 실패 시 다음 스크랩 키로 진행
-                }
+                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                        JsonNode rootNode = objectMapper.readTree(br);
+                        JsonNode resultNode = rootNode.path("result");
 
-                // API 응답 처리
-                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-                    JsonNode rootNode = objectMapper.readTree(br);
-                    JsonNode resultNode = rootNode.path("result");
-
-                    // 응답 데이터 파싱 및 저장
-                    if (!resultNode.isMissingNode()) {
-                        Map<String, String> jobData = new HashMap<>();
-                        jobData.put("scrapKey", scrapKey);
-                        jobData.put("title", resultNode.path("instNm").asText("기관명 없음"));
-                        jobData.put("duty", resultNode.path("ncsCdNmLst").asText("정보 없음"));
-                        jobData.put("employmentType", resultNode.path("hireTypeNmLst").asText("정보 없음"));
-                        jobData.put("region", resultNode.path("workRgnNmLst").asText("정보 없음"));
-                        jobData.put("deadline", resultNode.path("pbancEndYmd").asText("정보 없음"));
-                        jobData.put("url", resultNode.path("srcUrl").asText("#"));
-                        jobList.add(jobData);
+                        if (!resultNode.isMissingNode()) {
+                            Map<String, String> jobData = new HashMap<>();
+                            jobData.put("scrapKey", scrapKey);
+                            jobData.put("title", resultNode.path("instNm").asText("기관명 없음"));
+                            jobData.put("duty", resultNode.path("ncsCdNmLst").asText("정보 없음"));
+                            jobData.put("employmentType", resultNode.path("hireTypeNmLst").asText("정보 없음"));
+                            jobData.put("region", resultNode.path("workRgnNmLst").asText("정보 없음"));
+                            jobData.put("deadline", resultNode.path("pbancEndYmd").asText("정보 없음"));
+                            jobData.put("url", resultNode.path("srcUrl").asText("#"));
+                            jobList.add(jobData);
+                        }
                     }
                 }
             } catch (Exception e) {
-                System.err.println("Error fetching data for Scrap Key: " + scrapKey);
                 e.printStackTrace();
-            } finally {
-                if (conn != null) conn.disconnect(); // 연결 종료
             }
         }
-
         return jobList;
+    }
+
+    public int getScrapCount(String userId) throws Exception {
+        return scrapDAO.getScrapCount(userId);
     }
 
     public List<String> getScrapedKeys(String userId) throws Exception {
