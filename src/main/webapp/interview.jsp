@@ -116,13 +116,13 @@
 </head>
 
 <body>
-<iframe src="header.html" style="border:none; width:100%; height:100px;"></iframe>
+<iframe src="header.jsp" style="border:none; width:100%; height:100px;"></iframe>
 
 <div class="container">
     <div class="sidebar">
         <ul>
-            <li><a href="interview.html">면접 보기</a></li>
-            <li><a href="interview_view.html">면접 기록 조회</a></li>
+            <li><a href="interview.jsp">면접 보기</a></li>
+            <li><a href="interview_view.jsp">면접 기록 조회</a></li>
         </ul>
     </div>
 
@@ -131,7 +131,7 @@
         <div class="video-section-container">
             <div class="video-section">
                 <h2>면접관 화면</h2>
-                <img id="interviewer-video" src="img/ai-character.png" alt="가상 면접관 AI 캐릭터">
+                <img id="interviewer-video" src="ai-character.png" alt="가상 면접관 AI 캐릭터">
                 <h2>면접관 텍스트 창</h2>
                 <div class="text-output" id="interviewer-text-output"></div>
             </div>
