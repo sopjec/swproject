@@ -73,5 +73,7 @@ function stopRecording() {
     }
 }
 
+// 이벤트 리스너 설정
 document.getElementById('start-interview').addEventListener('click', startInterview);
 document.getElementById('stop-recording').addEventListener('click', stopRecording);
+
