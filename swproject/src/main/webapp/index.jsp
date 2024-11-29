@@ -214,7 +214,7 @@
             <ul>
                 <li><a href="#" onclick="checkSessionAndNavigate('resume.jsp'); return false;">자기소개서 등록</a></li>
                 <li><a href="#" onclick="checkSessionAndNavigate('resume_view'); return false;">자기소개서 조회</a></li>
-                <li><a href="#" onclick="checkSessionAndNavigate('resume'); return false;">자기소개서 분석</a></li>
+                <li><a href="#" onclick="checkSessionAndNavigate('resume_analyze.jsp'); return false;">자기소개서 분석</a></li>
             </ul>
         </div>
         <div class="box dark-box">

@@ -263,7 +263,7 @@
                             <div class="char-count">0 / 500 자 (공백 포함)</div>
                             <div class="coaching-buttons">
                                 <button onclick="getSpellCheck(this, event)">맞춤법 검사 받기</button>
-                                <button onclick="getAICoaching(this)">자기소개서 코칭 받기</button>
+                                <button onclick="getAICoaching(this, event)">자기소개서 코칭 받기</button>
                             </div>
                             <div class="result-box" name="resultBox" id = "resultBox1"></div>
                         </div>
@@ -426,9 +426,39 @@
             });
     }
     //자소서 분석 코칭ㅇ긴응
-    function getAICoaching(button) {
-        const resultBox = button.parentElement.nextElementSibling;
-        resultBox.textContent = "AI 코칭 결과: 자기소개서 내용이 훌륭합니다!";
+    function getAICoaching(button, event) {
+        event.preventDefault(); // 기본 폼 제출 동작 방지
+        const questionGroup = button.closest('.question-group');
+        const answerTextarea = questionGroup.querySelector('textarea');
+        const answerText = answerTextarea.value;
+
+        console.log("answer : " + answerText);
+
+        fetch('/aiCoaching', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8'
+            },
+            body: JSON.stringify({ text: answerText }) // 답변 텍스트 전송
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.replacedText) {
+                    // 결과를 Result Box에 출력
+                    console.log("Response Text:", data.replacedText);
+                    const questionGroup = button.closest('.question-group'); // 현재 버튼이 포함된 문항 찾기
+                    const resultBoxId = questionGroup.querySelector('.result-box').id; // Result Box ID 가져오기
+
+                    const resultBox = document.getElementById(resultBoxId); // Result Box 찾기
+                    resultBox.textContent = data.replacedText; // 결과 텍스트 삽입
+                } else {
+                    alert('AI 코칭 중 오류가 발생했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert('AI 코칭 요청 실패.');
+            });
     }
 
 
