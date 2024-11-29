@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="org.zerock.jdbcex.dto.UserDTO" %> <!-- UserDTO 클래스 임포트 -->
+<%@ page pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -133,6 +134,14 @@
         return;
     }
 %>
+<%
+    String userId = (String) session.getAttribute("id");
+    if (userId == null || userId.isEmpty()) {
+        out.println("유효하지 않은 사용자 ID입니다.");
+        response.sendRedirect("Login.jsp");
+        return;
+    }
+%>
 
 <jsp:include page="header.jsp"/>
 
@@ -148,6 +157,29 @@
     </div>
 
     <div class="content">
+        <form action="updateProfile" method="post" enctype="multipart/form-data">
+            <h3>프로필 사진 선택</h3>
+            <div>
+                <label>
+                    <input type="radio" name="profileImage" value="profile2.jpg">
+                    <img src="img/1.png" alt="프로필 2" width="100">
+                </label>
+                <label>
+                    <input type="radio" name="profileImage" value="profile3.jpg">
+                    <img src="img/2.png" alt="프로필 3" width="100">
+                </label>
+                <label>
+                    <input type="radio" name="profileImage" value="profile4.jpg">
+                    <img src="img/3.png" alt="프로필 4" width="100">
+                </label>
+                <label>
+                    <input type="radio" name="profileImage" value="profile5.jpg">
+                    <img src="img/4.png" alt="프로필 5" width="100">
+                </label>
+            </div>
+            <button type="submit">프로필 저장</button>
+        </form>
+
         <h2>내계정</h2>
 
         <!-- 프로필 사진 및 업로드 -->

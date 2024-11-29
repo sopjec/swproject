@@ -62,20 +62,17 @@ public class UserDAO {
     }
 
     public boolean updateProfileImage(String userId, String profileUrl) {
-        String sql = "UPDATE user SET profile_url = ? WHERE id = ?";
-
+        String sql = "UPDATE users SET profile_image = ? WHERE user_id = ?";
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setString(1, profileUrl);
             pstmt.setString(2, userId);
-
-            int rowsUpdated = pstmt.executeUpdate();
-            return rowsUpdated > 0; // 업데이트된 행이 있을 경우 true 반환
+            return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false; // 에러 발생 시 false 반환
+            return false;
         }
     }
+
 
 }

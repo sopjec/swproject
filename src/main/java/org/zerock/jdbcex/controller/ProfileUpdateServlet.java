@@ -20,21 +20,26 @@ public class ProfileUpdateServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // 요청과 응답 인코딩 설정
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html; charset=UTF-8");
+
         HttpSession session = request.getSession();
         String userId = (String) session.getAttribute("id");
 
-        Part filePart = request.getPart("profileImageUpload");
-        String fileName = extractFileName(filePart);
+        // 선택한 이미지 값 가져오기
+        String selectedImage = request.getParameter("profileImage");
+        if (selectedImage == null || selectedImage.isEmpty()) {
+            response.getWriter().write("프로필 사진을 선택하세요.");
+            return;
+        }
 
-        // 저장 경로 설정
-        String savePath = getServletContext().getRealPath("") + File.separator + "uploads" + File.separator + fileName;
-        File fileSaveDir = new File(savePath);
-        fileSaveDir.getParentFile().mkdirs();
-        filePart.write(savePath);
+        // 경로 저장
+        String profileUrl = "uploads/" + selectedImage;
 
-        // 데이터베이스에 프로필 이미지 경로 저장
-        String profileUrl = "uploads/" + fileName;
+        // 데이터베이스 업데이트
         boolean updateSuccess = userService.updateProfileImage(userId, profileUrl);
+
 
         if (updateSuccess) {
             response.sendRedirect("mypage.jsp");
