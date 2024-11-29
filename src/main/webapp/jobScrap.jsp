@@ -148,54 +148,53 @@
     <div class="content">
         <!-- 필터 UI -->
         <div class="filters">
-            <input type="text" id="search-keyword" placeholder="검색어 입력">
+            <input type="text" id="search-keyword" value="${param.keyword != null ? param.keyword : ''}" placeholder="검색어 입력" />
             <select id="region-filter">
-                <option value="" ${region == null || region == '' ? 'selected' : ''}>지역 선택</option>
-                <option value="서울" ${region == '서울' ? 'selected' : ''}>서울</option>
-                <option value="부산" ${region == '부산' ? 'selected' : ''}>부산</option>
-                <option value="대구" ${region == '대구' ? 'selected' : ''}>대구</option>
-                <option value="인천" ${region == '인천' ? 'selected' : ''}>인천</option>
-                <option value="광주" ${region == '광주' ? 'selected' : ''}>광주</option>
-                <option value="대전" ${region == '대전' ? 'selected' : ''}>대전</option>
-                <option value="울산" ${region == '울산' ? 'selected' : ''}>울산</option>
-                <option value="세종" ${region == '세종' ? 'selected' : ''}>세종</option>
-                <option value="경기" ${region == '경기' ? 'selected' : ''}>경기</option>
-                <option value="강원" ${region == '강원' ? 'selected' : ''}>강원</option>
-                <option value="충북" ${region == '충북' ? 'selected' : ''}>충북</option>
-                <option value="충남" ${region == '충남' ? 'selected' : ''}>충남</option>
-                <option value="전북" ${region == '전북' ? 'selected' : ''}>전북</option>
-                <option value="전남" ${region == '전남' ? 'selected' : ''}>전남</option>
-                <option value="경북" ${region == '경북' ? 'selected' : ''}>경북</option>
-                <option value="경남" ${region == '경남' ? 'selected' : ''}>경남</option>
-                <option value="제주" ${region == '제주' ? 'selected' : ''}>제주</option>
+                <option value="" ${param.region == null || param.region == '' ? 'selected' : ''}>지역 선택</option>
+                <option value="서울" ${param.region == '서울' ? 'selected' : ''}>서울</option>
+                <option value="부산" ${param.region == '부산' ? 'selected' : ''}>부산</option>
+                <option value="대구" ${param.region == '대구' ? 'selected' : ''}>대구</option>
+                <option value="인천" ${param.region == '인천' ? 'selected' : ''}>인천</option>
+                <option value="광주" ${param.region == '광주' ? 'selected' : ''}>광주</option>
+                <option value="대전" ${param.region == '대전' ? 'selected' : ''}>대전</option>
+                <option value="울산" ${param.region == '울산' ? 'selected' : ''}>울산</option>
+                <option value="세종" ${param.region == '세종' ? 'selected' : ''}>세종</option>
+                <option value="경기" ${param.region == '경기' ? 'selected' : ''}>경기</option>
+                <option value="강원" ${param.region == '강원' ? 'selected' : ''}>강원</option>
+                <option value="충북" ${param.region == '충북' ? 'selected' : ''}>충북</option>
+                <option value="충남" ${param.region == '충남' ? 'selected' : ''}>충남</option>
+                <option value="전북" ${param.region == '전북' ? 'selected' : ''}>전북</option>
+                <option value="전남" ${param.region == '전남' ? 'selected' : ''}>전남</option>
+                <option value="경북" ${param.region == '경북' ? 'selected' : ''}>경북</option>
+                <option value="경남" ${param.region == '경남' ? 'selected' : ''}>경남</option>
+                <option value="제주" ${param.region == '제주' ? 'selected' : ''}>제주</option>
             </select>
 
             <select id="employment-type-filter">
-                <option value="" ${employmentType == null || employmentType == '' ? 'selected' : ''}>고용 형태 선택</option>
-                <option value="인턴" ${employmentType == '인턴' ? 'selected' : ''}>인턴</option>
-                <option value="정규직" ${employmentType == '정규직' ? 'selected' : ''}>정규직</option>
-                <option value="비정규직" ${employmentType == '비정규직' ? 'selected' : ''}>비정규직</option>
-                <option value="무기계약직" ${employmentType == '무기계약직' ? 'selected' : ''}>무기계약직</option>
+                <option value="" ${param.employmentType == null || param.employmentType == '' ? 'selected' : ''}>고용 형태 선택</option>
+                <option value="인턴" ${param.employmentType == '인턴' ? 'selected' : ''}>인턴</option>
+                <option value="정규직" ${param.employmentType == '정규직' ? 'selected' : ''}>정규직</option>
+                <option value="비정규직" ${param.employmentType == '비정규직' ? 'selected' : ''}>비정규직</option>
+                <option value="무기계약직" ${param.employmentType == '무기계약직' ? 'selected' : ''}>무기계약직</option>
             </select>
 
             <select id="job-type-filter">
-                <option value="" ${jobType == null || jobType == '' ? 'selected' : ''}>직무 선택</option>
-                <option value="경영.회계.사무" ${jobType == '경영.회계.사무' ? 'selected' : ''}>경영.회계.사무</option>
-                <option value="경비" ${jobType == '경비' ? 'selected' : ''}>경비</option>
-                <option value="청소" ${jobType == '청소' ? 'selected' : ''}>청소</option>
-                <option value="교육.자연.사회과학" ${jobType == '교육.자연.사회과학' ? 'selected' : ''}>교육.자연.사회과학</option>
-                <option value="보건" ${jobType == '보건' ? 'selected' : ''}>보건</option>
-                <option value="의료" ${jobType == '의료' ? 'selected' : ''}>의료</option>
-                <option value="음식서비스" ${jobType == '음식서비스' ? 'selected' : ''}>음식서비스</option>
-                <option value="정보통신" ${jobType == '정보통신' ? 'selected' : ''}>정보통신</option>
-                <option value="운전" ${jobType == '운전' ? 'selected' : ''}>운전</option>
-                <option value="운송" ${jobType == '운송' ? 'selected' : ''}>운송</option>
-                <option value="사회복지" ${jobType == '사회복지' ? 'selected' : ''}>사회복지</option>
-                <option value="종교" ${jobType == '종교' ? 'selected' : ''}>종교</option>
-                <option value="에너지" ${jobType == '에너지' ? 'selected' : ''}>에너지</option>
-                <option value="안전" ${jobType == '안전' ? 'selected' : ''}>안전</option>
+                <option value="" ${param.jobType == null || param.jobType == '' ? 'selected' : ''}>직무 선택</option>
+                <option value="경영.회계.사무" ${param.jobType == '경영.회계.사무' ? 'selected' : ''}>경영.회계.사무</option>
+                <option value="경비" ${param.jobType == '경비' ? 'selected' : ''}>경비</option>
+                <option value="청소" ${param.jobType == '청소' ? 'selected' : ''}>청소</option>
+                <option value="교육.자연.사회과학" ${param.jobType == '교육.자연.사회과학' ? 'selected' : ''}>교육.자연.사회과학</option>
+                <option value="보건" ${param.jobType == '보건' ? 'selected' : ''}>보건</option>
+                <option value="의료" ${param.jobType == '의료' ? 'selected' : ''}>의료</option>
+                <option value="음식서비스" ${param.jobType == '음식서비스' ? 'selected' : ''}>음식서비스</option>
+                <option value="정보통신" ${param.jobType == '정보통신' ? 'selected' : ''}>정보통신</option>
+                <option value="운전" ${param.jobType == '운전' ? 'selected' : ''}>운전</option>
+                <option value="운송" ${param.jobType == '운송' ? 'selected' : ''}>운송</option>
+                <option value="사회복지" ${param.jobType == '사회복지' ? 'selected' : ''}>사회복지</option>
+                <option value="종교" ${param.jobType == '종교' ? 'selected' : ''}>종교</option>
+                <option value="에너지" ${param.jobType == '에너지' ? 'selected' : ''}>에너지</option>
+                <option value="안전" ${param.jobType == '안전' ? 'selected' : ''}>안전</option>
             </select>
-
             <button id="apply-filters">필터 적용</button>
         </div>
 
@@ -233,22 +232,25 @@
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const modal = document.getElementById("login-modal");
-        const closeModal = document.getElementById("close-modal");
-        const goLogin = document.getElementById("go-login");
-
-        // "닫기" 버튼 클릭 이벤트
-        closeModal.addEventListener("click", function () {
-            modal.style.display = "none";
-        });
-
-        // "로그인 하러가기" 버튼 클릭 이벤트
-        goLogin.addEventListener("click", function () {
-            window.location.href = "login.jsp";
-        });
-
+        const paginationButtons = document.querySelectorAll(".pagination button");
         // 필터 적용 버튼 클릭 이벤트
         const applyFilters = document.getElementById("apply-filters");
+
+        paginationButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const selectedPage = this.getAttribute("data-page");
+                const queryParams = new URLSearchParams(window.location.search);
+
+                queryParams.set("page", selectedPage);
+
+                const baseUrl = "/scrap";
+                window.location.href = baseUrl + "?" + queryParams.toString();
+            });
+        });
+>>>>>>> fe781576099da055d6d88e2f5eebc800da018f87:swproject/src/main/webapp/jobScrap.jsp
+
+
+
         applyFilters.addEventListener("click", function () {
             const keyword = document.getElementById("search-keyword").value.trim();
             const region = document.getElementById("region-filter").value;
@@ -261,6 +263,7 @@
             if (employmentType) queryParams.append("employmentType", employmentType);
             if (jobType) queryParams.append("jobType", jobType);
 
+            // 페이지 리다이렉트
             const baseUrl = "/scrap";
             window.location.href = baseUrl + "?" + queryParams.toString();
         });

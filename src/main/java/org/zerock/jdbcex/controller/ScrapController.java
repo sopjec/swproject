@@ -69,7 +69,7 @@ public class ScrapController extends HttpServlet {
             // 로그인 확인
             if (session == null || session.getAttribute("loggedInUser") == null) {
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                resp.getWriter().write("세션이 만료 되었습니다.");
+                resp.sendRedirect("login.jsp"); // login.jsp로 리다이렉트
                 return;
             }
 
@@ -82,9 +82,14 @@ public class ScrapController extends HttpServlet {
             String employmentType = req.getParameter("employmentType");
             String jobType = req.getParameter("jobType");
 
-            // 데이터 가져오기
-            List<Map<String, String>> allJobs = scrapService.fetchScrapJobs(userId);
+            // 페이지네이션 파라미터
+            int page = req.getParameter("page") != null ? Integer.parseInt(req.getParameter("page")) : 1;
+            int pageSize = 9; // 한 페이지에 표시할 공고 수
 
+            // 데이터 가져오기+
+            List<Map<String, String>> jobData = scrapService.fetchScrapJobs(userId);
+
+            List<Map<String, String>> allJobs = scrapService.fetchScrapJobs(userId);
             List<Map<String, String>> filteredJobs = allJobs.stream()
                     .filter(job -> (keyword == null || keyword.trim().isEmpty() || job.get("title").toLowerCase().contains(keyword.toLowerCase())) &&
                             (region == null || region.trim().isEmpty() || job.get("region").contains(region)) &&

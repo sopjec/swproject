@@ -1,10 +1,12 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="java.util.List" %>
+<%@ page import="org.zerock.jdbcex.dto.ReviewDTO" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>면접후기</title> <!--기업분석_면접후기-->
+    <title>면접후기</title> <!--커뮤니티/실제 기업 면접 후기 -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -137,14 +139,19 @@
 <body>
 <jsp:include page="header.jsp"/>
 
+<%
+    // 데이터베이스에서 가져온 면접 후기 리스트를 가져옴
+    List<ReviewDTO> reviews = (List<ReviewDTO>) request.getAttribute("reviews");
+%>
+
     <div class="container">
         <div class="sidebar">
             <ul>
                 <li><a href="review.jsp">기업 면접 후기</a></li>
             </ul>
         </div>
-    
-    
+
+
         <!-- 메인 컨텐츠 -->
         <div class="content">
             <!-- 검색바 -->
@@ -152,7 +159,7 @@
                 <input type="text" placeholder="기업명 및 키워드를 입력해주세요..">
                 <button type="button">검색하기</button>
             </div>
-    
+
             <!-- 필터 -->
             <div class="filters">
                 <select>
@@ -163,7 +170,9 @@
                 <select>
                     <option value="경력">경력전체</option>
                     <option value="신입">신입</option>
+                    <option value="인턴">인턴</option>>
                     <option value="경력">경력</option>
+                    <option value="경력무관">경력 무관</option>
                 </select>
                 <select>
                     <option value="업종">직무·직업 전체</option>
@@ -190,7 +199,7 @@
                     <option value="경상남도">경상남도</option>
                 </select>
             </div>
-    
+
             <!-- 테이블과 등록하기 버튼 -->
             <div class="table-container">
                 <h3>면접 후기 목록</h3>
@@ -198,7 +207,7 @@
                     <button class="register-button">등록하기</button>
                 </a>
             </div>
-    
+
             <!-- 테이블 형식의 채용 공고 리스트 -->
             <table>
                 <thead>
@@ -211,37 +220,30 @@
                 </tr>
                 </thead>
                 <tbody>
+                <%
+                    // 동적으로 후기 데이터를 테이블에 출력
+                    if (reviews != null && !reviews.isEmpty()) {
+                        int index = 1;
+                        for (ReviewDTO review : reviews) {
+                %>
                 <tr>
-                    <td>1</td>
-                    <td>A기업</td>
-                    <td>신입</td>
-                    <td>IT</td>
-                    <td>2024-10-01</td>
+                    <td><%= index++ %></td>
+                    <td><%= review.getUserId() %></td>
+                    <td><%= review.getTitle() %></td>
+                    <td><%= review.getJob() %></td>
+                    <td><%= review.getIndustry() %></td>
                 </tr>
+                <%
+                    }
+                } else {
+                %>
                 <tr>
-                    <td>2</td>
-                    <td>B기업</td>
-                    <td>경력</td>
-                    <td>제조</td>
-                    <td>2024-10-02</td>
+                    <td colspan="5">등록된 면접 후기가 없습니다.</td>
                 </tr>
-                <tr>
-                    <td>3</td>
-                    <td>C기업</td>
-                    <td>신입</td>
-                    <td>디자인</td>
-                    <td>2024-10-03</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>D기업</td>
-                    <td>경력</td>
-                    <td>IT</td>
-                    <td>2024-10-04</td>
-                </tr>
+                <% } %>
                 </tbody>
             </table>
-    
+
             <!-- 페이지네이션 -->
             <div class="pagination">
                 <a href="#">&laquo; Previous</a>
