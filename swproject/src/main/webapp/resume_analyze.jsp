@@ -145,30 +145,50 @@
             </div>
 
             <!-- 분석하기 버튼 -->
-            <button class="analyze-button" onclick="analyzeCoverLetter()">분석하기</button>
+            <button class="analyze-button" id="analyze-button" onclick="analyzeCoverLetter()">분석하기</button>
         </div>
     </div>
 
     <script>
         const textarea = document.getElementById("coverLetterInput");
         const charCount = document.getElementById("charCount");
+        document.getElementById("analyze-button").addEventListener("click", () => {
+            const textarea = document.getElementById("coverLetterInput");
+            const answerText = textarea.value;
+
+            console.log("Answer:", answerText);
+
+            fetch('/spellcheck', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                },
+                body: JSON.stringify({ text: answerText }) // 입력 텍스트 전송
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.replacedText) {
+                        console.log("Response Text:", data.replacedText);
+
+                        // Result Box에 텍스트 업데이트
+                        const resultBox = document.getElementById("analysisOutput");;
+                        resultBox.textContent = data.replacedText;
+                    } else {
+                        alert('어휘 교체 중 오류가 발생했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert('어휘 교체 요청 실패.resume_analyze.jsp');
+                });
+        });
 
         // 글자 수 카운트 업데이트
         textarea.addEventListener("input", () => {
             charCount.textContent = `${textarea.value.length}/2000`;
         });
 
-        function analyzeCoverLetter() {
-            const inputText = textarea.value;
-            const analysisOutput = document.getElementById("analysisOutput");
 
-            // 분석 결과 예시 (단순 예제)
-            if (inputText.length > 0) {
-                analysisOutput.value = `분석 결과: 자기소개서에서 발견된 주요 키워드: 책임감, 성실성, 팀워크\n추천 수정 사항: 첫 문장을 더 간결하게 수정해보세요.`;
-            } else {
-                analysisOutput.value = "분석할 내용을 입력해 주세요.";
-            }
-        }
     </script>
 </body>
 </html>

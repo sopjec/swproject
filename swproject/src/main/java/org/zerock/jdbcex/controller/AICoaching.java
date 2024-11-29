@@ -15,8 +15,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-@WebServlet("/spellcheck")
-public class SpellCheckController extends HttpServlet {
+@WebServlet("/aiCoaching")
+public class AICoaching extends HttpServlet {
 
     private static final String GPT_API_URL = "https://api.openai.com/v1/chat/completions";
     private static final String GPT_API_KEY = System.getenv("GPT_API_KEY");
@@ -59,14 +59,14 @@ public class SpellCheckController extends HttpServlet {
 
         // OpenAI 요청 데이터 생성
         JsonObject requestBody = new JsonObject();
-        requestBody.addProperty("model", "gpt-4-turbo");
+        requestBody.addProperty("model", "gpt-4o-mini");
         requestBody.addProperty("max_tokens", 500);
 
         JsonArray messages = new JsonArray();
 
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", "system");
-        systemMessage.addProperty("content", "자기소개서에 적합한 어휘이면서, 고급스럽고 직무에 적합한 단어로 교체해줘");
+        systemMessage.addProperty("content", "자기소개서의 주요키워드 3가지와 추가 수정할 내용을 간략하게 알려줘");
         messages.add(systemMessage);
 
         JsonObject userMessage = new JsonObject();
