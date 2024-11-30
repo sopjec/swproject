@@ -1,3 +1,8 @@
+// 웹캠 및 녹화 설정
+let stream;
+let mediaRecorder;
+let recordedChunks = [];
+
 let webcamStream;
 let expressionInterval;
 
@@ -48,6 +53,12 @@ async function analyzeExpressions() {
 // 면접 시작
 async function startInterview() {
     try {
+        // 사용자에게 비디오 및 오디오 권한 요청
+        stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true
+        });
+
         console.log('웹캠 연결 시도 중...');
         webcamStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         const userWebcam = document.getElementById('user-webcam');
@@ -73,7 +84,21 @@ function stopRecording() {
     }
 }
 
+//면접 영상 다운로드
+function saveRecording() {
+    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+    const url = URL.createObjectURL(blob);
+    const downloadLink = document.createElement('a');
+    downloadLink.href = url;
+    downloadLink.download = 'interview_recording.webm';
+    downloadLink.textContent = '녹화 영상 다운로드';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+}
+
 // 이벤트 리스너 설정
 document.getElementById('start-interview').addEventListener('click', startInterview);
 document.getElementById('stop-recording').addEventListener('click', stopRecording);
-
+document.getElementById('next-question').addEventListener('click', () => {
+    alert('다음 질문으로 이동합니다.');
+});

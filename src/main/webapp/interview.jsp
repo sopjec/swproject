@@ -160,6 +160,7 @@
     document.addEventListener("DOMContentLoaded", () => {
         const resumeId = "<%= request.getAttribute("resumeId") %>";
         console.log(`Selected Resume ID: ${resumeId}`);
+
     // 면접 시작 버튼 클릭 시 면접 질문 생성
     document.getElementById('start-interview').addEventListener('click', async () => {
         try {
