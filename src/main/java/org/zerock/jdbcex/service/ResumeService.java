@@ -33,4 +33,6 @@ public class ResumeService {
     public void removeResume(int id, String userId) throws Exception {
         resumeDAO.deleteResume(id, userId);
     }
+
+
 }
