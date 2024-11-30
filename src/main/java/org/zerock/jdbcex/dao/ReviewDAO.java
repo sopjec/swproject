@@ -12,23 +12,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReviewDAO {
+    //리뷰 데이터 삽입 메서드
     public void insertReview(ReviewDTO review) throws Exception {
-        String sql = "INSERT INTO Interview_review (user_id, title, content, job, industry) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO interview_review (comname, job, experience, region, content) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, review.getUserId());
-            pstmt.setString(2, review.getTitle());
-            pstmt.setString(3, review.getContent());
-            pstmt.setString(4, review.getJob());
-            pstmt.setString(5, review.getIndustry());
+            pstmt.setString(1, review.getComname());
+            pstmt.setString(2, review.getJob());
+            pstmt.setString(3, review.getExperience());
+            pstmt.setString(4, review.getRegion());
+            pstmt.setString(5, review.getContent());
+
             pstmt.executeUpdate();
         }
     }
     // 데이터 조회 메서드
     public List<ReviewDTO> getAllReviews() throws Exception {
-        String sql = "SELECT * FROM Interview_review ORDER BY id DESC"; // 최신순으로 정렬
+        String sql = "SELECT comname, job, experience, region, content FROM interview_review";
 
         List<ReviewDTO> reviews = new ArrayList<>();
 
@@ -38,12 +40,11 @@ public class ReviewDAO {
 
             while (rs.next()) {
                 ReviewDTO review = new ReviewDTO();
-                review.setId(rs.getInt("id"));
-                review.setUserId(rs.getString("user_id"));
-                review.setTitle(rs.getString("title"));
-                review.setContent(rs.getString("content"));
+                review.setComname(rs.getString("comname"));
                 review.setJob(rs.getString("job"));
-                review.setIndustry(rs.getString("industry"));
+                review.setExperience(rs.getString("experience"));
+                review.setRegion(rs.getString("region"));
+                review.setContent(rs.getString("content"));
 
                 reviews.add(review); // 리스트에 데이터 추가
             }
