@@ -31,7 +31,7 @@ public class GenerateQuestionServlet extends HttpServlet {
 
     static {
 	Dotenv dotenv = Dotenv.configure()
-            .directory("C:/Users/wlsek/IdeaProjects/project") // .env 파일의 디렉토리 경로
+            .directory("C:/Users/igaeu/IdeaProjects/swproject") // .env 파일의 디렉토리 경로
             .load();
 
 	OPENAI_API_KEY = dotenv.get("OPENAI_API_KEY");
