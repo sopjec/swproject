@@ -114,6 +114,10 @@ document.getElementById('next-question').addEventListener('click', () => {
         // 질문이 더 이상 없을 경우 메시지 출력
         document.getElementById('interviewer-text-output').innerText = '모든 질문을 완료했습니다.';
         currentQuestionIndex--; // 인덱스 유지
+
+        // 녹화 종료 및 안내창 표시
+        stopRecording(); // 녹화 종료 함수 호출
+        alert('면접이 끝났습니다.'); // 안내창 표시
     }
 });
 
