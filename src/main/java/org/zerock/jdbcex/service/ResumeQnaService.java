@@ -25,4 +25,8 @@ public class ResumeQnaService {
     public void deleteQnaByResumeId(int resumeId) throws Exception {
         resumeQnaDAO.deleteQnaByResumeId(resumeId);
     }
+
+    public void updateAnswerById(int id, String answer) throws Exception {
+        resumeQnaDAO.updateAnserById(id, answer);
+    }
 }
