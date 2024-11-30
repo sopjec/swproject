@@ -142,12 +142,13 @@
 <%
     // 데이터베이스에서 가져온 면접 후기 리스트를 가져옴
     List<ReviewDTO> reviews = (List<ReviewDTO>) request.getAttribute("reviews");
+    System.out.println(reviews);
 %>
 
     <div class="container">
         <div class="sidebar">
             <ul>
-                <li><a href="review.jsp">기업 면접 후기</a></li>
+                <li><a href="#" onclick="checkSessionAndNavigate('reviewUpload'); return false;">기업 면접 후기</a></li>
             </ul>
         </div>
 
@@ -214,33 +215,34 @@
                 <tr>
                     <th>순번</th>
                     <th>기업명</th>
+                    <th>직무·직업</th>
                     <th>경력</th>
-                    <th>직무·직업 전체</th>
-                    <th>등록날짜</th>
+                    <th>지역</th>
                 </tr>
                 </thead>
                 <tbody>
-                <%
-                    // 동적으로 후기 데이터를 테이블에 출력
-                    if (reviews != null && !reviews.isEmpty()) {
-                        int index = 1;
-                        for (ReviewDTO review : reviews) {
-                %>
-                <tr>
-                    <td><%= index++ %></td>
-                    <td><%= review.getUserId() %></td>
-                    <td><%= review.getTitle() %></td>
-                    <td><%= review.getJob() %></td>
-                    <td><%= review.getIndustry() %></td>
-                </tr>
-                <%
-                    }
-                } else {
-                %>
-                <tr>
-                    <td colspan="5">등록된 면접 후기가 없습니다.</td>
-                </tr>
-                <% } %>
+                    <%
+                        // 리뷰 데이터 출력
+                        if (reviews != null && !reviews.isEmpty()) {
+                            int index = 1; // 순번을 동적으로 생성
+                            for (ReviewDTO review : reviews) {
+                    %>
+                    <tr>
+                        <td><%= index++ %></td>
+                        <td><%= review.getComname() %></td>
+                        <td><%= review.getExperience() %></td>
+                        <td><%= review.getJob() %></td>
+                        <td><%= review.getRegion() %></td>
+                        <td><%= review.getContent() %></td>
+                    </tr>
+                    <%
+                        }
+                    } else {
+                    %>
+                    <tr>
+                        <td colspan="6">등록된 면접 후기가 없습니다.</td>
+                    </tr>
+                    <% } %>
                 </tbody>
             </table>
 

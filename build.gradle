@@ -37,7 +37,7 @@ dependencies {
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 
   // MariaDB JDBC 드라이버
-  implementation("org.mariadb.jdbc:mariadb-java-client:3.1.4")
+  implementation("org.mariadb.jdbc:mariadb-java-client:2.7.4")
 
   // HikariCP: JDBC Connection Pool
   implementation("com.zaxxer:HikariCP:5.0.0")
@@ -67,6 +67,8 @@ dependencies {
   implementation group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.2'
   //ObjectMapper
   implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+
+
 }
 
 

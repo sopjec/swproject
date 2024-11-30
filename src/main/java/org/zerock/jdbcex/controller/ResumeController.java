@@ -1,5 +1,6 @@
 package org.zerock.jdbcex.controller;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.zerock.jdbcex.dto.ResumeDTO;
@@ -18,6 +19,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/resume")
 public class ResumeController extends HttpServlet {
@@ -109,4 +111,42 @@ public class ResumeController extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding("UTF-8");
+        HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("loggedInUser") == null) {
+            resp.sendRedirect("login.jsp");
+            return;
+        }
+        UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
+        String userId = loggedInUser.getId();
+
+        // DELETE 요청의 body에서 JSON 데이터를 읽음
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader reader = req.getReader()) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+        }
+
+        // JSON 파싱
+        String jsonBody = sb.toString();
+        Gson gson = new Gson(); // Google Gson 라이브러리를 사용 (또는 다른 라이브러리 사용 가능)
+        Map<String, Object> payload = gson.fromJson(jsonBody, Map.class);
+
+        String id = String.valueOf(payload.get("id"));
+
+        try {
+            int intId = Integer.parseInt(id);
+            resumeService.removeResume(intId, userId);
+            resumeQnaService.deleteQnaByResumeId(intId);
+            resp.setStatus(HttpServletResponse.SC_OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -220,7 +220,7 @@
         <div class="box dark-box">
             <h3>가상면접</h3>
             <ul>
-                <li><a href="#" onclick="checkSessionAndNavigate('interview.jsp'); return false;">면접 보러가기</a></li>
+                <li><a href="#" onclick="checkSessionAndNavigate('/resume?action=interview'); return false;">면접 보러가기</a></li>
                 <li><a href="#" onclick="checkSessionAndNavigate('interview_view.jsp'); return false;">면접 녹화기록 조회</a></li>
             </ul>
         </div>
@@ -234,7 +234,7 @@
         <div class="box dark-box">
             <h3>커뮤니티</h3>
             <ul>
-                <li><a href="review.jsp">기업 면접 후기</a></li>
+                <li><a href="#" onclick="checkSessionAndNavigate('reviewUpload'); return false;">기업 면접 후기</a></li>
             </ul>
         </div>
     </div>

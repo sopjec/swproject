@@ -114,15 +114,14 @@ public class ResumeDAO {
         return resumes;
     }
 
-    public void updateResume(ResumeDTO resume) throws Exception {
-        String sql = "UPDATE resume SET title = ? WHERE id = ? AND user_id = ?";
+    public void updateResume(int id, String newTitle) throws Exception {
+        String sql = "UPDATE resume SET title = ? WHERE id = ?";
 
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, resume.getTitle());
-            pstmt.setInt(2, resume.getId());
-            pstmt.setString(3, resume.getUserId());
+            pstmt.setString(1, newTitle);
+            pstmt.setInt(2, id);
             pstmt.executeUpdate();
         }
     }
