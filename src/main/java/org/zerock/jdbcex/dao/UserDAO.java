@@ -62,7 +62,6 @@ public class UserDAO {
 
     public boolean updateProfileImage(String userId, String profileUrl) {
         String sql = "UPDATE user SET profile_url = ? WHERE id = ?";
-
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -70,6 +69,7 @@ public class UserDAO {
             pstmt.setString(2, userId);
 
             int rowsUpdated = pstmt.executeUpdate();
+            System.out.println("Rows updated: " + rowsUpdated); // 디버깅 로그
             return rowsUpdated > 0; // 업데이트된 행이 있을 경우 true 반환
         } catch (SQLException e) {
             e.printStackTrace();

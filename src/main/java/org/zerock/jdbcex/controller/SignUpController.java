@@ -27,11 +27,10 @@ public class SignUpController extends HttpServlet {
         String pwd = request.getParameter("pwd");
         String name = request.getParameter("name");
         String gender = request.getParameter("gender");
-
-        Part profilePart = request.getPart("profile_url");
-        String profileUrl = profilePart != null ? profilePart.getSubmittedFileName() : null;
-
         String dateOfBirth = request.getParameter("date_of_birth");
+
+        // 기본 프로필 이미지 설정
+        String profileUrl = "/img/1.png";
 
         // DTO 생성
         UserDTO user = new UserDTO(id, pwd, name, gender, profileUrl, dateOfBirth);

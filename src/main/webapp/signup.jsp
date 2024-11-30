@@ -141,11 +141,6 @@
             </select>
         </div>
 
-        <!-- 프로필 이미지 업로드 필드 -->
-        <div class="form-group">
-            <input type="file" id="profile_url" name="profile_url" accept="image/*">
-        </div>
-
         <!-- 생년월일 입력 필드 -->
         <div class="form-group">
             <input type="date" id="date_of_birth" name="date_of_birth" required>
