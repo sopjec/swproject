@@ -234,7 +234,7 @@
         <div class="box dark-box">
             <h3>커뮤니티</h3>
             <ul>
-                <li><a href="review.jsp">기업 면접 후기</a></li>
+                <li><a href="#" onclick="checkSessionAndNavigate('reviewUpload'); return false;">기업 면접 후기</a></li>
             </ul>
         </div>
     </div>

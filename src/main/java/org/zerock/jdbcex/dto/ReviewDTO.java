@@ -11,5 +11,5 @@ public class ReviewDTO {
     private String experience;  // 경력
     private String region;      // 지역
     private String content;     // 면접 내용
-    //private String userId;      // 사용자 ID
+    private String userId;      // 사용자 ID
 }

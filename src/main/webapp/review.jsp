@@ -142,12 +142,13 @@
 <%
     // 데이터베이스에서 가져온 면접 후기 리스트를 가져옴
     List<ReviewDTO> reviews = (List<ReviewDTO>) request.getAttribute("reviews");
+    System.out.println(reviews);
 %>
 
     <div class="container">
         <div class="sidebar">
             <ul>
-                <li><a href="review.jsp">기업 면접 후기</a></li>
+                <li><a href="#" onclick="checkSessionAndNavigate('reviewUpload'); return false;">기업 면접 후기</a></li>
             </ul>
         </div>
 

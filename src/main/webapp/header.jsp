@@ -138,7 +138,7 @@
     <a href="#" onclick="checkSessionAndNavigate('resume.jsp'); return false;">자소서관리</a>
     <a href="#" onclick="checkSessionAndNavigate('/resume?action=interview'); return false;">가상면접</a>
     <a href="jobPosting.jsp">채용공고</a>
-    <a href="review.jsp">커뮤니티</a> <!--면접후기 이름 수정-->
+    <a href="#" onclick="checkSessionAndNavigate('reviewUpload'); return false;">커뮤니티</a> <!--면접후기 이름 수정-->
   </nav>
   <div class="auth-links">
     <%
