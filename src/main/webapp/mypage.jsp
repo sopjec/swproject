@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="org.zerock.jdbcex.dto.UserDTO" %> <!-- UserDTO 클래스 임포트 -->
+<%@ page import="org.zerock.jdbcex.dto.UserDTO" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -180,6 +180,8 @@
         response.sendRedirect("login.jsp"); // 로그인되지 않은 경우 로그인 페이지로 리디렉트
         return;
     }
+    // 로그인된 사용자 정보 출력
+    System.out.println("로그인된 사용자: " + loggedInUser.getId());
 %>
 
 <jsp:include page="header.jsp"/>
@@ -198,7 +200,8 @@
     <div class="content">
         <h2>내계정</h2>
         <!-- 프로필 사진 및 업로드 -->
-        <form action="updateProfile" method="post" enctype="multipart/form-data">
+
+
             <div class="profile-container">
                 <img src="/img/1.png" alt="메인 프로필 이미지" id="mainProfileImage" class="profile-image" onclick="openImageSelector()">
             </div>
@@ -217,7 +220,7 @@
                     <button type="button" onclick="closeImageSelector()">닫기</button>
                 </div>
             </div>
-        </form>
+
     </div>
 </div>
 
@@ -242,7 +245,8 @@
     // "선택" 버튼 클릭 처리
     document.getElementById('applySelection').addEventListener('click', function () {
         if (selectedImageUrl) {
-            console.log("Sending selected image URL to server:", selectedImageUrl); // 디버깅 로그
+            console.log("선택한 이미지 URL:", selectedImageUrl); // 디버깅 로그
+
             // 서버로 선택된 이미지 URL 전송
             fetch('/updateProfileImage', {
                 method: 'POST',
@@ -250,7 +254,7 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    imageUrl: selectedImageUrl,
+                    imageUrl: selectedImageUrl, // 선택된 이미지 URL
                 }),
             })
                 .then(response => response.json())
@@ -272,6 +276,7 @@
             alert('이미지를 선택해주세요!');
         }
     });
+
 
 </script>
 

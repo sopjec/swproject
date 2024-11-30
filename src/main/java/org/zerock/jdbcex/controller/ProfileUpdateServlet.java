@@ -1,21 +1,19 @@
 package org.zerock.jdbcex.controller;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.zerock.jdbcex.service.UserService;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
-import java.io.File;
-import java.io.IOException;
 import java.io.BufferedReader;
+import java.io.IOException;
 
-@WebServlet("/updateProfile")
-@MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5)
+@WebServlet("/updateProfileImage")
 public class ProfileUpdateServlet extends HttpServlet {
 
     private final UserService userService = new UserService();
@@ -32,47 +30,43 @@ public class ProfileUpdateServlet extends HttpServlet {
                 jsonBuilder.append(line);
             }
         }
-        String jsonData = jsonBuilder.toString();
-        System.out.println("Received JSON: " + jsonData); // 디버깅 로그
 
-        // JSON 파싱
-        com.google.gson.JsonObject jsonObject = com.google.gson.JsonParser.parseString(jsonData).getAsJsonObject();
+        // JSON 데이터 파싱
+        String jsonData = jsonBuilder.toString();
+        JsonObject jsonObject;
+        try {
+            jsonObject = JsonParser.parseString(jsonData).getAsJsonObject();
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"success\": false, \"message\": \"Invalid JSON format\"}");
+            return;
+        }
+
         String imageUrl = jsonObject.get("imageUrl").getAsString();
 
         // 세션에서 사용자 ID 가져오기
         HttpSession session = request.getSession();
         String userId = (String) session.getAttribute("id");
+        System.out.println("User ID from session: " + userId);
 
-        if (userId == null || imageUrl == null) {
+
+        // 세션에 ID가 없거나 이미지 URL이 비어 있으면 오류 반환
+        if (userId == null || userId.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"success\": false}");
+            response.getWriter().write("{\"success\": false, \"message\": \"User not logged in\"}");
+            System.out.println("User not logged in: session ID is null or empty");
             return;
         }
 
         // 데이터베이스 업데이트
         boolean isUpdated = userService.updateProfileImage(userId, imageUrl);
+
         response.setContentType("application/json");
         if (isUpdated) {
             response.getWriter().write("{\"success\": true}");
         } else {
-            response.getWriter().write("{\"success\": false}");
+            response.getWriter().write("{\"success\": false, \"message\": \"Database update failed\"}");
         }
     }
 
-
-
-    private String extractFileName(Part part) {
-        String contentDisp = part.getHeader("content-disposition");
-        if (contentDisp == null) {
-            System.out.println("Error: content-disposition header is missing.");
-            return null; // null 반환
-        }
-        String[] items = contentDisp.split(";");
-        for (String s : items) {
-            if (s.trim().startsWith("filename")) {
-                return s.substring(s.indexOf("=") + 2, s.length() - 1);
-            }
-        }
-        return null;
-    }
 }
