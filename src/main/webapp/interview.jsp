@@ -153,6 +153,37 @@
 </div>
 
 <script src="script.js"></script>
+<script>
+    // 면접 시작 버튼 클릭 시 면접 질문 생성
+    document.getElementById('start-interview').addEventListener('click', async () => {
+        try {
+            // API 요청을 통해 질문 가져오기
+            const response = await fetch('/api/generate-question', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({ resumeId: '1' }) // resumeId는 실제 값으로 대체
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const question = data.question || '질문 생성 실패';
+                document.getElementById('interviewer-text-output').innerText = question;
+            } else {
+                document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생';
+            }
+        } catch (error) {
+            console.error('질문 생성 중 오류:', error);
+            document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생';
+        }
+    });
+
+    // 녹화 종료 버튼 이벤트 핸들러 (기존 유지)
+    document.getElementById('stop-recording').addEventListener('click', () => {
+        alert('녹화 종료!');
+    });
+</script>
 
 </body>
 </html>
