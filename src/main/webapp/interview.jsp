@@ -1,8 +1,4 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="org.zerock.jdbcex.dto.ResumeDTO" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.io.*" %>
-<%@ page import="java.net.*" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -15,24 +11,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             background-color: #f9f9f9;
             margin: 0;
             padding: 0;
         }
-        /* 메인 레이아웃 설정 */
         .container {
             display: flex;
             max-width: 1200px;
             margin: 20px auto;
             padding: 0 20px;
         }
-        /* 메인 컨텐츠 */
-        .content {
-            flex-grow: 1;
-            padding-left: 20px;
-        }
-        /* 왼쪽 사이드바 스타일 */
         .sidebar {
             width: 200px;
             padding: 20px;
@@ -40,11 +29,11 @@
             border-right: 1px solid #ddd;
         }
         .sidebar ul {
-            list-style-type: none;
+            list-style: none;
             padding: 0;
         }
         .sidebar ul li {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         .sidebar ul li a {
             text-decoration: none;
@@ -55,67 +44,74 @@
         .sidebar li:hover {
             background-color: #e0e0e0;
         }
-        /*오른쪽 컨텐츠 스타일*/
-        h2 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        .video-section {
-            width: 48%;
-            text-align: center;
-            justify-content: space-between;
-            height: 100%;
+        .content {
+            flex-grow: 1;
+            padding: 20px;
         }
         .video-section-container {
             display: flex;
             justify-content: space-between;
             gap: 20px;
         }
+        .video-section {
+            width: 48%;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .video-section h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
         video, img {
             width: 100%;
-            max-height: 500px;
-            border: 2px solid #333;
-            border-radius: 8px;
-            box-sizing: border-box;
+            max-height: 350px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
         }
         .text-output {
             width: 100%;
-            height: 200px;
-            border: 2px solid #333;
-            border-radius: 8px;
+            height: 150px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
             box-sizing: border-box;
             padding: 10px;
             overflow-y: auto;
-            text-align: left;
-            font-size: 15px;
+            font-size: 14px;
+            line-height: 1.5;
+            background-color: #f9f9f9;
             color: #333;
         }
         .expression-output {
-            margin-top: 10px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            color: #333;
+            color: #555;
             text-align: center;
+            margin-top: 10px;
         }
         .button-controls {
             display: flex;
-            gap: 10px;
             justify-content: center;
             margin-top: 20px;
+            gap: 15px;
         }
         .button-controls button {
-            padding: 10px 15px;
+            padding: 10px 20px;
+            font-size: 16px;
             background-color: #333;
-            border: none;
             color: white;
+            border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
         }
         .button-controls button:hover {
             background-color: #555;
         }
-
     </style>
 </head>
 
@@ -130,20 +126,23 @@
         </ul>
     </div>
 
-    <!-- 메인 컨텐츠 -->
     <div class="content">
         <div class="video-section-container">
+            <!-- 면접관 화면 -->
             <div class="video-section">
                 <h2>면접관 화면</h2>
                 <img id="interviewer-video" src="ai-character.png" alt="가상 면접관 AI 캐릭터">
                 <h2>면접관 텍스트 창</h2>
-                <div class="text-output" id="interviewer-text-output"></div>
+                <div class="text-output" id="interviewer-text-output">질문 내용이 여기에 표시됩니다.</div>
             </div>
+
+            <!-- 면접자 화면 -->
             <div class="video-section">
                 <h2>면접자 화면</h2>
                 <video id="user-webcam" autoplay playsinline muted></video>
-                <!-- 웹캠 아래에 감정 분석 결과를 표시 -->
                 <div class="expression-output" id="user-expression-output">표정 분석 결과가 여기에 표시됩니다.</div>
+                <h2>면접자 텍스트 창</h2>
+                <div class="text-output" id="user-text-output">면접자의 대답이 여기에 표시됩니다.</div>
             </div>
         </div>
 
@@ -202,9 +201,14 @@
 
 
     // 녹화 종료 버튼 이벤트 핸들러 (기존 유지)
-    document.getElementById('stop-recording').addEventListener('click', () => {
-        alert('녹화 종료!');
 
+    document.getElementById('start-interview').addEventListener('click', () => {
+        console.log("면접 시작");
+    });
+
+
+    document.getElementById('stop-recording').addEventListener('click', () => {
+        console.log("녹화 종료");
     });
 </script>
 
