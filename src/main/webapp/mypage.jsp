@@ -212,6 +212,7 @@
                         <img src="/img/3.png" alt="Image 3" class="thumbnail" onclick="selectThumbnail(this, '/img/3.png')">
                         <img src="/img/4.png" alt="Image 4" class="thumbnail" onclick="selectThumbnail(this, '/img/4.png')">
                     </div>
+
                     <button id="applySelection">선택</button>
                     <button type="button" onclick="closeImageSelector()">닫기</button>
                 </div>
@@ -233,17 +234,40 @@
 
     // 썸네일 클릭 처리
     function selectThumbnail(element, imageUrl) {
-        console.log('이미지 클릭됨:', imageUrl); // 디버깅 로그
         document.querySelectorAll('.thumbnail').forEach(img => img.classList.remove('selected'));
         element.classList.add('selected');
-        selectedImageUrl = imageUrl;
+        selectedImageUrl = imageUrl; // 선택된 이미지 URL 저장
     }
 
-    // 선택 버튼 클릭 처리
+    // "선택" 버튼 클릭 처리
     document.getElementById('applySelection').addEventListener('click', function () {
         if (selectedImageUrl) {
-            document.getElementById('mainProfileImage').src = selectedImageUrl;
-            closeImageSelector();
+            console.log("Sending selected image URL to server:", selectedImageUrl); // 디버깅 로그
+            // 서버로 선택된 이미지 URL 전송
+            fetch('/updateProfileImage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    imageUrl: selectedImageUrl,
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 성공 시 UI 업데이트
+                        document.getElementById('mainProfileImage').src = selectedImageUrl;
+                        closeImageSelector();
+                        alert('프로필 이미지가 성공적으로 업데이트되었습니다!');
+                    } else {
+                        alert('프로필 이미지 업데이트에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('서버 요청 중 오류가 발생했습니다.');
+                });
         } else {
             alert('이미지를 선택해주세요!');
         }

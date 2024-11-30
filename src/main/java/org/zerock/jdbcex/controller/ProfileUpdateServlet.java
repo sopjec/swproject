@@ -12,6 +12,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
+import java.io.BufferedReader;
+
 @WebServlet("/updateProfile")
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5)
 public class ProfileUpdateServlet extends HttpServlet {
@@ -20,38 +22,57 @@ public class ProfileUpdateServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+
+        // JSON 데이터 읽기
+        StringBuilder jsonBuilder = new StringBuilder();
+        try (BufferedReader reader = request.getReader()) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonBuilder.append(line);
+            }
+        }
+        String jsonData = jsonBuilder.toString();
+        System.out.println("Received JSON: " + jsonData); // 디버깅 로그
+
+        // JSON 파싱
+        com.google.gson.JsonObject jsonObject = com.google.gson.JsonParser.parseString(jsonData).getAsJsonObject();
+        String imageUrl = jsonObject.get("imageUrl").getAsString();
+
+        // 세션에서 사용자 ID 가져오기
         HttpSession session = request.getSession();
         String userId = (String) session.getAttribute("id");
 
-        Part filePart = request.getPart("profileImageUpload");
-        String fileName = extractFileName(filePart);
+        if (userId == null || imageUrl == null) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"success\": false}");
+            return;
+        }
 
-        // 저장 경로 설정
-        String savePath = getServletContext().getRealPath("") + File.separator + "uploads" + File.separator + fileName;
-        File fileSaveDir = new File(savePath);
-        fileSaveDir.getParentFile().mkdirs();
-        filePart.write(savePath);
-
-        // 데이터베이스에 프로필 이미지 경로 저장
-        String profileUrl = "img/" + fileName;
-        boolean updateSuccess = userService.updateProfileImage(userId, profileUrl);
-
-        if (updateSuccess) {
-            response.sendRedirect("mypage.jsp");
+        // 데이터베이스 업데이트
+        boolean isUpdated = userService.updateProfileImage(userId, imageUrl);
+        response.setContentType("application/json");
+        if (isUpdated) {
+            response.getWriter().write("{\"success\": true}");
         } else {
-            response.getWriter().write("프로필 업데이트 실패"); // 디버그 메시지
-            System.out.println("프로필 업데이트 실패: userId=" + userId + ", profileUrl=" + profileUrl); // 디버그 메시지
+            response.getWriter().write("{\"success\": false}");
         }
     }
 
+
+
     private String extractFileName(Part part) {
         String contentDisp = part.getHeader("content-disposition");
+        if (contentDisp == null) {
+            System.out.println("Error: content-disposition header is missing.");
+            return null; // null 반환
+        }
         String[] items = contentDisp.split(";");
         for (String s : items) {
             if (s.trim().startsWith("filename")) {
                 return s.substring(s.indexOf("=") + 2, s.length() - 1);
             }
         }
-        return "";
+        return null;
     }
 }
