@@ -149,43 +149,62 @@
 
 <script src="script.js"></script>
 <script>
-    // URL에서 resumeId 가져오기
     const urlParams = new URLSearchParams(window.location.search);
-    const resumeId = urlParams.get('resumeId'); // URL에서 resumeId 값 추출
+    const resumeId = urlParams.get('resumeId');
 
-    document.getElementById('start-interview').addEventListener('click', async () => {
+    function readTextAloud(text) {
+        if (!window.speechSynthesis) {
+            console.error('이 브라우저는 Web Speech API를 지원하지 않습니다.');
+            return;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ko-KR';
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        speechSynthesis.speak(utterance);
+    }
+
+    async function startInterviewProcess() {
         if (!resumeId) {
             alert('resumeId가 없습니다. URL을 확인하세요.');
             return;
         }
 
         try {
-            const response = await fetch('/api/generate-question', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({ resumeId }),
-            });
+            const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+            console.log('화면 공유 시작됨:', stream);
 
-            console.log('API 호출 URL: /api/generate-question');
-            console.log('API 요청 본문:', new URLSearchParams({ resumeId }));
-            console.log('API 응답 상태:', response.status);
+            alert('3초 후 면접 질문을 시작합니다.');
+            setTimeout(async () => {
+                const response = await fetch('/api/generate-question', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({ resumeId }),
+                });
 
-            if (response.ok) {
-                const data = await response.json();
-                console.log('API 응답 데이터:', data);
+                console.log('API 응답 상태:', response.status);
 
-                const question = data.question || '질문 생성 실패';
-                document.getElementById('interviewer-text-output').innerHTML = question.replace(/\n/g, '<br>');
-            } else {
-                document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생';
-            }
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('API 응답 데이터:', data);
+
+                    const question = data.question || '질문 생성 실패';
+                    document.getElementById('interviewer-text-output').innerHTML = question.replace(/\n/g, '<br>');
+                    readTextAloud(question); // 질문 읽기 시작
+                } else {
+                    document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생';
+                }
+            }, 3000); // 3초 대기
         } catch (error) {
-            console.error('질문 생성 중 오류:', error);
-            document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생';
+            console.error('화면 공유 오류:', error);
+            alert('화면 공유 중 문제가 발생했습니다.');
         }
-    });
+    }
+
+    document.getElementById('start-interview').addEventListener('click', startInterviewProcess);
 </script>
 
 </body>

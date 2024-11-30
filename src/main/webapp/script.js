@@ -25,7 +25,6 @@ async function analyzeExpressions() {
 
     expressionInterval = setInterval(async () => {
         try {
-            // 얼굴 및 감정 감지
             const detections = await faceapi
                 .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
                 .withFaceExpressions();
@@ -49,8 +48,34 @@ async function analyzeExpressions() {
     }, 500); // 500ms 간격으로 분석
 }
 
+// 텍스트 음성 읽기 함수
+function readTextAloud(text) {
+    if (!window.speechSynthesis) {
+        console.error('이 브라우저는 Web Speech API를 지원하지 않습니다.');
+        return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ko-KR';
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    speechSynthesis.speak(utterance);
+}
+
+// 질문 표시 함수
+function displayQuestion() {
+    if (currentQuestionIndex < questions.length) {
+        const question = questions[currentQuestionIndex];
+        const formattedQuestion = `질문 ${currentQuestionIndex + 1}: ${question}`;
+        document.getElementById('interviewer-text-output').innerHTML = formattedQuestion;
+        readTextAloud(question); // 질문 읽기 추가
+    } else {
+        document.getElementById('interviewer-text-output').innerText = '모든 질문을 완료했습니다.';
+    }
+}
+
 // 면접 시작 버튼 클릭 시 질문 데이터를 가져오는 함수
-document.getElementById('start-interview').addEventListener('click', async () => {
+async function startInterviewProcess() {
     const urlParams = new URLSearchParams(window.location.search);
     const resumeId = urlParams.get('resumeId'); // URL에서 resumeId 값 추출
 
@@ -76,12 +101,11 @@ document.getElementById('start-interview').addEventListener('click', async () =>
             // 질문 데이터를 줄바꿈 기준으로 분리하여 배열로 저장
             questions = data.question.split('\n').filter(q => q.trim() !== '');
             currentQuestionIndex = 0; // 초기화
-            questions = questions.map(q => q.replace(/^\d+\.\s*/, ''));  //질문 생성에서 접두어 제거
+            questions = questions.map(q => q.replace(/^\d+\.\s*/, '')); // 질문 접두어 제거
 
             if (questions.length > 0) {
                 // 첫 번째 질문 출력
-                document.getElementById('interviewer-text-output').innerHTML =
-                    `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
+                displayQuestion();
             } else {
                 document.getElementById('interviewer-text-output').innerText = '질문 데이터가 없습니다.';
             }
@@ -95,8 +119,11 @@ document.getElementById('start-interview').addEventListener('click', async () =>
     }
 
     startInterview();
-    startPageRecording();
-});
+    setTimeout(() => {
+        startPageRecording();
+        console.log('3초 후 녹화 시작');
+    }, 3000); // 3초 대기 후 녹화 시작
+}
 
 // 다음 질문 버튼 클릭 시 동작
 document.getElementById('next-question').addEventListener('click', () => {
@@ -108,8 +135,7 @@ document.getElementById('next-question').addEventListener('click', () => {
     currentQuestionIndex++;
     if (currentQuestionIndex < questions.length) {
         // 다음 질문 출력
-        document.getElementById('interviewer-text-output').innerHTML =
-            `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
+        displayQuestion();
     } else {
         // 질문이 더 이상 없을 경우 메시지 출력
         document.getElementById('interviewer-text-output').innerText = '모든 질문을 완료했습니다.';
@@ -142,20 +168,17 @@ async function startInterview() {
 // 페이지 녹화 시작
 async function startPageRecording() {
     try {
-        // 화면 스트림 요청
         const screenStream = await navigator.mediaDevices.getDisplayMedia({
             video: { cursor: "always" }, // 마우스 커서 포함
             audio: false
         });
 
-        // 화면 스트림과 웹캠 스트림 병합
         const combinedStream = new MediaStream([
             ...screenStream.getVideoTracks(),
             ...webcamStream.getVideoTracks(),
             ...webcamStream.getAudioTracks()
         ]);
 
-        // MediaRecorder로 병합된 스트림 녹화
         mediaRecorder = new MediaRecorder(combinedStream);
         recordedChunks = [];
 
@@ -182,7 +205,7 @@ function saveRecording() {
     const url = URL.createObjectURL(blob);
     const downloadLink = document.createElement('a');
     downloadLink.href = url;
-    downloadLink.download = 'recording.webm'; // 저장할 파일명
+    downloadLink.download = 'recording.webm';
     document.body.appendChild(downloadLink);
     downloadLink.click();
     console.log('녹화본 저장 완료');
@@ -196,6 +219,7 @@ function stopRecording() {
     }
     if (expressionInterval) {
         clearInterval(expressionInterval);
+        expressionInterval = null;
         console.log('감정 분석 중지');
     }
     if (webcamStream) {
@@ -205,4 +229,5 @@ function stopRecording() {
 }
 
 // 버튼 이벤트 리스너 설정
+document.getElementById('start-interview').addEventListener('click', startInterviewProcess);
 document.getElementById('stop-recording').addEventListener('click', stopRecording);
