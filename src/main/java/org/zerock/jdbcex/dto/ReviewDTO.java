@@ -5,10 +5,11 @@ import lombok.Data;
 
 @Data
 public class ReviewDTO {
-    private int id; //순번
-    private String userId; //아이디
-    private String title; //제목
-    private String content; //내용
-    private String job; //직무
-    private String industry; //업종
+    //private int id;             // 기본 키
+    private String comname;     // 기업명
+    private String job;         // 직무직업
+    private String experience;  // 경력
+    private String region;      // 지역
+    private String content;     // 면접 내용
+    //private String userId;      // 사용자 ID
 }

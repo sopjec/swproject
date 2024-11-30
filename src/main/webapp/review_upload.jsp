@@ -203,7 +203,7 @@
                     <tr>
                         <td>지역</td>
                         <td>
-                            <select name="industry">
+                            <select name="region">
                                 <option value="서울">서울</option>
                                 <option value="경기도">경기도</option>
                                 <option value="강원도">강원도</option>
@@ -225,5 +225,6 @@
                 <button type="submit" class="register-button">등록하기</button>
             </form>
         </div>
+    </div>
     </body>
 </html>
