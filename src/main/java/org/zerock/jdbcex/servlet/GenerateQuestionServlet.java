@@ -1,5 +1,4 @@
 package org.zerock.jdbcex.servlet;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
@@ -26,19 +25,10 @@ public class GenerateQuestionServlet extends HttpServlet {
     private static final String DB_URL = "jdbc:mariadb://localhost:3306/merijob_db?useUnicode=true&characterEncoding=UTF-8&useSSL=false";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "1111";
+
     // OpenAI API 키
-    private static final String OPENAI_API_KEY;
 
-    static {
-	Dotenv dotenv = Dotenv.configure()
-            .directory("C:/Users/wlsek/IdeaProjects/project") // .env 파일의 디렉토리 경로
-            .load();
-
-	OPENAI_API_KEY = dotenv.get("OPENAI_API_KEY");
-    // OpenAI API 키 확인용 로그
-    System.out.println("로드된 OpenAI API 키: " + OPENAI_API_KEY);
-    }
-
+    private static final String GPT_API_KEY = System.getenv("GPT_API_KEY");
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         response.setContentType("application/json");
@@ -105,7 +95,7 @@ public class GenerateQuestionServlet extends HttpServlet {
         String apiUrl = "https://api.openai.com/v1/chat/completions";
         HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
         connection.setRequestMethod("POST");
-        connection.setRequestProperty("Authorization", "Bearer " + OPENAI_API_KEY);
+        connection.setRequestProperty("Authorization", "Bearer " + GPT_API_KEY);
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setDoOutput(true);
 
