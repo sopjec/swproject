@@ -12,6 +12,10 @@ public class UserService {
     }
 
     public boolean registerUser(UserDTO user) {
+        // 프로필 이미지가 없는 경우 기본값 설정
+        if (user.getProfileUrl() == null || user.getProfileUrl().isEmpty()) {
+            user.setProfileUrl("/img/1.png");
+        }
         return userDAO.registerUser(user);
     }
 

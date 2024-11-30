@@ -53,35 +53,6 @@
             flex-grow: 1;
             padding-left: 20px;
         }
-
-        #profileImage {
-            width: 100px;
-            height: 100px;
-            display: block;
-            margin: 0 auto 20px auto;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #ddd;
-            background-color: #ffffff;
-        }
-        .custom-file-upload {
-            height: 25px;
-            width: 130px;
-            font-size: 14px;
-            line-height: 25px;
-            text-align: center;
-            color: white;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: #333;
-            margin: 10px auto;
-            display: block;
-            cursor: pointer;
-        }
-        .custom-file-upload:hover {
-            background-color: #000;
-        }
-
         .authSection {
             max-width: 400px;
             padding: 20px;
@@ -119,6 +90,83 @@
             font-size: 16px;
             color: #555;
         }
+
+
+
+
+        /* 메인 프로필 이미지 스타일 */
+        .profile-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid #ddd;
+            transition: border-color 0.3s ease;
+        }
+        .profile-image:hover {
+            border-color: #000000;
+        }
+        /* 팝업 기본 스타일 */
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 반투명한 검정 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .hidden {
+            display: none;
+        }
+        /* 팝업 내부 컨텐츠 */
+        .popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+        }
+        .thumbnail-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .thumbnail {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease;
+            pointer-events: auto;
+        }
+        .thumbnail:hover {
+            border-color: #000000;
+        }
+        .thumbnail.selected {
+            border-color: #007BFF; /* 파란색 테두리 */
+            transform: scale(1.1); /* 약간 확대 효과 */
+
+        }
+
+
+    </style>
+
+
+
+
+
     </style>
 
 </head>
@@ -141,43 +189,66 @@
     <div class="sidebar">
         <ul>
             <li><a href="mypage.jsp">내계정</a></li>
-            <li><a href="resume">자기소개서 조회</a></li>
-            <li><a href="interview_view.jsp">면접 녹화 기록 조회</a></li>
+            <li><a href="resume_view">자기소개서 조회</a></li>
+            <li><a href="interview_view">면접 녹화 기록 조회</a></li>
             <li><a href="jobposting/jobScrap.jsp">저장된 공고 목록</a></li>
         </ul>
     </div>
 
     <div class="content">
-
         <h2>내계정</h2>
-
         <!-- 프로필 사진 및 업로드 -->
         <form action="updateProfile" method="post" enctype="multipart/form-data">
-            <img src="<%= loggedInUser.getProfileUrl() %>" alt="프로필 이미지" id="profileImage">
-            <label for="profileImageUpload" class="custom-file-upload">프로필 사진 변경</label>
-            <input type="file" id="profileImageUpload" name="profileImageUpload" accept="image/*" style="display: none;">
-
-            <div class="authSection">
-                <input type="text" name="id" id="id" placeholder="아이디" value="<%= loggedInUser.getId() %>" required readonly/>
-                <input type="password" name="password" class="password" placeholder="비밀번호" required/>
-                <button type="submit" class="submit">저장</button>
-                <p id="authError" style="color: red; display: none;">아이디 또는 비밀번호가 일치하지 않습니다.</p>
+            <div class="profile-container">
+                <img src="/img/1.png" alt="메인 프로필 이미지" id="mainProfileImage" class="profile-image" onclick="openImageSelector()">
+            </div>
+            <!-- 이미지 선택 팝업 (기본적으로 숨김 처리) -->
+            <div id="imageSelectorPopup" class="popup hidden">
+                <div class="popup-content">
+                    <h3>이미지를 선택하세요</h3>
+                    <div class="thumbnail-container">
+                        <img src="/img/1.png" alt="Image 1" class="thumbnail" onclick="selectThumbnail(this, '/img/1.png')">
+                        <img src="/img/2.png" alt="Image 2" class="thumbnail" onclick="selectThumbnail(this, '/img/2.png')">
+                        <img src="/img/3.png" alt="Image 3" class="thumbnail" onclick="selectThumbnail(this, '/img/3.png')">
+                        <img src="/img/4.png" alt="Image 4" class="thumbnail" onclick="selectThumbnail(this, '/img/4.png')">
+                    </div>
+                    <button id="applySelection">선택</button>
+                    <button type="button" onclick="closeImageSelector()">닫기</button>
+                </div>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    document.getElementById("profileImageUpload").addEventListener("change", function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById("profileImage").src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+    let selectedImageUrl = '';
+
+    function openImageSelector() {
+        document.getElementById('imageSelectorPopup').classList.remove('hidden');
+    }
+
+    function closeImageSelector() {
+        document.getElementById('imageSelectorPopup').classList.add('hidden');
+    }
+
+    // 썸네일 클릭 처리
+    function selectThumbnail(element, imageUrl) {
+        console.log('이미지 클릭됨:', imageUrl); // 디버깅 로그
+        document.querySelectorAll('.thumbnail').forEach(img => img.classList.remove('selected'));
+        element.classList.add('selected');
+        selectedImageUrl = imageUrl;
+    }
+
+    // 선택 버튼 클릭 처리
+    document.getElementById('applySelection').addEventListener('click', function () {
+        if (selectedImageUrl) {
+            document.getElementById('mainProfileImage').src = selectedImageUrl;
+            closeImageSelector();
+        } else {
+            alert('이미지를 선택해주세요!');
         }
     });
+
 </script>
 
 </body>
