@@ -1,4 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="org.zerock.jdbcex.dto.ResumeDTO" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.io.*" %>
+<%@ page import="java.net.*" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -121,7 +125,7 @@
 <div class="container">
     <div class="sidebar">
         <ul>
-            <li><a href="interview.jsp">면접 보기</a></li>
+            <li><a href="/resume?action=interview">면접 보기</a></li>
             <li><a href="interview_view.jsp">면접 기록 조회</a></li>
         </ul>
     </div>
@@ -145,12 +149,48 @@
 
         <div class="button-controls">
             <button id="start-interview">면접 시작</button>
+            <button id="next-question">다음 질문</button>
             <button id="stop-recording">녹화 종료</button>
         </div>
     </div>
 </div>
 
 <script src="script.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const resumeId = "<%= request.getAttribute("resumeId") %>";
+        console.log(`Selected Resume ID: ${resumeId}`);
+    // 면접 시작 버튼 클릭 시 면접 질문 생성
+    document.getElementById('start-interview').addEventListener('click', async () => {
+        try {
+            // API 요청을 통해 질문 가져오기
+            const response = await fetch('/api/generate-question', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({ resumeId: '1' }) // resumeId는 실제 값으로 대체
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const question = data.question || '질문 생성 실패';
+                document.getElementById('interviewer-text-output').innerText = question;
+            } else {
+                document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생';
+            }
+        } catch (error) {
+            console.error('질문 생성 중 오류:', error);
+            document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생';
+        }
+    });
+
+    // 녹화 종료 버튼 이벤트 핸들러 (기존 유지)
+    document.getElementById('stop-recording').addEventListener('click', () => {
+        alert('녹화 종료!');
+
+    });
+</script>
 
 </body>
 </html>
