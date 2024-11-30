@@ -24,7 +24,8 @@ public class GenerateQuestionServlet extends HttpServlet {
     private static final String DB_PASSWORD = "1111";
 
     // OpenAI API 키
-    private static final String OPENAI_API_KEY = "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";
+
+    private static final String GPT_API_KEY = System.getenv("GPT_API_KEY");
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         response.setContentType("application/json");
@@ -77,7 +78,7 @@ public class GenerateQuestionServlet extends HttpServlet {
         String apiUrl = "https://api.openai.com/v1/completions";
         HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
         connection.setRequestMethod("POST");
-        connection.setRequestProperty("Authorization", "Bearer " + OPENAI_API_KEY);
+        connection.setRequestProperty("Authorization", "Bearer " + GPT_API_KEY);
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setDoOutput(true);
 

@@ -16,7 +16,7 @@ public enum ConnectionUtil {
 
 
     private static final String USER = "root";
-    private static final String PASSWORD = "abcd980225*";
+    private static final String PASSWORD = "1111";
 
     // ModelMapper instance
     private final ModelMapper modelMapper;
