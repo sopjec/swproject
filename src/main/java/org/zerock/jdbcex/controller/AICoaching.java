@@ -20,7 +20,7 @@ public class AICoaching extends HttpServlet {
 
     private static final String GPT_API_URL = "https://api.openai.com/v1/chat/completions";
     // Fine-Tuned 모델의 ID
-    private static final String FINE_TUNED_MODEL_ID = "gpt-3.5-turbo-0125";
+    private static final String FINE_TUNED_MODEL_ID = "ft:gpt-3.5-turbo-0125:personal::AYyR0kdn";
     private static final String GPT_API_KEY = System.getenv("GPT_API_KEY");
 
     @Override
@@ -114,8 +114,8 @@ public class AICoaching extends HttpServlet {
 
                     // 결과 JSON 작성 (형식 조정)
                     String[] parts = replacedText.split("\n", 2);
-                    String formattedResponse = "키워드:\n" + parts[0].replace("주요 키워드:", "").trim() +
-                            "\n\n수정 내용:\n" + parts[1].replace("수정 제안:", "").trim();
+                    String formattedResponse = parts[0].replace("발견된 주요 키워드:", "주요 키워드").trim() +
+                            "\n\n" + parts[1].replace("추천 수정 사항:", "\n\n수정 제안 : ").trim();
 
                     JsonObject resultJson = new JsonObject();
                     resultJson.addProperty("replacedText", formattedResponse);

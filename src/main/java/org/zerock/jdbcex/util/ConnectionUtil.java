@@ -11,8 +11,10 @@ import org.modelmapper.convention.MatchingStrategies;
 public enum ConnectionUtil {
     INSTANCE;
 
-    // Database connection details
-    private static final String URL = "jdbc:mariadb://localhost:3007/merijob_db";
+
+    private static final String URL = "jdbc:mariadb://localhost:3307/merijob_db?useUnicode=true&characterEncoding=UTF-8&useSSL=false";
+
+
     private static final String USER = "root";
     private static final String PASSWORD = "abcd980225*";
 
