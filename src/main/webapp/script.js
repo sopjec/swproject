@@ -2,6 +2,8 @@ let mediaRecorder;
 let recordedChunks = [];
 let webcamStream;
 let expressionInterval;
+let questions = []; // 서버에서 받아온 질문 배열
+let currentQuestionIndex = 0; // 현재 질문 인덱스
 
 // Face-api.js 모델 로드
 async function loadModels() {
@@ -46,6 +48,74 @@ async function analyzeExpressions() {
         }
     }, 500); // 500ms 간격으로 분석
 }
+
+// 면접 시작 버튼 클릭 시 질문 데이터를 가져오는 함수
+document.getElementById('start-interview').addEventListener('click', async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const resumeId = urlParams.get('resumeId'); // URL에서 resumeId 값 추출
+
+    if (!resumeId) {
+        alert('resumeId가 없습니다. URL을 확인하세요.');
+        return;
+    }
+
+    try {
+        // API 요청을 통해 질문 가져오기
+        const response = await fetch('/api/generate-question', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({ resumeId }), // 동적으로 resumeId 가져옴
+        });
+
+        if (response.ok) {
+            const data = await response.json(); // JSON 데이터 파싱
+            console.log('API 응답 데이터:', data);
+
+            // 질문 데이터를 줄바꿈 기준으로 분리하여 배열로 저장
+            questions = data.question.split('\n').filter(q => q.trim() !== '');
+            currentQuestionIndex = 0; // 초기화
+            questions = questions.map(q => q.replace(/^\d+\.\s*/, ''));  //질문 생성에서 접두어 제거
+
+            if (questions.length > 0) {
+                // 첫 번째 질문 출력
+                document.getElementById('interviewer-text-output').innerHTML =
+                    `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
+            } else {
+                document.getElementById('interviewer-text-output').innerText = '질문 데이터가 없습니다.';
+            }
+        } else {
+            console.error('서버 오류:', response.statusText);
+            document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생 (서버 문제)';
+        }
+    } catch (error) {
+        console.error('질문 생성 중 오류:', error);
+        document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생 (클라이언트 문제)';
+    }
+
+    startInterview();
+    startPageRecording();
+});
+
+// 다음 질문 버튼 클릭 시 동작
+document.getElementById('next-question').addEventListener('click', () => {
+    if (questions.length === 0) {
+        document.getElementById('interviewer-text-output').innerText = '먼저 면접을 시작하세요.';
+        return;
+    }
+
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questions.length) {
+        // 다음 질문 출력
+        document.getElementById('interviewer-text-output').innerHTML =
+            `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
+    } else {
+        // 질문이 더 이상 없을 경우 메시지 출력
+        document.getElementById('interviewer-text-output').innerText = '모든 질문을 완료했습니다.';
+        currentQuestionIndex--; // 인덱스 유지
+    }
+});
 
 // 면접 시작
 async function startInterview() {
@@ -131,8 +201,4 @@ function stopRecording() {
 }
 
 // 버튼 이벤트 리스너 설정
-document.getElementById('start-interview').addEventListener('click', () => {
-    startInterview();
-    startPageRecording();
-});
 document.getElementById('stop-recording').addEventListener('click', stopRecording);
