@@ -23,10 +23,8 @@ public class ScrapController extends HttpServlet {
         response.setContentType("application/json; charset=UTF-8"); // JSON 형식과 UTF-8 인코딩 설정
         response.setCharacterEncoding("UTF-8"); // 문자 인코딩 UTF-8로 설정
 
-        // 로그인 확인
         if (session == null || session.getAttribute("loggedInUser") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("세션이 만료 되었습니다.");
+            response.sendRedirect("login.jsp");
             return;
         }
 
@@ -122,13 +120,10 @@ public class ScrapController extends HttpServlet {
         response.setContentType("application/json; charset=UTF-8"); // JSON 형식과 UTF-8 인코딩 설정
         response.setCharacterEncoding("UTF-8"); // 문자 인코딩 UTF-8로 설정
 
-        // 로그인 확인
         if (session == null || session.getAttribute("loggedInUser") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("세션이 만료 되었습니다.");
+            response.sendRedirect("login.jsp");
             return;
         }
-
         UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
 
         // JSON 데이터 읽기

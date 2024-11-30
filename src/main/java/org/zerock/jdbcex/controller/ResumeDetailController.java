@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 @WebServlet("/resume_detail")
@@ -24,7 +25,11 @@ public class ResumeDetailController extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID가 필요합니다.");
             return;
         }
-
+        HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("loggedInUser") == null) {
+            resp.sendRedirect("login.jsp");
+            return;
+        }
         try {
             int resumeId = Integer.parseInt(idParam);
 

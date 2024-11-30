@@ -27,12 +27,9 @@ public class SpellCheckController extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         resp.setContentType("application/json; charset=UTF-8");
 
-        // 세션 확인 (로그인 여부 체크)
         HttpSession session = req.getSession(false);
-        // 로그인 확인
         if (session == null || session.getAttribute("loggedInUser") == null) {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.getWriter().write("세션이 만료 되었습니다.");
+            resp.sendRedirect("login.jsp");
             return;
         }
 

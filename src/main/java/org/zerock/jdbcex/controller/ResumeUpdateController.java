@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
@@ -23,7 +24,11 @@ public class ResumeUpdateController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         resp.setContentType("application/json;charset=UTF-8");
-
+        HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("loggedInUser") == null) {
+            resp.sendRedirect("login.jsp");
+            return;
+        }
         String path = req.getServletPath(); // 요청 경로 확인
         Gson gson = new Gson();
 
