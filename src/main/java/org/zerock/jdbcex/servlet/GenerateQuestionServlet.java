@@ -26,14 +26,19 @@ public class GenerateQuestionServlet extends HttpServlet {
     private static final String DB_URL = "jdbc:mariadb://localhost:3306/merijob_db?useUnicode=true&characterEncoding=UTF-8&useSSL=false";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "1111";
-
     // OpenAI API 키
     private static final String OPENAI_API_KEY;
 
     static {
-	Dotenv dotenv = Dotenv.load();
+	Dotenv dotenv = Dotenv.configure()
+            .directory("C:/Users/wlsek/IdeaProjects/project") // .env 파일의 디렉토리 경로
+            .load();
+
 	OPENAI_API_KEY = dotenv.get("OPENAI_API_KEY");
+    // OpenAI API 키 확인용 로그
+    System.out.println("로드된 OpenAI API 키: " + OPENAI_API_KEY);
     }
+
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         response.setContentType("application/json");
@@ -49,6 +54,7 @@ public class GenerateQuestionServlet extends HttpServlet {
         }
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            System.out.println("데이터베이스 연결 성공"); // 확인용
             // MariaDB에서 질문과 답변 데이터를 가져옴
             StringBuilder resumeContent = new StringBuilder();
             String query = "SELECT question, answer FROM resume_qna WHERE resume_id = ?";
@@ -65,11 +71,16 @@ public class GenerateQuestionServlet extends HttpServlet {
             }
             rs.close();
 
+            System.out.println("DB 조회 결과: " + resumeContent.toString()); // 확인용
+
             if (resumeContent.length() == 0) {
+                System.out.println("데이터베이스에서 가져온 데이터가 없습니다: resumeId = " + resumeId); //확인용
                 JSONObject errorResponse = new JSONObject();
                 errorResponse.put("error", "No data found for resume_id: " + resumeId);
                 response.getWriter().write(errorResponse.toString());
                 return;
+            } else{
+                System.out.println("데이터베이스에서 가져온 데이터: " + resumeContent.toString());
             }
 
             // OpenAI GPT API 호출
@@ -90,6 +101,7 @@ public class GenerateQuestionServlet extends HttpServlet {
 
     // OpenAI API 호출
     private String callOpenAI(String prompt) throws Exception {
+        System.out.println("OpenAI API 호출 시작. 전달할 프롬프트: " + prompt); //호출여부, 응답상태 확인
         String apiUrl = "https://api.openai.com/v1/chat/completions";
         HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
         connection.setRequestMethod("POST");
@@ -103,7 +115,7 @@ public class GenerateQuestionServlet extends HttpServlet {
 
         JSONArray messages = new JSONArray();
 
-        //GPT 모델 역할 설명
+        // GPT 모델 역할 설명
         JSONObject systemMessage = new JSONObject();
         systemMessage.put("role", "system");
         systemMessage.put("content", "너는 한국어로 대답하는 면접 질문 생성 AI이다.");
@@ -119,6 +131,9 @@ public class GenerateQuestionServlet extends HttpServlet {
         requestBody.put("max_tokens", 1000);
         requestBody.put("temperature", 0.7);
 
+        // OpenAI API 요청 데이터 확인
+        System.out.println("OpenAI 요청 데이터: " + requestBody.toString());
+
         // JSON 데이터 전송
         try (OutputStream os = connection.getOutputStream()) {
             os.write(requestBody.toString().getBytes("UTF-8"));
@@ -129,6 +144,7 @@ public class GenerateQuestionServlet extends HttpServlet {
         System.out.println("OpenAI 응답 코드: " + responseCode);
 
         if (responseCode != 200) {
+            // OpenAI 응답 오류 처리
             BufferedReader errorReader = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "UTF-8"));
             StringBuilder errorResponse = new StringBuilder();
             String errorLine;
@@ -141,7 +157,7 @@ public class GenerateQuestionServlet extends HttpServlet {
         }
 
         BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
-        StringBuilder responseString = new StringBuilder(); // 변수명 변경
+        StringBuilder responseString = new StringBuilder();
         String line;
         while ((line = br.readLine()) != null) {
             responseString.append(line.trim());
@@ -152,18 +168,14 @@ public class GenerateQuestionServlet extends HttpServlet {
 
         // JSON 응답 파싱
         JSONObject jsonResponse = new JSONObject(responseString.toString());
-        // 질문 추출
         String question = jsonResponse
                 .getJSONArray("choices")
                 .getJSONObject(0)
                 .getJSONObject("message")
                 .getString("content");
 
-        // 디버깅 로그 추가
-        System.out.println("JSON 응답: " + jsonResponse.toString());
         System.out.println("추출된 질문: " + question);
 
-        // 질문 반환
         return question;
     }
 }

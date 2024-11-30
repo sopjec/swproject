@@ -1,4 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="org.zerock.jdbcex.dto.ResumeDTO" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.io.*" %>
+<%@ page import="java.net.*" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -203,16 +207,12 @@
 
 
     // 녹화 종료 버튼 이벤트 핸들러 (기존 유지)
-
-    document.getElementById('start-interview').addEventListener('click', () => {
-        console.log("면접 시작");
-    });
-
-
     document.getElementById('stop-recording').addEventListener('click', () => {
-        console.log("녹화 종료");
+        alert('녹화 종료!');
+
     });
 </script>
 
 </body>
 </html>
+
