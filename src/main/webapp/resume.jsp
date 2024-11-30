@@ -224,6 +224,16 @@
         .footer-bar button:hover {
             background-color: #575757;
         }
+
+        .highlight-words {
+            color: #007bff;           /* 파란색 글자색 */
+            font-weight: bold;        /* 두꺼운 글자 */
+        }
+
+        .highlight-words:hover {
+            color: #0056b3;           /* 마우스 오버 시 글자색 변경 */
+        }
+
     </style>
 
 </head>
@@ -305,7 +315,7 @@
         //새로운 숫자 박스 생성
         const newNumberBox = document.createElement("div");
         newNumberBox.classList.add("number-box");
-        newNumberBox.id = `box${totalQuestions}`;
+        newNumberBox.id = "box" + totalQuestions;
         newNumberBox.textContent = totalQuestions;
         newNumberBox.onclick = () => selectQuestion(totalQuestions);
         document.getElementById("controls-container").insertBefore(newNumberBox, document.getElementById("addQuestion"));
@@ -425,7 +435,14 @@
                     const resultBoxId = questionGroup.querySelector('.result-box').id; // Result Box ID 가져오기
 
                     const resultBox = document.getElementById(resultBoxId); // Result Box 찾기
-                    resultBox.textContent = data.replacedText; // 결과 텍스트 삽입
+
+                    const formattedText = data.replacedText
+                        .replace(/\[/g, "<span class='highlight-words'>")  // [를 <div>로 교체
+                        .replace(/\]/g, "</span>");  // ]를 </div>로 교체
+
+                    resultBox.innerHTML = formattedText;  // 텍스트가 아닌 HTML을 렌더링
+
+                   // resultBox.textContent = formattedText; // 결과 텍스트 삽입
                     adjustResultBoxHeight(resultBox);
                 } else {
                     alert('어휘 교체 중 오류가 발생했습니다.');

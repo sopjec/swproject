@@ -58,12 +58,16 @@ public class SpellCheckController extends HttpServlet {
         JsonObject requestBody = new JsonObject();
         requestBody.addProperty("model", "gpt-4-turbo");
         requestBody.addProperty("max_tokens", 500);
+        requestBody.addProperty("temperature", 0.7); // 창의성 정도
+        requestBody.addProperty("top_p", 1.0); // 다양성 설정
+        requestBody.addProperty("frequency_penalty", 0.2); // 반복 방지
+        requestBody.addProperty("presence_penalty", 0.5); // 새로운 아이디어 생성 유도
 
         JsonArray messages = new JsonArray();
 
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", "system");
-        systemMessage.addProperty("content", "자기소개서에 적합한 어휘이면서, 고급스럽고 직무에 적합한 단어로 교체해줘");
+        systemMessage.addProperty("content", "자기소개서에 적합하며 직무에 적합한 어휘로 교체해줘. 바뀐단어만 대괄호로 표시해줘");
         messages.add(systemMessage);
 
         JsonObject userMessage = new JsonObject();
