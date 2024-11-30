@@ -9,13 +9,13 @@ import org.modelmapper.config.Configuration;
 import org.modelmapper.convention.MatchingStrategies;
 
 public enum ConnectionUtil {
-    INSTANCE;
 
-    // Database connection details
-    private static final String URL = "jdbc:mariadb://localhost:3007/merijob_db";
+    INSTANCE, jdbc;
+
+    private static final String URL = "jdbc:mariadb://localhost:3306/merijob_db?useUnicode=true&characterEncoding=UTF-8&useSSL=false";
+
     private static final String USER = "root";
-    private static final String PASSWORD = "abcd980225*";
-
+    private static final String PASSWORD = "1111";
     // ModelMapper instance
     private final ModelMapper modelMapper;
 
@@ -32,12 +32,23 @@ public enum ConnectionUtil {
     // Method to get a database connection
     public Connection getConnection() throws SQLException {
         try {
-            // JDBC 드라이버 수동 로드 (필요 시)
+            // JDBC 드라이버 수동 로드
             Class.forName("org.mariadb.jdbc.Driver");
+            System.out.println("MariaDB JDBC Driver 로드 성공");
         } catch (ClassNotFoundException e) {
+            System.err.println("MariaDB JDBC Driver 로드 실패: " + e.getMessage());
             throw new RuntimeException("MariaDB JDBC Driver not found", e);
         }
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+
+        try {
+            // 데이터베이스 연결 생성
+            Connection connection = DriverManager.  getConnection(URL, USER, PASSWORD);
+            System.out.println("데이터베이스 연결 성공: " + URL);
+            return connection;
+        } catch (SQLException e) {
+            System.err.println("데이터베이스 연결 실패: " + e.getMessage());
+            throw e;
+        }
     }
 
     // Method to get the ModelMapper instance

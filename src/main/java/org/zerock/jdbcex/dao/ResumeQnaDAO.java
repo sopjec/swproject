@@ -27,7 +27,7 @@ public class ResumeQnaDAO {
     }
 
     public List<ResumeQnaDTO> getQnaByResumeId(int resumeId) throws Exception {
-        String sql = "SELECT question, answer FROM resume_qna WHERE resume_id = ?";
+        String sql = "SELECT id, question, answer FROM resume_qna WHERE resume_id = ?";
         List<ResumeQnaDTO> qnaList = new ArrayList<>();
 
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
@@ -38,6 +38,7 @@ public class ResumeQnaDAO {
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     ResumeQnaDTO qna = new ResumeQnaDTO();
+                    qna.setId(rs.getInt("id")); // 이 부분 확인
                     qna.setQuestion(rs.getString("question"));
                     qna.setAnswer(rs.getString("answer"));
                     qnaList.add(qna);
@@ -58,6 +59,20 @@ public class ResumeQnaDAO {
 
             pstmt.setInt(1, resumeId);
             pstmt.executeUpdate();
+        }
+    }
+
+    public void updateAnserById(int id, String answer) {
+        String sql = "UPDATE resume_qna SET answer = ? WHERE id = ?";
+        try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, answer);
+            pstmt.setLong(2, id);
+            pstmt.executeUpdate();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error updating answer by id", e);
         }
     }
 }

@@ -168,12 +168,12 @@
             &nbsp;
             <h3>기본 정보 입력</h3>
 
-            <form action="reviewUpload" method="post"> <!-- Servlet의 URL 매핑 -->
+            <form action="reviewUpload" method="POST"> <!-- Servlet의 URL 매핑 -->
                 <table>
                     <tbody>
                     <tr>
                         <td width ="150">기업명</td>
-                        <td><input type="text" name="user_id" id="input-user-id" placeholder="회사명" required></td>
+                        <td><input type="text" name="comname" id="input-user-id" placeholder="회사명" required></td>
                     </tr>
                     <tr>
                         <td>직무직업</td>
@@ -203,7 +203,7 @@
                     <tr>
                         <td>지역</td>
                         <td>
-                            <select name="industry">
+                            <select name="region">
                                 <option value="서울">서울</option>
                                 <option value="경기도">경기도</option>
                                 <option value="강원도">강원도</option>
@@ -225,5 +225,6 @@
                 <button type="submit" class="register-button">등록하기</button>
             </form>
         </div>
+    </div>
     </body>
 </html>

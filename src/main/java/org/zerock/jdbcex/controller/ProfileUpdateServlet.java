@@ -33,7 +33,7 @@ public class ProfileUpdateServlet extends HttpServlet {
         filePart.write(savePath);
 
         // 데이터베이스에 프로필 이미지 경로 저장
-        String profileUrl = "uploads/" + fileName;
+        String profileUrl = "img/" + fileName;
         boolean updateSuccess = userService.updateProfileImage(userId, profileUrl);
 
         if (updateSuccess) {

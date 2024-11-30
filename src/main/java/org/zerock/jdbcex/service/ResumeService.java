@@ -26,11 +26,13 @@ public class ResumeService {
         return resumeDAO.getResumesByUserId(userId);
     }
 
-    public void editResume(ResumeDTO resume) throws Exception {
-        resumeDAO.updateResume(resume);
+    public void updateTitleById(int id, String newTitle) throws Exception {
+        resumeDAO.updateResume(id, newTitle);
     }
 
     public void removeResume(int id, String userId) throws Exception {
         resumeDAO.deleteResume(id, userId);
     }
+
+
 }

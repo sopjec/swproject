@@ -198,6 +198,7 @@
 <body>
 
 <jsp:include page="header.jsp"/>
+
 <!-- 로그인 모달 -->
 <div id="login-modal" class="modal">
     <div class="modal-content">
