@@ -116,7 +116,7 @@
 </head>
 
 <body>
-<iframe src="header.jsp" style="border:none; width:100%; height:100px;"></iframe>
+<jsp:include page="header.jsp"/>
 
 <div class="container">
     <div class="sidebar">

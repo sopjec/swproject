@@ -31,7 +31,7 @@ public enum ConnectionUtil {
     // Method to get a database connection
     public Connection getConnection() throws SQLException {
         try {
-            // JDBC 드라이버 수동 로드 (필요 시)
+            // JDBC 드라이버 수동 로드
             Class.forName("org.mariadb.jdbc.Driver");
             System.out.println("MariaDB JDBC Driver 로드 성공");
         } catch (ClassNotFoundException e) {
@@ -48,7 +48,6 @@ public enum ConnectionUtil {
             System.err.println("데이터베이스 연결 실패: " + e.getMessage());
             throw e;
         }
-        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
     // Method to get the ModelMapper instance
