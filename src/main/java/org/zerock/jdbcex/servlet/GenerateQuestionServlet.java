@@ -15,6 +15,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import io.github.cdimascio.dotenv.Dotenv;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -30,7 +32,7 @@ public class GenerateQuestionServlet extends HttpServlet {
 
     static {
 	Dotenv dotenv = Dotenv.load();
-	OPENAI_API_KEY = dotenv.get("OPENAI_API_KEY);
+	OPENAI_API_KEY = dotenv.get("OPENAI_API_KEY");
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {

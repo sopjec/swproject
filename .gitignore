@@ -42,3 +42,7 @@ bin/
 .DS_Store.env
 
 .env.env
+
+.DS_Store
+
+.env

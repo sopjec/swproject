@@ -69,6 +69,7 @@ dependencies {
   //ObjectMapper
   implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 
+  implementation 'io.github.cdimascio:dotenv-java:3.0.0'
 
 }
 
