@@ -23,9 +23,9 @@ import org.json.JSONArray;
 @WebServlet("/api/generate-question")
 public class GenerateQuestionServlet extends HttpServlet {
     // MariaDB 연결 정보
-    private static final String DB_URL = "jdbc:mariadb://localhost:3306/merijob_db?useUnicode=true&characterEncoding=UTF-8&useSSL=false";
+    private static final String DB_URL = "jdbc:mariadb://localhost:3007/merijob_db?useUnicode=true&characterEncoding=UTF-8&useSSL=false";
     private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "1111";
+    private static final String DB_PASSWORD = "abcd980225*";
     // OpenAI API 키
     private static final String OPENAI_API_KEY;
 
