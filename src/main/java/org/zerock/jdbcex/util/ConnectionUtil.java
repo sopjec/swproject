@@ -12,9 +12,10 @@ public enum ConnectionUtil {
 
     INSTANCE, jdbc;
 
-    private static final String URL = "jdbc:mariadb://localhost:3306/merijob_db?useUnicode=true&characterEncoding=UTF-8";
+    private static final String URL = "jdbc:mariadb://localhost:3306/merijob_db?useUnicode=true&characterEncoding=UTF-8&useSSL=false";
+
     private static final String USER = "root";
-    private static final String PASSWORD = "1024";
+    private static final String PASSWORD = "1111";
     // ModelMapper instance
     private final ModelMapper modelMapper;
 

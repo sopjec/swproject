@@ -5,6 +5,8 @@
       <paths name="qwer">
         <serverdata>
           <mappings>
+            <mapping local="$PROJECT_DIR$/src/main" web="/" />
+            <mapping local="$PROJECT_DIR$/build/generated/sources/annotationProcessor/java/main" web="/" />
             <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
