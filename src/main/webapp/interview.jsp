@@ -1,8 +1,4 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="org.zerock.jdbcex.dto.ResumeDTO" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.io.*" %>
-<%@ page import="java.net.*" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -73,7 +69,7 @@
         }
         video, img {
             width: 100%;
-            max-height: 500px;
+            max-height: 400px; /* 면접자 화면 크기를 약간 줄임 */
             border: 2px solid #333;
             border-radius: 8px;
             box-sizing: border-box;
@@ -115,7 +111,6 @@
         .button-controls button:hover {
             background-color: #555;
         }
-
     </style>
 </head>
 
@@ -133,17 +128,22 @@
     <!-- 메인 컨텐츠 -->
     <div class="content">
         <div class="video-section-container">
+            <!-- 면접관 화면 -->
             <div class="video-section">
                 <h2>면접관 화면</h2>
                 <img id="interviewer-video" src="ai-character.png" alt="가상 면접관 AI 캐릭터">
                 <h2>면접관 텍스트 창</h2>
                 <div class="text-output" id="interviewer-text-output"></div>
             </div>
+
+            <!-- 면접자 화면 -->
             <div class="video-section">
                 <h2>면접자 화면</h2>
                 <video id="user-webcam" autoplay playsinline muted></video>
-                <!-- 웹캠 아래에 감정 분석 결과를 표시 -->
+                <!-- 웹캠 아래에 감정 분석 결과와 텍스트 창 추가 -->
                 <div class="expression-output" id="user-expression-output">표정 분석 결과가 여기에 표시됩니다.</div>
+                <h2>면접자 텍스트 창</h2>
+                <div class="text-output" id="user-text-output"></div>
             </div>
         </div>
 
@@ -194,7 +194,6 @@
     // 녹화 종료 버튼 이벤트 핸들러 (기존 유지)
     document.getElementById('stop-recording').addEventListener('click', () => {
         alert('녹화 종료!');
-
     });
 </script>
 
