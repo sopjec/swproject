@@ -157,12 +157,17 @@
 
 <script src="script.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const resumeId = "<%= request.getAttribute("resumeId") %>";
-        console.log(`Selected Resume ID: ${resumeId}`);
+    // URL에서 resumeId 가져오기
+    const urlParams = new URLSearchParams(window.location.search);
+    const resumeId = urlParams.get('resumeId'); // URL에서 resumeId 값 추출
 
     // 면접 시작 버튼 클릭 시 면접 질문 생성
     document.getElementById('start-interview').addEventListener('click', async () => {
+        if (!resumeId) {
+            alert('resumeId가 없습니다. URL을 확인하세요.');
+            return;
+        }
+
         try {
             // API 요청을 통해 질문 가져오기
             const response = await fetch('/api/generate-question', {
@@ -170,7 +175,7 @@
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: new URLSearchParams({ resumeId: '1' }) // resumeId는 실제 값으로 대체
+                body: new URLSearchParams({ resumeId }) // 동적으로 resumeId 가져옴
             });
 
             if (response.ok) {
