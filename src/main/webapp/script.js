@@ -44,7 +44,7 @@ async function loadModels() {
         console.log('tinyFaceDetector 모델 로드 성공');
         await faceapi.nets.faceExpressionNet.loadFromUri('/models');
         console.log('faceExpressionNet 모델 로드 성공');
-    } catch (error) {
+    } catch (error) {x``
         console.error('Face-api.js 모델 로드 중 오류:', error);
     }
 }
