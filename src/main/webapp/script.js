@@ -2,11 +2,9 @@ let mediaRecorder;
 let recordedChunks = [];
 let webcamStream;
 let expressionInterval;
-let questions = []; // 서버에서 받아온 질문 배열
-let currentQuestionIndex = 0; // 현재 질문 인덱스
-
-// Web Speech API 음성 인식 객체 생성
-let recognition = null;
+let questions = [];
+let currentQuestionIndex = 0;
+let isRecordingStarted = false; // 녹화 시작 여부 플래그
 
 // Face-api.js 모델 로드
 async function loadModels() {
@@ -38,7 +36,6 @@ async function analyzeExpressions() {
                     expressions[a] > expressions[b] ? a : b
                 );
 
-                // 감정 분석 결과를 웹캠 아래에 출력
                 expressionOutput.innerHTML = `현재 표정: ${dominantExpression} (${(expressions[dominantExpression] * 100).toFixed(2)}%)`;
                 console.log('감정 분석 결과:', expressions);
             } else {
@@ -51,79 +48,51 @@ async function analyzeExpressions() {
     }, 500); // 500ms 간격으로 분석
 }
 
-// 텍스트 음성 읽기 함수
-function readTextAloud(text) {
-    if (!window.speechSynthesis) {
-        console.error('이 브라우저는 Web Speech API를 지원하지 않습니다.');
-        return;
+// 페이지 녹화 시작
+async function startPageRecording() {
+    if (isRecordingStarted) {
+        console.warn('녹화가 이미 시작되었습니다.');
+        return; // 중복 호출 방지
     }
+    isRecordingStarted = true; // 녹화 시작 상태로 설정
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'ko-KR';
-    utterance.rate = 1;
-    utterance.pitch = 1;
-    speechSynthesis.speak(utterance);
-}
+    try {
+        const screenStream = await navigator.mediaDevices.getDisplayMedia({
+            video: { cursor: "always" },
+            audio: false,
+        });
 
-// 질문 표시 함수
-function displayQuestion() {
-    if (currentQuestionIndex < questions.length) {
-        const question = questions[currentQuestionIndex];
-        const formattedQuestion = `질문 ${currentQuestionIndex + 1}: ${question}`;
-        document.getElementById('interviewer-text-output').innerHTML = formattedQuestion;
-        readTextAloud(question); // 질문 읽기 추가
-    } else {
-        document.getElementById('interviewer-text-output').innerText = '모든 질문을 완료했습니다.';
-        listenToUserAnswer(); // 마지막 질문 이후 음성 입력 받기 시작
+        const combinedStream = new MediaStream([
+            ...screenStream.getVideoTracks(),
+            ...webcamStream.getVideoTracks(),
+            ...webcamStream.getAudioTracks(),
+        ]);
+
+        mediaRecorder = new MediaRecorder(combinedStream);
+        recordedChunks = [];
+
+        mediaRecorder.ondataavailable = function (event) {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+
+        mediaRecorder.onstop = saveRecording; // 녹화 종료 시 저장
+        mediaRecorder.start();
+
+        console.log('페이지 녹화가 시작되었습니다.');
+        alert('페이지와 웹캠 녹화가 시작되었습니다.');
+    } catch (error) {
+        console.error('페이지 녹화 중 오류:', error);
+        alert('페이지 녹화 중 문제가 발생했습니다.');
+        isRecordingStarted = false; // 오류 발생 시 다시 시작 가능하도록 설정
     }
-}
-
-// 음성을 텍스트로 변환하는 함수
-function listenToUserAnswer() {
-    if (!window.webkitSpeechRecognition && !window.SpeechRecognition) {
-        alert('이 브라우저는 음성 인식을 지원하지 않습니다.');
-        return;
-    }
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
-    recognition.lang = 'ko-KR';
-
-    // 음성 인식 시작
-    recognition.start();
-    console.log('음성 인식 시작');
-
-    recognition.onresult = function (event) {
-        const userAnswer = event.results[0][0].transcript;
-        console.log('음성 인식 결과:', userAnswer);
-
-        // 면접자 텍스트 창에 표시
-        document.getElementById('user-text-output').innerHTML = userAnswer;
-
-        // 다음 질문으로 넘어가거나 녹화 종료
-        if (currentQuestionIndex < questions.length - 1) {
-            currentQuestionIndex++;
-            displayQuestion();
-        } else {
-            stopRecording();
-            alert('면접이 완료되었습니다.');
-        }
-    };
-
-    recognition.onerror = function (event) {
-        console.error('음성 인식 오류:', event.error);
-        alert('음성 인식 중 오류가 발생했습니다.');
-    };
-
-    recognition.onend = function () {
-        console.log('음성 인식 종료');
-    };
 }
 
 // 면접 시작 버튼 클릭 시 질문 데이터를 가져오는 함수
-async function startInterviewProcess() {
+document.getElementById('start-interview').addEventListener('click', async () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const resumeId = urlParams.get('resumeId'); // URL에서 resumeId 값 추출
+    const resumeId = urlParams.get('resumeId');
 
     if (!resumeId) {
         alert('resumeId가 없습니다. URL을 확인하세요.');
@@ -131,27 +100,22 @@ async function startInterviewProcess() {
     }
 
     try {
-        // API 요청을 통해 질문 가져오기
         const response = await fetch('/api/generate-question', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: new URLSearchParams({ resumeId }), // 동적으로 resumeId 가져옴
+            body: new URLSearchParams({ resumeId }),
         });
 
         if (response.ok) {
-            const data = await response.json(); // JSON 데이터 파싱
-            console.log('API 응답 데이터:', data);
-
-            // 질문 데이터를 줄바꿈 기준으로 분리하여 배열로 저장
+            const data = await response.json();
             questions = data.question.split('\n').filter(q => q.trim() !== '');
-            currentQuestionIndex = 0; // 초기화
-            questions = questions.map(q => q.replace(/^\d+\.\s*/, '')); // 질문 접두어 제거
+            currentQuestionIndex = 0;
 
             if (questions.length > 0) {
-                // 첫 번째 질문 출력
-                displayQuestion();
+                document.getElementById('interviewer-text-output').innerHTML =
+                    `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
             } else {
                 document.getElementById('interviewer-text-output').innerText = '질문 데이터가 없습니다.';
             }
@@ -164,30 +128,75 @@ async function startInterviewProcess() {
         document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생 (클라이언트 문제)';
     }
 
-    startInterview();
-    setTimeout(() => {
-        startPageRecording();
-        console.log('3초 후 녹화 시작');
-    }, 3000); // 3초 대기 후 녹화 시작
+    startInterview(); // 면접 시작
+  //  startPageRecording(); // 녹화 시작
+});
+
+// 다음 질문 버튼 클릭 시 동작
+document.getElementById('next-question').addEventListener('click', () => {
+    if (questions.length === 0) {
+        document.getElementById('interviewer-text-output').innerText = '먼저 면접을 시작하세요.';
+        return;
+    }
+
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questions.length) {
+        document.getElementById('interviewer-text-output').innerHTML =
+            `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
+    } else {
+        document.getElementById('interviewer-text-output').innerText = '모든 질문을 완료했습니다.';
+        currentQuestionIndex--;
+
+        stopRecording(); // 녹화 종료
+        alert('면접이 끝났습니다.');
+    }
+});
+
+// 면접 시작
+async function startInterview() {
+    try {
+        console.log('웹캠 연결 시도 중...');
+        webcamStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const userWebcam = document.getElementById('user-webcam');
+        if (userWebcam) userWebcam.srcObject = webcamStream;
+        console.log('웹캠 스트림이 성공적으로 연결되었습니다.');
+
+        await loadModels(); // 모델 로드
+        console.log('감정 분석 시작...');
+        analyzeExpressions(); // 감정 분석 시작
+    } catch (error) {
+        console.error('웹캠 연결 오류:', error);
+        alert('웹캠과 마이크에 접근할 수 없습니다. 권한을 확인해주세요.');
+    }
 }
 
 // 녹화 저장
 function saveRecording() {
     const blob = new Blob(recordedChunks, { type: 'video/webm' });
     const url = URL.createObjectURL(blob);
-
     const downloadLink = document.createElement('a');
     downloadLink.href = url;
-
-    // 파일명에 자소서 제목 포함 (현재 `resumeId` 사용)
-    const resumeId = new URLSearchParams(window.location.search).get('resumeId');
-    downloadLink.download = `interview_record_resume_${resumeId}.webm`;
-
+    downloadLink.download = 'recording.webm'; // 저장할 파일명
     document.body.appendChild(downloadLink);
     downloadLink.click();
     console.log('녹화본 저장 완료');
 }
 
-// 기타 녹화, 감정 분석, 버튼 이벤트 리스너는 기존 코드 유지
-document.getElementById('start-interview').addEventListener('click', startInterviewProcess);
+// 녹화 종료
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        console.log('녹화 중지');
+    }
+    if (expressionInterval) {
+        clearInterval(expressionInterval);
+        console.log('감정 분석 중지');
+    }
+    if (webcamStream) {
+        webcamStream.getTracks().forEach(track => track.stop());
+        console.log('웹캠 스트림 중지');
+    }
+}
+
+// 버튼 이벤트 리스너 설정
 document.getElementById('stop-recording').addEventListener('click', stopRecording);
