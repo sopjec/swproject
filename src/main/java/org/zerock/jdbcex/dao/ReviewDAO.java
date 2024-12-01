@@ -31,7 +31,7 @@ public class ReviewDAO {
     }
     // 데이터 조회 메서드
     public List<ReviewDTO> getAllReviews() throws Exception {
-        String sql = "SELECT comname, job, experience, region, content FROM interview_review";
+        String sql = "SELECT id, comname, job, experience, region, content FROM interview_review";
 
         List<ReviewDTO> reviews = new ArrayList<>();
 
@@ -46,10 +46,38 @@ public class ReviewDAO {
                 review.setExperience(rs.getString("experience"));
                 review.setRegion(rs.getString("region"));
                 review.setContent(rs.getString("content"));
+                review.setId(Integer.parseInt(rs.getString("id")));
 
                 reviews.add(review); // 리스트에 데이터 추가
             }
         }
         return reviews;
     }
+
+    public ReviewDTO getReviewById(int reviewId) throws Exception {
+        String sql = "SELECT * FROM interview_review WHERE id = ?";
+
+
+        try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, reviewId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    ReviewDTO review = new ReviewDTO();
+                    review.setId(Integer.parseInt(rs.getString("id")));
+                    review.setUserId(rs.getString("user_id"));
+                    review.setComname(rs.getString("comname"));
+                    review.setJob(rs.getString("job"));
+                    review.setExperience(rs.getString("experience"));
+                    review.setRegion(rs.getString("region"));
+                    review.setContent(rs.getString("content"));
+                    return review;
+                }
+            }
+        }
+        return null;
+    }
+
 }
