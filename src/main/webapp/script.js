@@ -8,6 +8,10 @@ let isRecordingStarted = false; // 녹화 시작 여부 플래그
 let isFirstQuestionDisplayed = false; // 첫 질문 출력 여부 플래그
 let isSpeaking = false; // 음성 재생 상태 플래그
 
+// URL에서 resumeId 가져오기
+const urlParams = new URLSearchParams(window.location.search);
+const resumeId = urlParams.get('resumeId'); // URL에서 resumeId 값 추출
+
 // 텍스트 음성 읽기 함수
 function readTextAloud(text) {
     if (!window.speechSynthesis) {
@@ -44,7 +48,7 @@ async function loadModels() {
         console.log('tinyFaceDetector 모델 로드 성공');
         await faceapi.nets.faceExpressionNet.loadFromUri('/models');
         console.log('faceExpressionNet 모델 로드 성공');
-    } catch (error) {x``
+    } catch (error) {
         console.error('Face-api.js 모델 로드 중 오류:', error);
     }
 }
@@ -237,4 +241,6 @@ function stopRecording() {
 }
 
 // 버튼 이벤트 리스너 설정
-document.getElementById('stop-recording').addEventListener('click', stopRecording);
+document.getElementById('stop-recording').addEventListener('click', () => {
+    alert('녹화 종료!');
+});
