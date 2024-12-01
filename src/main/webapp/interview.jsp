@@ -126,7 +126,7 @@
     <div class="sidebar">
         <ul>
             <li><a href="/resume?action=interview">면접 보기</a></li>
-            <li><a href="interview_view.jsp">면접 기록 조회</a></li>
+            <li><a href="interviewView">면접 기록 조회</a></li>
         </ul>
     </div>
 
@@ -161,57 +161,6 @@
 </div>
 
 <script src="script.js"></script>
-<script>
-    // URL에서 resumeId 가져오기
-    const urlParams = new URLSearchParams(window.location.search);
-    const resumeId = urlParams.get('resumeId'); // URL에서 resumeId 값 추출
-
-    // 면접 시작 버튼 클릭 시 면접 질문 생성
-    document.getElementById('start-interview').addEventListener('click', async () => {
-        if (!resumeId) {
-            alert('resumeId가 없습니다. URL을 확인하세요.');
-            return;
-        }
-
-        try {
-            // API 요청을 통해 질문 가져오기
-            const response = await fetch('/api/generate-question', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({ resumeId }), // 동적으로 resumeId 가져옴
-            });
-
-            console.log('API 응답 상태:', response.status); // 상태 코드 확인용 로그
-
-            if (response.ok) {
-                const data = await response.json(); // JSON 데이터 파싱
-                console.log('API 응답 데이터:', data); // JSON 데이터 확인
-
-                // 질문 데이터 포맷팅 및 출력
-                const question = data.question || '질문 생성 실패';
-                const formattedQuestion = question.replace(/\n/g, '<br>'); // 줄바꿈 처리
-                document.getElementById('interviewer-text-output').innerHTML = formattedQuestion;
-            } else {
-                // 응답 상태 코드가 OK가 아닐 때 처리
-                console.error('서버 오류:', response.statusText);
-                document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생 (서버 문제)';
-            }
-        } catch (error) {
-            // 네트워크 오류 또는 클라이언트 측 문제 처리
-            console.error('질문 생성 중 오류:', error);
-            document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생 (클라이언트 문제)';
-        }
-    });
-
-
-    // 녹화 종료 버튼 이벤트 핸들러 (기존 유지)
-    document.getElementById('stop-recording').addEventListener('click', () => {
-        alert('녹화 종료!');
-
-    });
-</script>
 
 </body>
 </html>

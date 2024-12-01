@@ -6,6 +6,7 @@ import org.zerock.jdbcex.dto.ReviewDTO;
 import org.zerock.jdbcex.dto.UserDTO;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,7 +18,10 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/reviewUpload")
 public class ReviewController extends HttpServlet {
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnsupportedEncodingException {
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
+
         ReviewDAO reviewDAO = new ReviewDAO();
         try {
             List<ReviewDTO> reviews = reviewDAO.getAllReviews(); // DB에서 리뷰 목록 가져오기
@@ -30,6 +34,9 @@ public class ReviewController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
+
         HttpSession session = request.getSession(false);
         // 데이터베이스 접근 객체 생성
         ReviewDAO reviewDAO = new ReviewDAO();
