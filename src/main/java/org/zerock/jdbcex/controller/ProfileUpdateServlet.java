@@ -64,16 +64,11 @@ public class ProfileUpdateServlet extends HttpServlet {
 
         response.setContentType("application/json");
         if (isUpdated) {
-            // 세션에 저장된 사용자 정보 업데이트
-            UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
-            if (loggedInUser != null) {
-                loggedInUser.setProfileUrl(imageUrl); // 새로운 URL로 갱신
-                session.setAttribute("loggedInUser", loggedInUser); // 세션 다시 저장
-            }
-            response.getWriter().write("{\"success\": true}");
+            response.getWriter().write("{\"success\": true, \"imageUrl\": \"" + imageUrl + "\"}");
         } else {
             response.getWriter().write("{\"success\": false, \"message\": \"Database update failed\"}");
         }
+
     }
 
 }

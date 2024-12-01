@@ -119,26 +119,8 @@ async function startPageRecording() {
     }
 }
 
-// 면접 시작
-async function startInterview() {
-    try {
-        console.log('웹캠 연결 시도 중...');
-        webcamStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        const userWebcam = document.getElementById('user-webcam');
-        if (userWebcam) userWebcam.srcObject = webcamStream;
-        console.log('웹캠 스트림이 성공적으로 연결되었습니다.');
-
-        await loadModels(); // 모델 로드
-        console.log('감정 분석 시작...');
-        analyzeExpressions(); // 감정 분석 시작
-    } catch (error) {
-        console.error('웹캠 연결 오류:', error);
-        alert('웹캠과 마이크에 접근할 수 없습니다. 권한을 확인해주세요.');
-    }
-}
-
-// 면접 시작 버튼 클릭 핸들러
-function startInterviewHandler() {
+// 면접 시작 버튼 클릭 시 질문 데이터를 가져오는 함수
+document.getElementById('start-interview').addEventListener('click', async () => {
     if (isFirstQuestionDisplayed) {
         console.warn('첫 질문이 이미 출력되었습니다.');
         return; // 중복 실행 방지
@@ -152,15 +134,17 @@ function startInterviewHandler() {
         return;
     }
 
-    fetch('/api/generate-question', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({ resumeId }),
-    })
-        .then(response => response.json())
-        .then(data => {
+    try {
+        const response = await fetch('/api/generate-question', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({ resumeId }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
             questions = data.question.split('\n').filter(q => q.trim() !== '');
             currentQuestionIndex = 0;
 
@@ -174,17 +158,20 @@ function startInterviewHandler() {
             } else {
                 document.getElementById('interviewer-text-output').innerText = '질문 데이터가 없습니다.';
             }
-        })
-        .catch(error => {
-            console.error('질문 생성 중 오류:', error);
-            document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생.';
-        });
+        } else {
+            console.error('서버 오류:', response.statusText);
+            document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생 (서버 문제)';
+        }
+    } catch (error) {
+        console.error('질문 생성 중 오류:', error);
+        document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생 (클라이언트 문제)';
+    }
 
     startInterview(); // 면접 시작
-}
+});
 
-// 다음 질문 버튼 클릭 핸들러
-function nextQuestionHandler() {
+// 다음 질문 버튼 클릭 시 동작
+document.getElementById('next-question').addEventListener('click', () => {
     if (questions.length === 0) {
         document.getElementById('interviewer-text-output').innerText = '먼저 면접을 시작하세요.';
         return;
@@ -201,6 +188,24 @@ function nextQuestionHandler() {
 
         stopRecording(); // 녹화 종료
         alert('면접이 끝났습니다.');
+    }
+});
+
+// 면접 시작
+async function startInterview() {
+    try {
+        console.log('웹캠 연결 시도 중...');
+        webcamStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const userWebcam = document.getElementById('user-webcam');
+        if (userWebcam) userWebcam.srcObject = webcamStream;
+        console.log('웹캠 스트림이 성공적으로 연결되었습니다.');
+
+        await loadModels(); // 모델 로드
+        console.log('감정 분석 시작...');
+        analyzeExpressions(); // 감정 분석 시작
+    } catch (error) {
+        console.error('웹캠 연결 오류:', error);
+        alert('웹캠과 마이크에 접근할 수 없습니다. 권한을 확인해주세요.');
     }
 }
 
@@ -232,7 +237,5 @@ function stopRecording() {
     }
 }
 
-// 이벤트 리스너 설정
-document.getElementById('start-interview').addEventListener('click', startInterviewHandler);
-document.getElementById('next-question').addEventListener('click', nextQuestionHandler);
+// 버튼 이벤트 리스너 설정
 document.getElementById('stop-recording').addEventListener('click', stopRecording);

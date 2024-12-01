@@ -1,4 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="org.zerock.jdbcex.dto.ResumeDTO" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.io.*" %>
+<%@ page import="java.net.*" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -16,16 +20,19 @@
             margin: 0;
             padding: 0;
         }
+        /* 메인 레이아웃 설정 */
         .container {
             display: flex;
             max-width: 1200px;
             margin: 20px auto;
             padding: 0 20px;
         }
+        /* 메인 컨텐츠 */
         .content {
             flex-grow: 1;
             padding-left: 20px;
         }
+        /* 왼쪽 사이드바 스타일 */
         .sidebar {
             width: 200px;
             padding: 20px;
@@ -48,6 +55,7 @@
         .sidebar li:hover {
             background-color: #e0e0e0;
         }
+        /*오른쪽 컨텐츠 스타일*/
         h2 {
             color: #333;
             margin-bottom: 10px;
@@ -65,7 +73,7 @@
         }
         video, img {
             width: 100%;
-            max-height: 400px;
+            max-height: 400px; /* 면접자 화면 크기를 약간 줄임 */
             border: 2px solid #333;
             border-radius: 8px;
             box-sizing: border-box;
@@ -107,6 +115,7 @@
         .button-controls button:hover {
             background-color: #555;
         }
+
     </style>
 </head>
 
@@ -121,18 +130,22 @@
         </ul>
     </div>
 
+    <!-- 메인 컨텐츠 -->
     <div class="content">
         <div class="video-section-container">
+            <!-- 면접관 화면 -->
             <div class="video-section">
                 <h2>면접관 화면</h2>
                 <img id="interviewer-video" src="ai-character.png" alt="가상 면접관 AI 캐릭터">
                 <h2>면접관 텍스트 창</h2>
-                <div class="text-output" id="interviewer-text-output">질문 내용이 여기에 표시됩니다.</div>
+                <div class="text-output" id="interviewer-text-output"></div>
             </div>
 
+            <!-- 면접자 화면 -->
             <div class="video-section">
                 <h2>면접자 화면</h2>
                 <video id="user-webcam" autoplay playsinline muted></video>
+                <!-- 웹캠 아래에 감정 분석 결과와 텍스트 창 추가 -->
                 <div class="expression-output" id="user-expression-output">표정 분석 결과가 여기에 표시됩니다.</div>
                 <h2>면접자 텍스트 창</h2>
                 <div class="text-output" id="user-text-output"></div>
@@ -149,62 +162,55 @@
 
 <script src="script.js"></script>
 <script>
+    // URL에서 resumeId 가져오기
     const urlParams = new URLSearchParams(window.location.search);
-    const resumeId = urlParams.get('resumeId');
+    const resumeId = urlParams.get('resumeId'); // URL에서 resumeId 값 추출
 
-    function readTextAloud(text) {
-        if (!window.speechSynthesis) {
-            console.error('이 브라우저는 Web Speech API를 지원하지 않습니다.');
-            return;
-        }
-
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'ko-KR';
-        utterance.rate = 1;
-        utterance.pitch = 1;
-        speechSynthesis.speak(utterance);
-    }
-
-    async function startInterviewProcess() {
+    // 면접 시작 버튼 클릭 시 면접 질문 생성
+    document.getElementById('start-interview').addEventListener('click', async () => {
         if (!resumeId) {
             alert('resumeId가 없습니다. URL을 확인하세요.');
             return;
         }
 
         try {
-            const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-            console.log('화면 공유 시작됨:', stream);
+            // API 요청을 통해 질문 가져오기
+            const response = await fetch('/api/generate-question', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({ resumeId }), // 동적으로 resumeId 가져옴
+            });
 
-            alert('3초 후 면접 질문을 시작합니다.');
-            setTimeout(async () => {
-                const response = await fetch('/api/generate-question', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({ resumeId }),
-                });
+            console.log('API 응답 상태:', response.status); // 상태 코드 확인용 로그
 
-                console.log('API 응답 상태:', response.status);
+            if (response.ok) {
+                const data = await response.json(); // JSON 데이터 파싱
+                console.log('API 응답 데이터:', data); // JSON 데이터 확인
 
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('API 응답 데이터:', data);
-
-                    const question = data.question || '질문 생성 실패';
-                    document.getElementById('interviewer-text-output').innerHTML = question.replace(/\n/g, '<br>');
-                    readTextAloud(question); // 질문 읽기 시작
-                } else {
-                    document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생';
-                }
-            }, 3000); // 3초 대기
+                // 질문 데이터 포맷팅 및 출력
+                const question = data.question || '질문 생성 실패';
+                const formattedQuestion = question.replace(/\n/g, '<br>'); // 줄바꿈 처리
+                document.getElementById('interviewer-text-output').innerHTML = formattedQuestion;
+            } else {
+                // 응답 상태 코드가 OK가 아닐 때 처리
+                console.error('서버 오류:', response.statusText);
+                document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생 (서버 문제)';
+            }
         } catch (error) {
-            console.error('화면 공유 오류:', error);
-            alert('화면 공유 중 문제가 발생했습니다.');
+            // 네트워크 오류 또는 클라이언트 측 문제 처리
+            console.error('질문 생성 중 오류:', error);
+            document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생 (클라이언트 문제)';
         }
-    }
+    });
 
-    document.getElementById('start-interview').addEventListener('click', startInterviewProcess);
+
+    // 녹화 종료 버튼 이벤트 핸들러 (기존 유지)
+    document.getElementById('stop-recording').addEventListener('click', () => {
+        alert('녹화 종료!');
+
+    });
 </script>
 
 </body>

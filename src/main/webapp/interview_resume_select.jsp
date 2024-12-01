@@ -211,7 +211,7 @@
     <div class="sidebar">
         <ul>
             <li><a href="/resume?action=interview">면접 보기</a></li>
-            <li><a href="interview_view.jsp">면접 기록 조회</a></li>
+            <li><a href="interviewView">면접 기록 조회</a></li>
         </ul>
     </div>
 
