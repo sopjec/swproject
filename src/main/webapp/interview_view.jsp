@@ -202,7 +202,7 @@
         table.style.display = "none";
 
         // 동영상 소스 설정 (URL 인코딩)
-        videoPlayer.src = "/download/" + title + ".webm";
+        videoPlayer.src = "/videos/" + title + ".webm";
 
         // 비디오 컨테이너 표시
         videoContainer.style.display = "block";
