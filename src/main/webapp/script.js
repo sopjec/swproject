@@ -97,37 +97,7 @@ document.getElementById('start-interview').addEventListener('click', async () =>
         return;
     }
 
-    try {
-        const response = await fetch('/api/generate-question', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({ resumeId }),
-        });
 
-        if (response.ok) {
-            const data = await response.json();
-            questions = data.question.split('\n').filter(q => q.trim() !== '');
-            questions = questions.map(q => q.replace(/^\d+\.\s*/, '')); // 접두어 제거
-            currentQuestionIndex = 0; // 첫 질문 인덱스 초기화
-
-            if (questions.length > 0) {
-                const question = `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
-                document.getElementById('interviewer-text-output').innerHTML = question;
-                readTextAloud(question); // 질문 음성으로 읽기
-                isFirstQuestionDisplayed = true; // 첫 질문 출력 플래그 설정
-            } else {
-                document.getElementById('interviewer-text-output').innerText = '질문 데이터가 없습니다.';
-            }
-        } else {
-            console.error('서버 오류:', response.statusText);
-            document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생 (서버 문제)';
-        }
-    } catch (error) {
-        console.error('질문 생성 중 오류:', error);
-        document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생 (클라이언트 문제)';
-    }
 
     startInterview(); // 면접 시작
     startPageRecording();
@@ -202,10 +172,40 @@ async function startPageRecording() {
         mediaRecorder.start();
 
         console.log('페이지 녹화가 시작되었습니다.');
-        alert('페이지와 웹캠 녹화가 시작되었습니다.');
     } catch (error) {
         console.error('페이지 녹화 중 오류:', error);
         alert('페이지 녹화 중 문제가 발생했습니다.');
+    }
+    try {
+        const response = await fetch('/api/generate-question', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({ resumeId }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            questions = data.question.split('\n').filter(q => q.trim() !== '');
+            questions = questions.map(q => q.replace(/^\d+\.\s*/, '')); // 접두어 제거
+            currentQuestionIndex = 0; // 첫 질문 인덱스 초기화
+
+            if (questions.length > 0) {
+                const question = `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
+                document.getElementById('interviewer-text-output').innerHTML = question;
+                readTextAloud(question); // 질문 음성으로 읽기
+                isFirstQuestionDisplayed = true; // 첫 질문 출력 플래그 설정
+            } else {
+                document.getElementById('interviewer-text-output').innerText = '질문 데이터가 없습니다.';
+            }
+        } else {
+            console.error('서버 오류:', response.statusText);
+            document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생 (서버 문제)';
+        }
+    } catch (error) {
+        console.error('질문 생성 중 오류:', error);
+        document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생 (클라이언트 문제)';
     }
 }
 
