@@ -190,10 +190,12 @@
             border-radius: 4px;
             background-color: #f9f9f9;
             color: #333;
-            height: 100px;
-            overflow-y: auto;
             box-sizing: border-box;
+            overflow: hidden; /* 스크롤을 숨깁니다. */
+            min-height: 50px; /* 최소 높이 */
+            height: auto; /* 텍스트에 맞게 높이 자동 조정 */
         }
+
         /* 고정된 하단 영역 스타일 */
         .footer-bar {
             position: fixed; /* 화면 고정 */
@@ -222,6 +224,16 @@
         .footer-bar button:hover {
             background-color: #575757;
         }
+
+        .highlight-words {
+            color: #007bff;           /* 파란색 글자색 */
+            font-weight: bold;        /* 두꺼운 글자 */
+        }
+
+        .highlight-words:hover {
+            color: #0056b3;           /* 마우스 오버 시 글자색 변경 */
+        }
+
     </style>
 
 </head>
@@ -262,7 +274,7 @@
                             <textarea id = "answer" name="answer" placeholder="내용을 입력해 주세요" maxlength="500" oninput="updateCharCount(this)"></textarea>
                             <div class="char-count">0 / 500 자 (공백 포함)</div>
                             <div class="coaching-buttons">
-                                <button onclick="getSpellCheck(this, event)">맞춤법 검사 받기</button>
+                                <button onclick="getSpellCheck(this, event)">맞춤법 및 어휘 검사</button>
                                 <button onclick="getAICoaching(this, event)">자기소개서 코칭 받기</button>
                             </div>
                             <div class="result-box" name="resultBox" id = "resultBox1"></div>
@@ -290,7 +302,7 @@
         document.querySelectorAll(".number-box").forEach(box => box.classList.remove("selected"));
 
         // 선택된 숫자박스 강조
-        const selectedBox = document.getElementById(`box${number}`);
+        const selectedBox = document.getElementById("box" + number);
         selectedBox.classList.add("selected");
 
         // 선택된 문항 번호 저장
@@ -303,7 +315,7 @@
         //새로운 숫자 박스 생성
         const newNumberBox = document.createElement("div");
         newNumberBox.classList.add("number-box");
-        newNumberBox.id = `box${totalQuestions}`;
+        newNumberBox.id = "box" + totalQuestions;
         newNumberBox.textContent = totalQuestions;
         newNumberBox.onclick = () => selectQuestion(totalQuestions);
         document.getElementById("controls-container").insertBefore(newNumberBox, document.getElementById("addQuestion"));
@@ -320,8 +332,8 @@
             "<textarea name='answer' placeholder='내용을 입력해 주세요' maxlength='500' oninput='updateCharCount(this)'></textarea>" +
             "<div class='char-count'>0 / 500 자 (공백 포함)</div>" +
             "<div class='coaching-buttons'>" +
-            "<button onclick='getSpellCheck(this, event)'>맞춤법 검사 받기</button>" +
-            "<button onclick='getAICoaching(this)'>자기소개서 코칭 받기</button>" +
+            "<button onclick='getSpellCheck(this, event)'>맞춤법 및 어휘 검사</button>" +
+            "<button onclick='getAICoaching(this, event)'>자기소개서 코칭 받기</button>" +
             "</div>" +
             "<div class='result-box' name='resultBox' id='resultBox" + totalQuestions + "'></div>" +
             "</div>";
@@ -336,8 +348,8 @@
     document.getElementById("removeQuestion").addEventListener("click", () => {
         if (totalQuestions > 1) {
             // 선택된 숫자박스와 문항박스 삭제
-            const selectedBox = document.getElementById(`box${selectedQuestion}`);
-            const selectedQuestionBox = document.getElementById(`question${selectedQuestion}`);
+            const selectedBox = document.getElementById("box" + selectedQuestion);
+            const selectedQuestionBox = document.getElementById("question" + selectedQuestion);
 
             if (selectedBox && selectedQuestionBox) {
                 selectedBox.remove();
@@ -348,14 +360,14 @@
                 const questionGroups = document.querySelectorAll(".question-group");
 
                 numberBoxes.forEach((box, index) => {
-                    box.id = `box${index + 1}`;
+                    box.id = "box" + index + 1;
                     box.textContent = index + 1;
                     box.onclick = () => selectQuestion(index + 1); // 번호에 따라 다시 클릭 이벤트 연결
                 });
 
                 questionGroups.forEach((group, index) => {
-                    group.id = `question${index + 1}`;
-                    group.querySelector("h3").textContent = `${index + 1}번 문항`;
+                    group.id = "question" + index + 1;
+                    group.querySelector("h3").textContent = index + 1 + "번 문항";
                 });
 
                 totalQuestions--;
@@ -374,11 +386,15 @@
         }
     });
 
+    function adjustResultBoxHeight(resultBox) {
+        resultBox.style.height = 'auto'; // 높이를 자동으로 조정
+        resultBox.style.height = resultBox.scrollHeight + 'px'; // 텍스트 크기에 맞게 높이 설정
+    }
 
     // 글자 수 업데이트
     function updateCharCount(textarea) {
         const charCountElement = textarea.parentElement.querySelector(".char-count");
-        charCountElement.textContent = `${textarea.value.length} / ${textarea.maxLength} 자 (공백 포함)`;
+        charCountElement.textContent = textarea.value.length / textarea.maxLength + "자 (공백 포함)";
     }
 
     // 초기 숫자 박스 선택 상태 설정
@@ -387,7 +403,7 @@
     //글자수 세기
     function updateCharCount(textarea) {
         const charCountElement = textarea.parentElement.querySelector(".char-count");
-        charCountElement.textContent = `${textarea.value.length} / ${textarea.maxLength} 자 (공백 포함)`;
+        charCountElement.textContent = textarea.value.length / textarea.maxLength + " 자 (공백 포함)";
     }
 
     // 맞춤법 검사 및 어휘 교체
@@ -396,6 +412,10 @@
         const questionGroup = button.closest('.question-group');
         const answerTextarea = questionGroup.querySelector('textarea');
         const answerText = answerTextarea.value;
+        const resultBoxId = questionGroup.querySelector('.result-box').id; // Result Box ID 가져오기
+        console.log(resultBoxId);
+        const resultBox = document.getElementById(resultBoxId);
+        resultBox.innerHTML = "검사 중 ...";
 
         console.log("answer : " + answerText);
 
@@ -415,7 +435,15 @@
                     const resultBoxId = questionGroup.querySelector('.result-box').id; // Result Box ID 가져오기
 
                     const resultBox = document.getElementById(resultBoxId); // Result Box 찾기
-                    resultBox.textContent = data.replacedText; // 결과 텍스트 삽입
+
+                    const formattedText = data.replacedText
+                        .replace(/\[/g, "<span class='highlight-words'>")  // [를 <div>로 교체
+                        .replace(/\]/g, "</span>");  // ]를 </div>로 교체
+
+                    resultBox.innerHTML = formattedText;  // 텍스트가 아닌 HTML을 렌더링
+
+                   // resultBox.textContent = formattedText; // 결과 텍스트 삽입
+                    adjustResultBoxHeight(resultBox);
                 } else {
                     alert('어휘 교체 중 오류가 발생했습니다.');
                 }
@@ -425,12 +453,14 @@
                 alert('어휘 교체 요청 실패.');
             });
     }
-    //자소서 분석 코칭ㅇ긴응
     function getAICoaching(button, event) {
         event.preventDefault(); // 기본 폼 제출 동작 방지
         const questionGroup = button.closest('.question-group');
         const answerTextarea = questionGroup.querySelector('textarea');
         const answerText = answerTextarea.value;
+        const resultBoxId = questionGroup.querySelector('.result-box').id; // Result Box ID 가져오기
+        const resultBox = document.getElementById(resultBoxId);
+        resultBox.innerHTML = "AI 분석 중 ...";
 
         console.log("answer : " + answerText);
 
@@ -444,13 +474,18 @@
             .then(response => response.json())
             .then(data => {
                 if (data && data.replacedText) {
-                    // 결과를 Result Box에 출력
                     console.log("Response Text:", data.replacedText);
                     const questionGroup = button.closest('.question-group'); // 현재 버튼이 포함된 문항 찾기
                     const resultBoxId = questionGroup.querySelector('.result-box').id; // Result Box ID 가져오기
 
                     const resultBox = document.getElementById(resultBoxId); // Result Box 찾기
-                    resultBox.textContent = data.replacedText; // 결과 텍스트 삽입
+
+                    // 줄바꿈 문자(\n)를 <br> 태그로 변환
+                    const formattedText = data.replacedText.replace(/\n/g, "<br>");
+
+                    // HTML 형식으로 결과 삽입
+                    resultBox.innerHTML = formattedText;
+                    adjustResultBoxHeight(resultBox);
                 } else {
                     alert('AI 코칭 중 오류가 발생했습니다.');
                 }

@@ -26,6 +26,7 @@ dependencies {
   implementation 'com.squareup.okhttp3:okhttp:4.11.0'
   implementation 'com.google.code.gson:gson:2.10'
 
+
   // Servlet API
   compileOnly('javax.servlet:javax.servlet-api:4.0.1')
 
@@ -61,12 +62,16 @@ dependencies {
   // JSON 처리 (org.json)
   implementation 'org.json:json:20210307'
 
+
   // Gson: JSON 파싱 라이브러리
   implementation 'com.google.code.gson:gson:2.8.9'
 
   implementation group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.2'
   //ObjectMapper
   implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+
+  implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+
 }
 
 

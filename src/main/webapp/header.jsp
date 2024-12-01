@@ -86,44 +86,49 @@
     }
   </style>
   <script>
+    // checkSessionAndNavigate 함수를 전역 스코프로 정의
+    function checkSessionAndNavigate(url) {
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", "/checkSession", true);
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText);
+          if (response.isLoggedIn) {
+            window.location.href = url;
+          } else {
+            // 세션이 없으면 모달창 표시
+            const modal = document.getElementById("login-modal");
+            if (modal) {
+              modal.style.display = "block";
+            }
+          }
+        } else {
+          console.error("세션 확인 중 오류 발생");
+        }
+      };
+      xhr.send();
+    }
+
+    // DOMContentLoaded 이벤트 처리
     document.addEventListener("DOMContentLoaded", function () {
       const modal = document.getElementById("login-modal");
       const closeModal = document.getElementById("close-modal");
       const goLogin = document.getElementById("go-login");
 
-      closeModal.addEventListener("click", () => {
-        modal.style.display = "none";
-      });
-
-      goLogin.addEventListener("click", () => {
-        window.location.href = "login.jsp";
-      });
-
-      function checkSessionAndNavigate(url) {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "/checkSession", true);
-        xhr.onload = function () {
-          if (xhr.status === 200) {
-            const response = JSON.parse(xhr.responseText);
-            if (response.isLoggedIn) {
-              // 세션이 있으면 URL로 이동
-              window.location.href = url;
-            } else {
-              // 세션이 없으면 모달창 표시
-              modal.style.display = "block";
-            }
-          } else {
-            console.error("세션 확인 중 오류 발생");
-          }
-        };
-        xhr.send();
+      if (closeModal) {
+        closeModal.addEventListener("click", () => {
+          modal.style.display = "none";
+        });
       }
 
-      // 페이지 내에서 사용하는 함수도 이벤트 리스너 안에 포함
-      window.checkSessionAndNavigate = checkSessionAndNavigate;
+      if (goLogin) {
+        goLogin.addEventListener("click", () => {
+          window.location.href = "login.jsp";
+        });
+      }
     });
-
   </script>
+
 </head>
 
 <body>
@@ -149,7 +154,7 @@
         String userId = loggedInUser.getId(); // 사용자 ID
     %>
     <!-- 프로필 사진과 사용자 아이디 표시 -->
-    <img src="<%= (profileImagePath != null && !profileImagePath.isEmpty()) ? profileImagePath : "default-profile.png" %>"
+    <img id="header-profile-pic" src="<%= (profileImagePath != null && !profileImagePath.isEmpty()) ? profileImagePath : "default-profile.png" %>"
          alt="Profile Picture" class="profile-pic">
     <a href="mypage.jsp" class="username"><%= userId %>님</a> <!-- 아이디 클릭 시 mypage.jsp로 이동 -->
     <a href="logout">로그아웃</a>

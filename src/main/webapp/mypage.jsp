@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="org.zerock.jdbcex.dto.UserDTO" %> <!-- UserDTO 클래스 임포트 -->
+<%@ page import="org.zerock.jdbcex.dto.UserDTO" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -53,34 +53,78 @@
             flex-grow: 1;
             padding-left: 20px;
         }
-
-        #profileImage {
-            width: 100px;
-            height: 100px;
-            display: block;
-            margin: 0 auto 20px auto;
+        /* 메인 프로필 이미지 스타일 */
+        .profile-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .profile-image {
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #ddd;
-            background-color: #ffffff;
-        }
-        .custom-file-upload {
-            height: 25px;
-            width: 130px;
-            font-size: 14px;
-            line-height: 25px;
-            text-align: center;
-            color: white;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: #333;
-            margin: 10px auto;
-            display: block;
             cursor: pointer;
+            border: 2px solid #ddd;
+            transition: border-color 0.3s ease;
         }
-        .custom-file-upload:hover {
-            background-color: #000;
+        .profile-image:hover {
+            border-color: #000000;
         }
+        /* 팝업 기본 스타일 */
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 반투명한 검정 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hidden {
+            display: none;
+        }
+        /* 팝업 내부 컨텐츠 */
+        .popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+        }
+        .thumbnail-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .thumbnail {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease;
+            pointer-events: auto;
+        }
+        .thumbnail:hover {
+            border-color: #343434;
+        }
+        .thumbnail.selected {
+            border-color: #007BFF; /* 파란색 테두리 */
+            transform: scale(1.1); /* 약간 확대 효과 */
+        }
+
+        button {
+            background-color: #343434;
+            color: white;
+        }
+        button:hover {
+            background-color: #575757;
+        }
+
 
         .authSection {
             max-width: 400px;
@@ -120,7 +164,6 @@
             color: #555;
         }
     </style>
-
 </head>
 
 <body>
@@ -132,51 +175,114 @@
         response.sendRedirect("login.jsp"); // 로그인되지 않은 경우 로그인 페이지로 리디렉트
         return;
     }
+    // 로그인된 사용자 정보 출력
+    System.out.println("로그인된 사용자: " + loggedInUser.getId());
 %>
 
 <jsp:include page="header.jsp"/>
-
 
 <div class="container">
     <div class="sidebar">
         <ul>
             <li><a href="mypage.jsp">내계정</a></li>
-            <li><a href="resume">자기소개서 조회</a></li>
-            <li><a href="interview_view.jsp">면접 녹화 기록 조회</a></li>
-            <li><a href="jobposting/jobScrap.jsp">저장된 공고 목록</a></li>
+            <li><a href="resume_view?action=view">자기소개서 조회</a></li>
+            <li><a href=interview_view?action=interview_view">면접 녹화 기록 조회</a></li>
+            <li><a href="jobScrap?action=jobScrap.jsp">저장된 공고 목록</a></li>
         </ul>
     </div>
 
     <div class="content">
         <h2>내계정</h2>
-
         <!-- 프로필 사진 및 업로드 -->
-        <form action="updateProfile" method="post" enctype="multipart/form-data">
-            <img src="<%= loggedInUser.getProfileUrl() %>" alt="프로필 이미지" id="profileImage">
-            <label for="profileImageUpload" class="custom-file-upload">프로필 사진 변경</label>
-            <input type="file" id="profileImageUpload" name="profileImageUpload" accept="image/*" style="display: none;">
-
-            <div class="authSection">
-                <input type="text" name="id" id="id" placeholder="아이디" value="<%= loggedInUser.getId() %>" required readonly/>
-                <input type="password" name="password" class="password" placeholder="비밀번호" required/>
-                <button type="submit" class="submit">저장</button>
-                <p id="authError" style="color: red; display: none;">아이디 또는 비밀번호가 일치하지 않습니다.</p>
+        <div class="profile-container">
+            <img src="<%= loggedInUser.getProfileUrl() %>" alt="메인 프로필 이미지" id="mainProfileImage" class="profile-image" onclick="openImageSelector()">
+        </div>
+        <!-- 이미지 선택 팝업 (기본적으로 숨김 처리) -->
+        <div id="imageSelectorPopup" class="popup hidden">
+            <div class="popup-content">
+                <h3>이미지를 선택하세요</h3>
+                <div class="thumbnail-container">
+                    <img src="/img/1.png" alt="Image 1" class="thumbnail" onclick="selectThumbnail(this, '/img/1.png')">
+                    <img src="/img/2.png" alt="Image 2" class="thumbnail" onclick="selectThumbnail(this, '/img/2.png')">
+                    <img src="/img/3.png" alt="Image 3" class="thumbnail" onclick="selectThumbnail(this, '/img/3.png')">
+                    <img src="/img/4.png" alt="Image 4" class="thumbnail" onclick="selectThumbnail(this, '/img/4.png')">
+                </div>
+                <button id="applySelection">선택</button>
+                <button type="button" onclick="closeImageSelector()">닫기</button>
             </div>
-        </form>
+        </div>
+
+        <div class="authSection">
+            <input type="text" name="id" id="id" placeholder="아이디" value="<%= loggedInUser.getId() %>" required readonly/>
+            <input type="password" name="password" class="password" placeholder="비밀번호" required/>
+            <button type="submit" class="submit">저장</button>
+            <p id="authError" style="color: red; display: none;">아이디 또는 비밀번호가 일치하지 않습니다.</p>
+        </div>
+
     </div>
 </div>
 
 <script>
-    document.getElementById("profileImageUpload").addEventListener("change", function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById("profileImage").src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+    let selectedImageUrl = '';
+
+    function openImageSelector() {
+        document.getElementById('imageSelectorPopup').classList.remove('hidden');
+    }
+
+    function closeImageSelector() {
+        document.getElementById('imageSelectorPopup').classList.add('hidden');
+    }
+
+    // 썸네일 클릭 처리
+    function selectThumbnail(element, imageUrl) {
+        document.querySelectorAll('.thumbnail').forEach(img => img.classList.remove('selected'));
+        element.classList.add('selected');
+        selectedImageUrl = imageUrl; // 선택된 이미지 URL 저장
+    }
+
+    // "선택" 버튼 클릭 처리
+    document.getElementById('applySelection').addEventListener('click', function () {
+        if (selectedImageUrl) {
+            console.log("선택한 이미지 URL:", selectedImageUrl); // 디버깅 로그
+
+            // 서버로 선택된 이미지 URL 전송
+            fetch('/updateProfileImage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    imageUrl: selectedImageUrl, // 선택된 이미지 URL
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 성공 시 UI 업데이트
+                        updateProfileImage(data.imageUrl);
+                        document.getElementById('mainProfileImage').src = selectedImageUrl;
+                        closeImageSelector();
+                        alert('프로필 이미지가 성공적으로 업데이트되었습니다!');
+                    } else {
+                        alert('프로필 이미지 업데이트에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('서버 요청 중 오류가 발생했습니다.');
+                });
+        } else {
+            alert('이미지를 선택해주세요!');
         }
+
+        function updateProfileImage(newImageUrl) {
+            const profileImage = document.getElementById('mainProfileImage');
+            profileImage.src = newImageUrl; // 이미지 태그의 src를 변경된 URL로 갱신
+        }
+
     });
+
+
 </script>
 
 </body>

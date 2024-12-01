@@ -1,57 +1,79 @@
 package org.zerock.jdbcex.controller;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.zerock.jdbcex.service.UserService;
+import org.zerock.jdbcex.dto.UserDTO;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
-@WebServlet("/updateProfile")
-@MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5)
+
+@WebServlet("/updateProfileImage")
 public class ProfileUpdateServlet extends HttpServlet {
 
     private final UserService userService = new UserService();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        String userId = (String) session.getAttribute("id");
+        request.setCharacterEncoding("UTF-8");
 
-        Part filePart = request.getPart("profileImageUpload");
-        String fileName = extractFileName(filePart);
-
-        // 저장 경로 설정
-        String savePath = getServletContext().getRealPath("") + File.separator + "uploads" + File.separator + fileName;
-        File fileSaveDir = new File(savePath);
-        fileSaveDir.getParentFile().mkdirs();
-        filePart.write(savePath);
-
-        // 데이터베이스에 프로필 이미지 경로 저장
-        String profileUrl = "uploads/" + fileName;
-        boolean updateSuccess = userService.updateProfileImage(userId, profileUrl);
-
-        if (updateSuccess) {
-            response.sendRedirect("mypage.jsp");
-        } else {
-            response.getWriter().write("프로필 업데이트 실패"); // 디버그 메시지
-            System.out.println("프로필 업데이트 실패: userId=" + userId + ", profileUrl=" + profileUrl); // 디버그 메시지
-        }
-    }
-
-    private String extractFileName(Part part) {
-        String contentDisp = part.getHeader("content-disposition");
-        String[] items = contentDisp.split(";");
-        for (String s : items) {
-            if (s.trim().startsWith("filename")) {
-                return s.substring(s.indexOf("=") + 2, s.length() - 1);
+        // JSON 데이터 읽기
+        StringBuilder jsonBuilder = new StringBuilder();
+        try (BufferedReader reader = request.getReader()) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonBuilder.append(line);
             }
         }
-        return "";
+
+        // JSON 데이터 파싱
+        String jsonData = jsonBuilder.toString();
+        JsonObject jsonObject;
+        try {
+            jsonObject = JsonParser.parseString(jsonData).getAsJsonObject();
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"success\": false, \"message\": \"Invalid JSON format\"}");
+            return;
+        }
+
+        String imageUrl = jsonObject.get("imageUrl").getAsString();
+
+        // 세션에서 사용자 ID 가져오기
+        HttpSession session = request.getSession();
+        String userId = (String) session.getAttribute("id");
+        System.out.println("User ID from session: " + userId);
+
+
+        // 세션에 ID가 없거나 이미지 URL이 비어 있으면 오류 반환
+        if (userId == null || userId.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"success\": false, \"message\": \"User not logged in\"}");
+            System.out.println("User not logged in: session ID is null or empty");
+            return;
+        }
+
+        // 데이터베이스 업데이트
+        boolean isUpdated = userService.updateProfileImage(userId, imageUrl);
+
+        response.setContentType("application/json");
+        if (isUpdated) {
+            // 세션에 저장된 사용자 정보 업데이트
+            UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
+            if (loggedInUser != null) {
+                loggedInUser.setProfileUrl(imageUrl); // 새로운 URL로 갱신
+                session.setAttribute("loggedInUser", loggedInUser); // 세션 다시 저장
+            }
+            response.getWriter().write("{\"success\": true}");
+        } else {
+            response.getWriter().write("{\"success\": false, \"message\": \"Database update failed\"}");
+        }
     }
+
 }
