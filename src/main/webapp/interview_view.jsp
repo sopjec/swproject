@@ -173,7 +173,14 @@
             } else {
             %>
             <tr>
-                <td colspan="3" class="no-records">면접 기록이 없습니다.</td>
+                <td colspan="3">
+                    <div class="no-records">
+                        <p>면접 기록이 없습니다.</p>
+                        <p>
+                            <a href="/resume?action=interview" style="text-decoration-line: none; font-size: 15px; color: #333;">면접 보러가기</a>
+                        </p>
+                    </div>
+                </td>
             </tr>
             <%
                 }
