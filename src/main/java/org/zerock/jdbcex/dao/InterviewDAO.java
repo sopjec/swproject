@@ -20,7 +20,7 @@ import java.util.List;
 
 public class InterviewDAO {
 
-    private static final String SELECT_INTERVIEWS_BY_USER_ID = "SELECT id, title, user_id, path, feedback, interview_date FROM interview WHERE user_id = ?";
+    private static final String SELECT_INTERVIEWS_BY_USER_ID = "SELECT id, title, user_id, interview_date FROM interview WHERE user_id = ?";
 
     public List<InterviewDTO> findInterviewsByUserId(String userId) throws Exception {
         List<InterviewDTO> interviewList = new ArrayList<>();
@@ -36,8 +36,6 @@ public class InterviewDAO {
                             .id(rs.getInt("id"))
                             .title(rs.getString("title"))
                             .userId(rs.getString("user_id"))
-                            .path(rs.getString("path"))
-                            .feedback(rs.getString("feedback"))
                             .interviewDate(rs.getDate("interview_date"))
                             .build();
 

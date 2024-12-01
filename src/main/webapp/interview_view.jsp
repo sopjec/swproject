@@ -99,6 +99,39 @@
             color: #555;
             padding: 20px 0;
         }
+
+        /* 비디오 컨테이너 */
+        .video-container {
+            display: none; /* 처음엔 숨김 */
+            position: relative;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+
+        .video-container video {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* 닫기 버튼 */
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 18px;
+            text-align: center;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -130,13 +163,9 @@
                     int index = 1; // 순번을 위한 변수
                     for (InterviewDTO interview : interviews) {
             %>
-            <tr>
-                <td><%= index++ %></td>
-                <td>
-                    <a href="/download/interview/<%= interview.getId() %>" target="_blank">
-                        <%= interview.getTitle() %>
-                    </a>
-                </td>
+            <tr onclick="showVideo('<%= java.net.URLEncoder.encode(interview.getTitle(), "UTF-8") %>')">
+            <td><%= index++ %></td>
+                <td><%= interview.getTitle() %></td>
                 <td><%= interview.getInterviewDate() %></td>
             </tr>
             <%
@@ -151,8 +180,49 @@
             %>
             </tbody>
         </table>
+
+        <!-- 비디오 컨테이너 -->
+        <div class="video-container" id="video-container">
+            <button class="close-button" onclick="hideVideo()">X</button>
+            <video controls id="video-player">
+                <source src="" type="video/webm">
+                브라우저에서 동영상을 지원하지 않습니다.
+            </video>
+        </div>
     </div>
 </div>
+
+<script>
+    function showVideo(title) {
+        const table = document.querySelector(".interviewTable");
+        const videoContainer = document.getElementById("video-container");
+        const videoPlayer = document.getElementById("video-player");
+
+        // 테이블 숨기기
+        table.style.display = "none";
+
+        // 동영상 소스 설정 (URL 인코딩)
+        videoPlayer.src = "/download/" + title + ".webm";
+
+        // 비디오 컨테이너 표시
+        videoContainer.style.display = "block";
+    }
+
+    function hideVideo() {
+        const table = document.querySelector(".interviewTable");
+        const videoContainer = document.getElementById("video-container");
+        const videoPlayer = document.getElementById("video-player");
+
+        // 테이블 보이기
+        table.style.display = "table";
+
+        // 비디오 컨테이너 숨기기
+        videoContainer.style.display = "none";
+
+        // 동영상 소스 초기화
+        videoPlayer.src = "";
+    }
+</script>
 
 </body>
 </html>
