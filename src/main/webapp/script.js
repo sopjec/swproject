@@ -5,6 +5,36 @@ let expressionInterval;
 let questions = [];
 let currentQuestionIndex = 0;
 let isRecordingStarted = false; // 녹화 시작 여부 플래그
+let isFirstQuestionDisplayed = false; // 첫 질문 출력 여부 플래그
+let isSpeaking = false; // 음성 재생 상태 플래그
+
+// 텍스트 음성 읽기 함수
+function readTextAloud(text) {
+    if (!window.speechSynthesis) {
+        console.error('이 브라우저는 Web Speech API를 지원하지 않습니다.');
+        return;
+    }
+
+    if (isSpeaking) {
+        console.warn('이미 음성을 재생 중입니다.');
+        return; // 중복 실행 방지
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ko-KR';
+    utterance.rate = 1; // 읽는 속도
+    utterance.pitch = 1; // 음 높이
+
+    utterance.onstart = () => {
+        isSpeaking = true;
+    };
+
+    utterance.onend = () => {
+        isSpeaking = false;
+    };
+
+    speechSynthesis.speak(utterance);
+}
 
 // Face-api.js 모델 로드
 async function loadModels() {
@@ -89,69 +119,6 @@ async function startPageRecording() {
     }
 }
 
-// 면접 시작 버튼 클릭 시 질문 데이터를 가져오는 함수
-document.getElementById('start-interview').addEventListener('click', async () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const resumeId = urlParams.get('resumeId');
-
-    if (!resumeId) {
-        alert('resumeId가 없습니다. URL을 확인하세요.');
-        return;
-    }
-
-    try {
-        const response = await fetch('/api/generate-question', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({ resumeId }),
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            questions = data.question.split('\n').filter(q => q.trim() !== '');
-            currentQuestionIndex = 0;
-
-            if (questions.length > 0) {
-                document.getElementById('interviewer-text-output').innerHTML =
-                    `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
-            } else {
-                document.getElementById('interviewer-text-output').innerText = '질문 데이터가 없습니다.';
-            }
-        } else {
-            console.error('서버 오류:', response.statusText);
-            document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생 (서버 문제)';
-        }
-    } catch (error) {
-        console.error('질문 생성 중 오류:', error);
-        document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생 (클라이언트 문제)';
-    }
-
-    startInterview(); // 면접 시작
-  //  startPageRecording(); // 녹화 시작
-});
-
-// 다음 질문 버튼 클릭 시 동작
-document.getElementById('next-question').addEventListener('click', () => {
-    if (questions.length === 0) {
-        document.getElementById('interviewer-text-output').innerText = '먼저 면접을 시작하세요.';
-        return;
-    }
-
-    currentQuestionIndex++;
-    if (currentQuestionIndex < questions.length) {
-        document.getElementById('interviewer-text-output').innerHTML =
-            `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
-    } else {
-        document.getElementById('interviewer-text-output').innerText = '모든 질문을 완료했습니다.';
-        currentQuestionIndex--;
-
-        stopRecording(); // 녹화 종료
-        alert('면접이 끝났습니다.');
-    }
-});
-
 // 면접 시작
 async function startInterview() {
     try {
@@ -167,6 +134,73 @@ async function startInterview() {
     } catch (error) {
         console.error('웹캠 연결 오류:', error);
         alert('웹캠과 마이크에 접근할 수 없습니다. 권한을 확인해주세요.');
+    }
+}
+
+// 면접 시작 버튼 클릭 핸들러
+function startInterviewHandler() {
+    if (isFirstQuestionDisplayed) {
+        console.warn('첫 질문이 이미 출력되었습니다.');
+        return; // 중복 실행 방지
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const resumeId = urlParams.get('resumeId');
+
+    if (!resumeId) {
+        alert('resumeId가 없습니다. URL을 확인하세요.');
+        return;
+    }
+
+    fetch('/api/generate-question', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({ resumeId }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            questions = data.question.split('\n').filter(q => q.trim() !== '');
+            currentQuestionIndex = 0;
+
+            if (questions.length > 0) {
+                setTimeout(() => {
+                    const question = `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
+                    document.getElementById('interviewer-text-output').innerHTML = question;
+                    readTextAloud(question); // 질문 음성으로 읽기
+                    isFirstQuestionDisplayed = true; // 첫 질문 출력 플래그 설정
+                }, 3000); // 3초 대기 후 질문 읽기
+            } else {
+                document.getElementById('interviewer-text-output').innerText = '질문 데이터가 없습니다.';
+            }
+        })
+        .catch(error => {
+            console.error('질문 생성 중 오류:', error);
+            document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생.';
+        });
+
+    startInterview(); // 면접 시작
+}
+
+// 다음 질문 버튼 클릭 핸들러
+function nextQuestionHandler() {
+    if (questions.length === 0) {
+        document.getElementById('interviewer-text-output').innerText = '먼저 면접을 시작하세요.';
+        return;
+    }
+
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questions.length) {
+        const question = `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
+        document.getElementById('interviewer-text-output').innerHTML = question;
+        readTextAloud(question); // 다음 질문 음성으로 읽기
+    } else {
+        document.getElementById('interviewer-text-output').innerText = '모든 질문을 완료했습니다.';
+        currentQuestionIndex--;
+
+        stopRecording(); // 녹화 종료
+        alert('면접이 끝났습니다.');
     }
 }
 
@@ -198,5 +232,7 @@ function stopRecording() {
     }
 }
 
-// 버튼 이벤트 리스너 설정
+// 이벤트 리스너 설정
+document.getElementById('start-interview').addEventListener('click', startInterviewHandler);
+document.getElementById('next-question').addEventListener('click', nextQuestionHandler);
 document.getElementById('stop-recording').addEventListener('click', stopRecording);

@@ -12,4 +12,9 @@ public class UserDTO {
     private String gender;
     private String profileUrl;
     private String dateOfBirth;
+
+    public String getProfileUrl() {
+        return profileUrl;
+    }
+
 }

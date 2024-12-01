@@ -195,7 +195,7 @@
         <h2>내계정</h2>
         <!-- 프로필 사진 및 업로드 -->
         <div class="profile-container">
-            <img src="/img/1.png" alt="메인 프로필 이미지" id="mainProfileImage" class="profile-image" onclick="openImageSelector()">
+            <img src="<%= loggedInUser.getProfileUrl() %>" alt="메인 프로필 이미지" id="mainProfileImage" class="profile-image" onclick="openImageSelector()">
         </div>
         <!-- 이미지 선택 팝업 (기본적으로 숨김 처리) -->
         <div id="imageSelectorPopup" class="popup hidden">
@@ -259,6 +259,7 @@
                 .then(data => {
                     if (data.success) {
                         // 성공 시 UI 업데이트
+                        updateProfileImage(data.imageUrl);
                         document.getElementById('mainProfileImage').src = selectedImageUrl;
                         closeImageSelector();
                         alert('프로필 이미지가 성공적으로 업데이트되었습니다!');
@@ -273,6 +274,12 @@
         } else {
             alert('이미지를 선택해주세요!');
         }
+
+        function updateProfileImage(newImageUrl) {
+            const profileImage = document.getElementById('mainProfileImage');
+            profileImage.src = newImageUrl; // 이미지 태그의 src를 변경된 URL로 갱신
+        }
+
     });
 
 

@@ -137,6 +137,7 @@
 </head>
 
 <body>
+
 <jsp:include page="header.jsp"/>
 
 <%
@@ -221,29 +222,29 @@
                 </tr>
                 </thead>
                 <tbody>
-                    <%
-                        // 리뷰 데이터 출력
-                        if (reviews != null && !reviews.isEmpty()) {
-                            int index = 1; // 순번을 동적으로 생성
-                            for (ReviewDTO review : reviews) {
-                    %>
-                    <tr>
-                        <td><%= index++ %></td>
-                        <td><%= review.getComname() %></td>
-                        <td><%= review.getExperience() %></td>
-                        <td><%= review.getJob() %></td>
-                        <td><%= review.getRegion() %></td>
-                        <td><%= review.getContent() %></td>
-                    </tr>
-                    <%
-                        }
-                    } else {
-                    %>
-                    <tr>
-                        <td colspan="6">등록된 면접 후기가 없습니다.</td>
-                    </tr>
-                    <% } %>
+                <%
+                    // 리뷰 데이터 출력
+                    if (reviews != null && !reviews.isEmpty()) {
+                        int index = 1; // 순번을 동적으로 생성
+                        for (ReviewDTO review : reviews) {
+                %>
+                <tr onclick="location.href='reviewDetail?review_id=<%= review.getId() %>'" style="cursor: pointer;">
+                    <td><%= index++ %></td>
+                    <td><%= review.getComname() %></td>
+                    <td><%= review.getExperience() %></td>
+                    <td><%= review.getJob() %></td>
+                    <td><%= review.getRegion() %></td>
+                </tr>
+                <%
+                    }
+                } else {
+                %>
+                <tr>
+                    <td colspan="5">등록된 면접 후기가 없습니다.</td>
+                </tr>
+                <% } %>
                 </tbody>
+
             </table>
 
             <!-- 페이지네이션 -->
