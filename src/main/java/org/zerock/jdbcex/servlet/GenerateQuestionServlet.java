@@ -27,11 +27,18 @@ public class GenerateQuestionServlet extends HttpServlet {
     private static final String OPENAI_API_KEY;
 
     static {
-        Dotenv dotenv = Dotenv.configure()
-                .directory("C:/Users/igaeu/IdeaProjects/swproject") // .env 파일 경로
-                .load();
-        OPENAI_API_KEY = dotenv.get("OPENAI_API_KEY");
-        System.out.println("로드된 OpenAI API 키: " + OPENAI_API_KEY);
+        try {
+            Dotenv dotenv = Dotenv.configure()
+                    .directory("C:/Users/igaeu/IdeaProjects/swproject") // .env 파일 경로
+                    .load();
+            OPENAI_API_KEY = dotenv.get("GPT_API_KEY"); // .env 파일의 GPT_API_KEY를 가져옴
+            if (OPENAI_API_KEY == null || OPENAI_API_KEY.isEmpty()) {
+                throw new RuntimeException("OpenAI API 키가 .env 파일에 설정되지 않았습니다.");
+            }
+            System.out.println("로드된 OpenAI API 키: " + OPENAI_API_KEY);
+        } catch (Exception e) {
+            throw new RuntimeException("환경 변수 로드 실패: .env 파일을 확인하세요.", e);
+        }
     }
 
     @Override
