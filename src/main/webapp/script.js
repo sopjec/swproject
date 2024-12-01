@@ -20,8 +20,9 @@ function readTextAloud(text) {
     }
 
     if (isSpeaking) {
-        console.warn('이미 음성을 재생 중입니다.');
-        return; // 중복 실행 방지
+        window.speechSynthesis.cancel(); // 현재 음성 정지
+        /*console.warn('이미 음성을 재생 중입니다.');
+        return; // 중복 실행 방지*/
     }
 
     const utterance = new SpeechSynthesisUtterance(text);
