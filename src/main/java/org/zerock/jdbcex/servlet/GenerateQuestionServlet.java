@@ -18,15 +18,10 @@ import javax.servlet.http.HttpServletResponse;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.json.JSONObject;
 import org.json.JSONArray;
+import org.zerock.jdbcex.util.ConnectionUtil;
 
 @WebServlet("/api/generate-question")
 public class GenerateQuestionServlet extends HttpServlet {
-    // MariaDB 연결 정보
-    private static final String DB_URL = "jdbc:mariadb://localhost:3306/merijob_db?useUnicode=true&characterEncoding=UTF-8&useSSL=false";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "1111";
-
-    // OpenAI API 키
 
     private static final String GPT_API_KEY = System.getenv("GPT_API_KEY");
 
@@ -43,7 +38,7 @@ public class GenerateQuestionServlet extends HttpServlet {
             return;
         }
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+        try (Connection conn = ConnectionUtil.INSTANCE.getConnection()) {
             System.out.println("데이터베이스 연결 성공"); // 확인용
             // MariaDB에서 질문과 답변 데이터를 가져옴
             StringBuilder resumeContent = new StringBuilder();
