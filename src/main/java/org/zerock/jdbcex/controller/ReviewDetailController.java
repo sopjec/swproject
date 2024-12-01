@@ -23,7 +23,7 @@ public class ReviewDetailController extends HttpServlet{
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
 
         try {
             // 리뷰 ID를 요청에서 가져옴
@@ -52,6 +52,9 @@ public class ReviewDetailController extends HttpServlet{
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
+
         try {
             // 댓글 작성 요청 처리
             int reviewId = Integer.parseInt(request.getParameter("review_id"));

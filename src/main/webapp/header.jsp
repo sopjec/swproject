@@ -154,7 +154,7 @@
         String userId = loggedInUser.getId(); // 사용자 ID
     %>
     <!-- 프로필 사진과 사용자 아이디 표시 -->
-    <img id="header-profile-pic" src="<%= (profileImagePath != null && !profileImagePath.isEmpty()) ? profileImagePath : "default-profile.png" %>"
+    <img id="header-profile-pic" src="<%= (profileImagePath != null && !profileImagePath.isEmpty()) ? profileImagePath : "img/1.png" %>"
          alt="Profile Picture" class="profile-pic">
     <a href="mypage.jsp" class="username"><%= userId %>님</a> <!-- 아이디 클릭 시 mypage.jsp로 이동 -->
     <a href="logout">로그아웃</a>
