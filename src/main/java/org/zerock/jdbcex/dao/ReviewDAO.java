@@ -70,6 +70,7 @@ public class ReviewDAO {
                     review.setExperience(rs.getString("experience"));
                     review.setRegion(rs.getString("region"));
                     review.setContent(rs.getString("content"));
+                    review.setLikes(rs.getInt("count_likes"));
                     return review;
                 }
             }

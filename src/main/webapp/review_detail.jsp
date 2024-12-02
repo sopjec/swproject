@@ -8,29 +8,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>리뷰 상세 보기</title>
+  <link rel="stylesheet" type="text/css" href="layout.css">
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
+      background-color: #f9f9f9;
       margin: 0;
       padding: 0;
     }
-    .container {
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 20px;
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    .review-header {
-      margin-bottom: 20px;
-    }
+
     .review-header h3 {
       font-size: 24px;
       margin: 0;
       color: #333;
     }
+
     .review-meta {
       display: flex;
       justify-content: space-between;
@@ -38,6 +30,7 @@
       font-size: 14px;
       margin-top: 5px;
     }
+
     .review-content {
       margin-top: 20px;
       padding-top: 10px;
@@ -45,13 +38,15 @@
       color: #555;
       line-height: 1.6;
     }
+
     .like-section {
       margin-top: 20px;
       padding-top: 10px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center; /* 공감 버튼 가운데 정렬 */
     }
+
     .like-button {
       background-color: #007bff;
       color: white;
@@ -59,37 +54,51 @@
       border-radius: 4px;
       padding: 8px 16px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 18px; /* 공감 버튼 글씨 크기 키움 */
+      transition: background-color 0.3s;
     }
+
     .like-button:hover {
-      background-color: #0056b3;
+      background-color: #0099ff;
     }
+
     .comment-section {
       margin-top: 30px;
       padding-top: 10px;
       border-top: 1px solid #ddd;
     }
-    .comment-form textarea {
-      width: 100%;
-      padding: 10px;
+
+    .comment-form {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-top: 10px;
+    }
+
+    .comment-form textarea {
+      width: calc(100% - 120px); /* 텍스트 영역과 버튼 간격 유지 */
+      padding: 10px;
       border: 1px solid #ddd;
       border-radius: 4px;
       font-size: 14px;
     }
+
     .comment-form button {
-      margin-top: 10px;
-      background-color: #28a745;
+      background-color: black;
       color: white;
       border: none;
       border-radius: 4px;
       padding: 8px 12px;
       cursor: pointer;
       font-size: 14px;
+      transition: background-color 0.3s;
+      margin-left: 10px; /* 버튼과 텍스트 필드 간격 추가 */
     }
+
     .comment-form button:hover {
-      background-color: #218838;
+      background-color: gray;
     }
+
     .comment-box {
       margin-top: 15px;
       padding: 15px;
@@ -97,37 +106,52 @@
       border-radius: 5px;
       background-color: #f9f9f9;
     }
+
     .comment-header {
       font-weight: bold;
       margin-bottom: 10px;
       color: #333;
     }
+
     .comment-content {
       color: #555;
       margin-bottom: 10px;
     }
+
     .reply-box {
       margin-left: 20px;
       margin-top: 10px;
       border-left: 2px solid #ddd;
       padding-left: 10px;
     }
+
     .reply-button {
-      background-color: #007bff;
+      background-color: black;
       color: white;
       border: none;
       border-radius: 4px;
       padding: 5px 10px;
       cursor: pointer;
       font-size: 14px;
+      transition: background-color 0.3s;
     }
+
     .reply-button:hover {
-      background-color: #0056b3;
+      background-color: gray;
     }
+
   </style>
 </head>
 <body>
+<jsp:include page="header.jsp"/>
 <div class="container">
+  <div class="sidebar">
+    <ul>
+      <li><a href="#" onclick="checkSessionAndNavigate('reviewUpload'); return false;">기업 면접 후기</a></li>
+    </ul>
+  </div>
+<div class="content">
+
   <%
     // 리뷰 데이터
     ReviewDTO review = (ReviewDTO) request.getAttribute("review");
@@ -148,12 +172,15 @@
     <p><%= review.getContent() %></p>
   </div>
 
-  <!-- 공감 버튼 -->
+  <!-- 공감 버튼 (폼 방식) -->
   <div class="like-section">
-    <button class="like-button" data-id="<%= review.getId() %>" data-action="<%= isLikedByUser ? "unlike" : "like" %>">
-      <%= isLikedByUser ? "공감 취소" : "공감" %>
-    </button>
-
+    <form action="reviewDetail" method="post">
+      <input type="hidden" name="action" value="<%= isLikedByUser ? "unlike" : "like" %>">
+      <input type="hidden" name="reviewId" value="<%= review.getId() %>">
+      <button class = "like-button" type="submit">
+        <%= isLikedByUser ? "공감 취소" : "공감" %>
+      </button>
+    </form>
   </div>
 
   <!-- 댓글 쓰기 -->
@@ -163,7 +190,7 @@
       <input type="hidden" name="parentCommentId" value="">
       <input type="hidden" name="reviewId" value="<%= review.getId() %>">
       <textarea name="content" placeholder="댓글을 입력하세요..." required></textarea>
-      <button type="submit">댓글 등록</button>
+      <button style="right: 20px"type="submit">댓글 등록</button>
     </form>
 
     <!-- 댓글과 대댓글 -->
@@ -203,6 +230,7 @@
         </form>
       </div>
     </div>
+
     <%
         }
       }
@@ -213,50 +241,8 @@
   </div>
 </div>
 
+</div>
 <script>
-  document.querySelectorAll('.like-button').forEach(function(button) {
-    button.addEventListener('click', function() {
-      const reviewId = button.getAttribute('data-id');
-      const currentAction = button.getAttribute('data-action');
-
-      console.log("reviewId: " + reviewId);
-
-      fetch('/reviewDetail?action=' + currentAction, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reviewId: reviewId }) // reviewId만 전송
-      })
-              .then(response => {
-                if (!response.ok) {
-                  throw new Error("HTTP status " + response.status);
-                }
-                return response.json();
-              })
-              .then(data => {
-                console.log("Response data:", data);
-
-                // 공감 수 업데이트
-                const likeCountSpan = document.getElementById('like-count-' + reviewId);
-                if (likeCountSpan) {
-                  likeCountSpan.innerText = data.likes;
-                }
-
-                // 버튼 상태 업데이트
-                if (currentAction === 'like') {
-                  button.innerText = '공감 취소';
-                  button.setAttribute('data-action', 'unlike');
-                } else {
-                  button.innerText = '공감';
-                  button.setAttribute('data-action', 'like');
-                }
-              })
-              .catch(error => {
-                console.error('Error:', error);
-              });
-    });
-  });
-
-
   function toggleReplyForm(id) {
     const replyForm = document.getElementById('reply-form-' + id);
     replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';

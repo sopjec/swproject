@@ -150,6 +150,12 @@
             height: auto; /* 텍스트에 맞게 높이 자동 조정 */
         }
 
+        /* X축 스크롤 제거 */
+        textarea {
+            overflow: hidden; /* 스크롤을 숨깁니다. */
+            white-space: normal; /* 텍스트 줄바꿈 허용 */
+        }
+
         /* 고정된 하단 영역 스타일 */
         .footer-bar {
             position: fixed; /* 화면 고정 */
@@ -348,7 +354,7 @@
     // 글자 수 업데이트
     function updateCharCount(textarea) {
         const charCountElement = textarea.parentElement.querySelector(".char-count");
-        charCountElement.textContent = textarea.value.length / textarea.maxLength + "자 (공백 포함)";
+        charCountElement.textContent = textarea.value.length +"/"+ textarea.maxLength + "자 (공백 포함)";
     }
 
     // 초기 숫자 박스 선택 상태 설정
@@ -357,7 +363,7 @@
     //글자수 세기
     function updateCharCount(textarea) {
         const charCountElement = textarea.parentElement.querySelector(".char-count");
-        charCountElement.textContent = textarea.value.length / textarea.maxLength + " 자 (공백 포함)";
+        charCountElement.textContent = textarea.value.length+"/"+ textarea.maxLength + " 자 (공백 포함)";
     }
 
     // 맞춤법 검사 및 어휘 교체
@@ -448,7 +454,23 @@
                 console.error("Error:", error);
                 alert('AI 코칭 요청 실패.');
             });
+
     }
+
+    function adjustTextareaHeight(textarea) {
+        textarea.style.height = 'auto'; // 기존 높이 초기화
+        textarea.style.height = textarea.scrollHeight + 'px'; // 텍스트 크기에 맞게 높이 설정
+    }
+
+    // 이벤트 리스너 추가
+    document.querySelectorAll('textarea[name="answer"]').forEach(textarea => {
+        textarea.addEventListener('input', function() {
+            adjustTextareaHeight(this);
+        });
+
+        // 페이지 로드 시 초기화
+        adjustTextareaHeight(textarea);
+    });
 
 
 </script>
