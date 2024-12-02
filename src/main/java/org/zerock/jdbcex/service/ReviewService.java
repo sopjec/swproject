@@ -9,8 +9,8 @@ import java.util.List;
 public class ReviewService {
     private final ReviewDAO reviewDAO = new ReviewDAO();
 
-    public List<ReviewDTO> getAllReviews() throws Exception {
-        return reviewDAO.getAllReviews();
+    public List<ReviewDTO> getAllReviews(String sort, String experience, String region) throws Exception {
+        return reviewDAO.getAllReviews(sort, experience, region);
     }
 
     public void saveReview(ReviewDTO review) throws Exception {
