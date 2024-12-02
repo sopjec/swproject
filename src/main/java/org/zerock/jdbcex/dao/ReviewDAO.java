@@ -4,10 +4,7 @@ package org.zerock.jdbcex.dao;
 import org.zerock.jdbcex.dto.ReviewDTO;
 import org.zerock.jdbcex.util.ConnectionUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,4 +77,50 @@ public class ReviewDAO {
         return null;
     }
 
+    //좋아요 여부 확인
+    public boolean isLikedByUser(String userId, int reviewId) throws Exception {
+        String sql = "SELECT COUNT(*) FROM likes WHERE user_id = ? AND review_id = ?";
+        try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, userId);
+            pstmt.setInt(2, reviewId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
+        }
+    }
+
+    //좋아요 추가
+    public void likeReview(String userId, int reviewId) throws Exception {
+        String sql = "INSERT INTO likes (user_id, review_id) VALUES (?, ?)";
+        try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, userId);
+            pstmt.setInt(2, reviewId);
+            pstmt.executeUpdate();
+        }
+    }
+
+    //좋아요 삭제
+    public void unlikeReview(String userId, int reviewId) throws Exception {
+        String sql = "DELETE FROM likes WHERE user_id = ? AND review_id = ?";
+        try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, userId);
+            pstmt.setInt(2, reviewId);
+            pstmt.executeUpdate();
+        }
+    }
+
+    //좋아요 갯수 가져오기
+    public int getLikes(int reviewId) throws Exception {
+        String sql = "SELECT COUNT(*) FROM review_likes WHERE review_id = ?";
+        try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, reviewId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
+            }
+        }
+    }
 }
