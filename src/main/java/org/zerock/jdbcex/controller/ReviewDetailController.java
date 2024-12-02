@@ -1,5 +1,6 @@
 package org.zerock.jdbcex.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.zerock.jdbcex.dao.CommentDAO;
 import org.zerock.jdbcex.dao.ReviewDAO;
 import org.zerock.jdbcex.dto.CommentDTO;
@@ -14,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @WebServlet("/reviewDetail")
 public class ReviewDetailController extends HttpServlet {
@@ -50,15 +53,26 @@ public class ReviewDetailController extends HttpServlet {
         if (session == null || session.getAttribute("loggedInUser") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("{\"error\": \"로그인이 필요합니다.\"}");
+
+            response.sendRedirect("login.jsp");
             return;
         }
 
         UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
 
+        // JSON 데이터 읽기
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> requestBody = objectMapper.readValue(request.getReader(), Map.class);
+
+        // reviewId 가져오기
+        int reviewId = (int) requestBody.get("reviewId");
         String action = request.getParameter("action");
 
+        // 로그 출력
+        System.out.println("reviewId: " + reviewId);
+        System.out.println("action: " + action);
+
         try {
-            int reviewId = Integer.parseInt(request.getParameter("review_id"));
 
             switch (action) {
                 case "like":
@@ -73,6 +87,7 @@ public class ReviewDetailController extends HttpServlet {
 
                 case "addComment":
                     // 댓글 추가
+                    System.out.println("addComment옴");
                     handleAddCommentAction(reviewId, request, response);
                     break;
 
@@ -122,6 +137,7 @@ public class ReviewDetailController extends HttpServlet {
     }
 
     private void handleLikeAction(String userId, int reviewId, HttpServletResponse response) throws Exception {
+        System.out.println("reviewId : " + reviewId);
         reviewDAO.likeReview(userId, reviewId);
         int updatedLikes = reviewDAO.getLikes(reviewId);
         response.getWriter().write("{\"likes\": " + updatedLikes + "}");
@@ -135,16 +151,24 @@ public class ReviewDetailController extends HttpServlet {
 
     private void handleAddCommentAction(int reviewId, HttpServletRequest request, HttpServletResponse response) throws Exception {
         String content = request.getParameter("content");
+        String parentCommentId = request.getParameter("parentCommentId");
 
+        System.out.println("reviewId : " + reviewId + " content: " + content);
         CommentDTO comment = new CommentDTO();
         comment.setReviewId(reviewId);
+
+        if(Objects.equals(parentCommentId, "")) {
+            comment.setParentCommentId(null);
+        } else {
+            comment.setParentCommentId(Integer.valueOf(parentCommentId));
+        }
         comment.setContent(content);
 
         HttpSession session = request.getSession(false);
         if (session != null) {
             UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
             if (loggedInUser != null) {
-                comment.setAuthor(loggedInUser.getName());
+                comment.setAuthor(loggedInUser.getId());
             } else {
                 comment.setAuthor("익명");
             }
@@ -159,6 +183,7 @@ public class ReviewDetailController extends HttpServlet {
 
     private void handleReplyCommentAction(HttpServletRequest request, HttpServletResponse response) throws Exception {
         int parentCommentId = Integer.parseInt(request.getParameter("parent_comment_id"));
+        System.out.println("controller" + parentCommentId);
         String replyContent = request.getParameter("reply_content");
 
         CommentDTO reply = new CommentDTO();
@@ -170,7 +195,7 @@ public class ReviewDetailController extends HttpServlet {
         if (session != null) {
             UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
             if (loggedInUser != null) {
-                reply.setAuthor(loggedInUser.getName());
+                reply.setAuthor(loggedInUser.getId());
             } else {
                 reply.setAuthor("익명");
             }
