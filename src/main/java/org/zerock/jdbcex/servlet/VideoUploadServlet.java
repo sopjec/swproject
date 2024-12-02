@@ -24,9 +24,6 @@ import org.zerock.jdbcex.util.ConnectionUtil;
 )
 public class VideoUploadServlet extends HttpServlet {
 
-    // 절대경로 설정 (Windows 환경 예시, 사용자의 요구에 맞게 수정 가능)
-    private static final String ABSOLUTE_UPLOAD_DIR = "C:\\Users\\wlsek\\IdeaProjects\\project\\src\\main\\webapp\\videos";
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -41,8 +38,6 @@ public class VideoUploadServlet extends HttpServlet {
 
         // URL에서 resumeId 가져오기
         String resumeId = request.getParameter("resumeId");
-        System.out.println("받은 resumeId: " + resumeId); // 디버깅용 로그
-
         if (resumeId == null || resumeId.isEmpty()) {
             writer.println("resumeId가 전달되지 않았습니다.");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -59,8 +54,12 @@ public class VideoUploadServlet extends HttpServlet {
 
         System.out.println("조회된 resumeTitle: " + resumeTitle);
 
+        // 저장 경로를 상대 경로로 설정
+        String relativePath = "/videos"; // 상대 경로 설정
+        String savePath = getServletContext().getRealPath(relativePath);
+        File uploadDir = new File(savePath);
+
         // 디렉토리 생성
-        File uploadDir = new File(ABSOLUTE_UPLOAD_DIR);
         if (!uploadDir.exists() && !uploadDir.mkdirs()) {
             writer.println("업로드 디렉토리 생성에 실패했습니다.");
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -72,9 +71,9 @@ public class VideoUploadServlet extends HttpServlet {
             String originalFileName = extractFileName(part);
             if (originalFileName != null && !originalFileName.isEmpty()) {
                 String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-                String uniqueFileName = generateUniqueFileName(ABSOLUTE_UPLOAD_DIR, resumeTitle, fileExtension);
+                String uniqueFileName = generateUniqueFileName(savePath, resumeTitle, fileExtension);
 
-                File fileToSave = new File(ABSOLUTE_UPLOAD_DIR, uniqueFileName);
+                File fileToSave = new File(savePath, uniqueFileName);
                 part.write(fileToSave.getAbsolutePath());
 
                 writer.println("파일 저장 완료: " + fileToSave.getAbsolutePath());
@@ -88,9 +87,7 @@ public class VideoUploadServlet extends HttpServlet {
     // 데이터베이스에서 resumeId에 해당하는 title 조회
     private String getResumeTitle(String resumeId) {
         String title = null;
-
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection()) {
-            System.out.println("데이터베이스 연결 성공"); // 디버깅용
             String sql = "SELECT title FROM resume WHERE id = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setInt(1, Integer.parseInt(resumeId));
@@ -103,7 +100,6 @@ public class VideoUploadServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return title;
     }
 
@@ -113,13 +109,11 @@ public class VideoUploadServlet extends HttpServlet {
         File file = new File(savePath, uniqueFileName);
         int counter = 1;
 
-        // 중복된 파일이 있을 경우 숫자를 추가
         while (file.exists()) {
             uniqueFileName = baseName + "_" + counter + fileExtension;
             file = new File(savePath, uniqueFileName);
             counter++;
         }
-
         return uniqueFileName;
     }
 
