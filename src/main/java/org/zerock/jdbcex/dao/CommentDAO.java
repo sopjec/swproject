@@ -6,14 +6,17 @@ import org.zerock.jdbcex.util.ConnectionUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CommentDAO {
     // 댓글 삽입
     public void insertComment(CommentDTO comment) throws Exception {
-        String sql = "INSERT INTO comments (review_id, parent_comment_id, author, content, created_date, updated_date, parent_comment_id) VALUES (?, ?, ?, ?, NOW(), NOW())";
+        System.out.println(comment.getParentCommentId());
 
+        String sql = "INSERT INTO comments (review_id, parent_comment_id, author, content, created_date, updated_date) "
+                + "VALUES (?, ?, ?, ?, NOW(), NOW())";
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -32,7 +35,7 @@ public class CommentDAO {
 
     // 댓글 리스트 가져오기
     public List<CommentDTO> getCommentsByReviewId(int reviewId) throws Exception {
-        String sql = "SELECT * FROM comments WHERE review_id = ? ORDER BY parent_comment_id ASC, created_date ASC";
+        String sql = "SELECT * FROM comments WHERE review_id = ? ORDER BY created_date ASC";
 
         List<CommentDTO> comments = new ArrayList<>();
 

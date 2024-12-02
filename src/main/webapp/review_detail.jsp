@@ -150,96 +150,96 @@
       <li><a href="#" onclick="checkSessionAndNavigate('reviewUpload'); return false;">기업 면접 후기</a></li>
     </ul>
   </div>
-  <div class="content">
+<div class="content">
 
-    <%
-      // 리뷰 데이터
-      ReviewDTO review = (ReviewDTO) request.getAttribute("review");
-      List<CommentDTO> comments = (List<CommentDTO>) request.getAttribute("comments");
-      boolean isLikedByUser = (boolean) request.getAttribute("likedByUser");
-    %>
-    <!-- 리뷰 상세 정보 -->
-    <div class="review-header">
-      <h3><%= review.getComname() %></h3>
-      <div class="review-meta">
-        <div>
-          작성자: <%= review.getUserId() %> | 지역: <%= review.getRegion() %> | 경력: <%= review.getExperience()%>
-        </div>
-        <span id="like-count-<%= review.getId() %>">공감수: <%= review.getLikes() %></span>
+  <%
+    // 리뷰 데이터
+    ReviewDTO review = (ReviewDTO) request.getAttribute("review");
+    List<CommentDTO> comments = (List<CommentDTO>) request.getAttribute("comments");
+    boolean isLikedByUser = (boolean) request.getAttribute("likedByUser");
+  %>
+  <!-- 리뷰 상세 정보 -->
+  <div class="review-header">
+    <h3><%= review.getComname() %></h3>
+    <div class="review-meta">
+      <div>
+        작성자: <%= review.getUserId() %> | 지역: <%= review.getRegion() %> | 경력: <%= review.getExperience()%>
       </div>
-    </div>
-    <div class="review-content">
-      <p><%= review.getContent() %></p>
-    </div>
-
-    <!-- 공감 버튼 (폼 방식) -->
-    <div class="like-section">
-      <form action="reviewDetail" method="post">
-        <input type="hidden" name="action" value="<%= isLikedByUser ? "unlike" : "like" %>">
-        <input type="hidden" name="reviewId" value="<%= review.getId() %>">
-        <button class = "like-button" type="submit">
-          <%= isLikedByUser ? "공감 취소" : "공감" %>
-        </button>
-      </form>
-    </div>
-
-    <!-- 댓글 쓰기 -->
-    <div class="comment-section">
-      <h4>댓글</h4>
-      <form action="reviewDetail?action=addComment" method="post" class="comment-form">
-        <input type="hidden" name="parentCommentId" value="">
-        <input type="hidden" name="reviewId" value="<%= review.getId() %>">
-        <textarea name="content" placeholder="댓글을 입력하세요..." required></textarea>
-        <button style="right: 20px"type="submit">댓글 등록</button>
-      </form>
-
-      <!-- 댓글과 대댓글 -->
-      <%
-        if (comments != null && !comments.isEmpty()) {
-          for (CommentDTO comment : comments) {
-            if (comment.getParentCommentId() == null) { // 댓글만 렌더링
-      %>
-      <div class="comment-box">
-        <div class="comment-header">작성자: <%= comment.getAuthor() %></div>
-        <div class="comment-content"><%= comment.getContent() %></div>
-        <button class="reply-button" onclick="toggleReplyForm('<%= comment.getId() %>')">답글</button>
-
-        <!-- 대댓글 -->
-        <div class="reply-box">
-          <%
-            for (CommentDTO reply : comments) {
-              if (reply.getParentCommentId() != null && reply.getParentCommentId().equals(comment.getId())) {
-          %>
-          <div class="comment-box">
-            <div class="comment-header">작성자: <%= reply.getAuthor() %></div>
-            <div class="comment-content"><%= reply.getContent() %></div>
-          </div>
-          <%
-              }
-            }
-          %>
-        </div>
-
-        <!-- 대댓글 작성 폼 -->
-        <div class="reply-form" id="reply-form-<%= comment.getId() %>" style="display:none;">
-          <form action="reviewDetail?action=addComment" method="post" class="comment-form">
-            <input type="hidden" name="parentCommentId" value="<%= comment.getId() %>">
-            <input type="hidden" name="reviewId" value="<%= review.getId() %>">
-            <textarea name="content" placeholder="대댓글을 입력하세요..." required></textarea>
-            <button type="submit">대댓글 등록</button>
-          </form>
-        </div>
-      </div>
-
-      <%
-          }
-        }
-      } else {
-      %>
-      <p>댓글이 없습니다. 첫 댓글을 작성해보세요!</p>
-      <% } %>
+      <span id="like-count-<%= review.getId() %>">공감수: <%= review.getLikes() %></span>
     </div>
   </div>
+  <div class="review-content">
+    <p><%= review.getContent() %></p>
+  </div>
+
+  <!-- 공감 버튼 (폼 방식) -->
+  <div class="like-section">
+    <form action="reviewDetail" method="post">
+      <input type="hidden" name="action" value="<%= isLikedByUser ? "unlike" : "like" %>">
+      <input type="hidden" name="reviewId" value="<%= review.getId() %>">
+      <button class = "like-button" type="submit">
+        <%= isLikedByUser ? "공감 취소" : "공감" %>
+      </button>
+    </form>
+  </div>
+
+  <!-- 댓글 쓰기 -->
+  <div class="comment-section">
+    <h4>댓글</h4>
+    <form action="reviewDetail?action=addComment" method="post" class="comment-form">
+      <input type="hidden" name="parentCommentId" value="">
+      <input type="hidden" name="reviewId" value="<%= review.getId() %>">
+      <textarea name="content" placeholder="댓글을 입력하세요..." required></textarea>
+      <button style="right: 20px"type="submit">댓글 등록</button>
+    </form>
+
+    <!-- 댓글과 대댓글 -->
+    <%
+      if (comments != null && !comments.isEmpty()) {
+        for (CommentDTO comment : comments) {
+          if (comment.getParentCommentId() == null) { // 댓글만 렌더링
+    %>
+    <div class="comment-box">
+      <div class="comment-header">작성자: <%= comment.getAuthor() %></div>
+      <div class="comment-content"><%= comment.getContent() %></div>
+      <button class="reply-button" onclick="toggleReplyForm('<%= comment.getId() %>')">답글</button>
+
+      <!-- 대댓글 -->
+      <div class="reply-box">
+        <%
+          for (CommentDTO reply : comments) {
+            if (reply.getParentCommentId() != null && reply.getParentCommentId().equals(comment.getId())) {
+        %>
+        <div class="comment-box">
+          <div class="comment-header">작성자: <%= reply.getAuthor() %></div>
+          <div class="comment-content"><%= reply.getContent() %></div>
+        </div>
+        <%
+            }
+          }
+        %>
+      </div>
+
+      <!-- 대댓글 작성 폼 -->
+      <div class="reply-form" id="reply-form-<%= comment.getId() %>" style="display:none;">
+        <form action="reviewDetail?action=addComment" method="post" class="comment-form">
+          <input type="hidden" name="parentCommentId" value="<%= comment.getId() %>">
+          <input type="hidden" name="reviewId" value="<%= review.getId() %>">
+          <textarea name="content" placeholder="대댓글을 입력하세요..." required></textarea>
+          <button type="submit">대댓글 등록</button>
+        </form>
+      </div>
+    </div>
+
+    <%
+        }
+      }
+    } else {
+    %>
+    <p>댓글이 없습니다. 첫 댓글을 작성해보세요!</p>
+    <% } %>
+  </div>
+</div>
 
 </div>
 <script>

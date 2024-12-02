@@ -91,94 +91,94 @@
     System.out.println(reviews);
 %>
 
-<div class="container">
-    <div class="sidebar">
-        <ul>
-            <li><a href="#" onclick="checkSessionAndNavigate('reviewUpload'); return false;">기업 면접 후기</a></li>
-        </ul>
-    </div>
-
-
-    <!-- 메인 컨텐츠 -->
-    <div class="content">
-        <!-- 검색바 -->
-        <form action="reviewUpload" method="get" class="search-bar">
-            <input type="text" name="search" placeholder="기업명 및 키워드를 입력해주세요.." value="<%= request.getParameter("search") %>">
-            <button type="submit">검색하기</button>
-        </form>
-
-        <!-- 필터 -->
-        <form action="reviewUpload" method="get" class="filters">
-            <select name="sort">
-                <option value="정렬순" <%= "정렬순".equals(request.getParameter("sort")) ? "selected" : "" %>>정렬순</option>
-                <option value="최신순" <%= "최신순".equals(request.getParameter("sort")) ? "selected" : "" %>>최신순</option>
-                <option value="인기순" <%= "인기순".equals(request.getParameter("sort")) ? "selected" : "" %>>인기순</option>
-            </select>
-            <select name="experience">
-                <option value="">경력 전체</option>
-                <option value="신입" <%= "신입".equals(request.getParameter("experience")) ? "selected" : "" %>>신입</option>
-                <option value="인턴" <%= "인턴".equals(request.getParameter("experience")) ? "selected" : "" %>>인턴</option>
-                <option value="경력" <%= "경력".equals(request.getParameter("experience")) ? "selected" : "" %>>경력</option>
-            </select>
-            <select name="region">
-                <option value="">지역 전체</option>
-                <option value="서울" <%= "서울".equals(request.getParameter("region")) ? "selected" : "" %>>서울</option>
-                <option value="경기도" <%= "경기도".equals(request.getParameter("region")) ? "selected" : "" %>>경기도</option>
-            </select>
-            <button type="submit">필터 적용</button>
-        </form>
-
-        <!-- 테이블과 등록하기 버튼 -->
-        <div class="table-container">
-            <h3>면접 후기 목록</h3>
-            <a href="review_upload.jsp">
-                <button class="register-button">등록하기</button>
-            </a>
+    <div class="container">
+        <div class="sidebar">
+            <ul>
+                <li><a href="#" onclick="checkSessionAndNavigate('reviewUpload'); return false;">기업 면접 후기</a></li>
+            </ul>
         </div>
 
-        <!-- 테이블 형식의 채용 공고 리스트 -->
-        <table>
-            <thead>
-            <tr>
-                <th>순번</th>
-                <th>기업명</th>
-                <th>직무·직업</th>
-                <th>경력</th>
-                <th>지역</th>
-                <th>등록 날짜</th> <!-- 등록 날짜 컬럼 추가 -->
-                <th>공감 수</th> <!-- 공감 수 컬럼 추가 -->
-            </tr>
-            </thead>
-            <tbody>
-            <%
-                // 리뷰 데이터 출력
-                if (reviews != null && !reviews.isEmpty()) {
-                    int index = 1; // 순번을 동적으로 생성
-                    for (ReviewDTO review : reviews) {
-            %>
-            <tr onclick="location.href='reviewDetail?review_id=<%= review.getId() %>'" style="cursor: pointer;">
-                <td><%= index++ %></td>
-                <td><%= review.getComname() %></td>
-                <td><%= review.getExperience() %></td>
-                <td><%= review.getJob() %></td>
-                <td><%= review.getRegion() %></td>
-                <td><%= review.getCreatedDate() %></td> <!-- 등록 날짜 표시 -->
-                <td><%= review.getLikes() %></td> <!-- 공감 수 표시 -->
-            </tr>
-            <%
-                }
-            } else {
-            %>
-            <tr>
-                <td colspan="7">등록된 면접 후기가 없습니다.</td>
-            </tr>
-            <% } %>
-            </tbody>
 
-        </table>
+        <!-- 메인 컨텐츠 -->
+        <div class="content">
+            <!-- 검색바 -->
+            <form action="reviewUpload" method="get" class="search-bar">
+                <input type="text" name="search" placeholder="기업명 및 키워드를 입력해주세요.." value="<%= request.getParameter("search") %>">
+                <button type="submit">검색하기</button>
+            </form>
 
+            <!-- 필터 -->
+            <form action="reviewUpload" method="get" class="filters">
+                <select name="sort">
+                    <option value="정렬순" <%= "정렬순".equals(request.getParameter("sort")) ? "selected" : "" %>>정렬순</option>
+                    <option value="최신순" <%= "최신순".equals(request.getParameter("sort")) ? "selected" : "" %>>최신순</option>
+                    <option value="인기순" <%= "인기순".equals(request.getParameter("sort")) ? "selected" : "" %>>인기순</option>
+                </select>
+                <select name="experience">
+                    <option value="">경력 전체</option>
+                    <option value="신입" <%= "신입".equals(request.getParameter("experience")) ? "selected" : "" %>>신입</option>
+                    <option value="인턴" <%= "인턴".equals(request.getParameter("experience")) ? "selected" : "" %>>인턴</option>
+                    <option value="경력" <%= "경력".equals(request.getParameter("experience")) ? "selected" : "" %>>경력</option>
+                </select>
+                <select name="region">
+                    <option value="">지역 전체</option>
+                    <option value="서울" <%= "서울".equals(request.getParameter("region")) ? "selected" : "" %>>서울</option>
+                    <option value="경기도" <%= "경기도".equals(request.getParameter("region")) ? "selected" : "" %>>경기도</option>
+                </select>
+                <button type="submit">필터 적용</button>
+            </form>
+
+            <!-- 테이블과 등록하기 버튼 -->
+            <div class="table-container">
+                <h3>면접 후기 목록</h3>
+                <a href="review_upload.jsp">
+                    <button class="register-button">등록하기</button>
+                </a>
+            </div>
+
+            <!-- 테이블 형식의 채용 공고 리스트 -->
+            <table>
+                <thead>
+                <tr>
+                    <th>순번</th>
+                    <th>기업명</th>
+                    <th>직무·직업</th>
+                    <th>경력</th>
+                    <th>지역</th>
+                    <th>등록 날짜</th> <!-- 등록 날짜 컬럼 추가 -->
+                    <th>공감 수</th> <!-- 공감 수 컬럼 추가 -->
+                </tr>
+                </thead>
+                <tbody>
+                <%
+                    // 리뷰 데이터 출력
+                    if (reviews != null && !reviews.isEmpty()) {
+                        int index = 1; // 순번을 동적으로 생성
+                        for (ReviewDTO review : reviews) {
+                %>
+                <tr onclick="location.href='reviewDetail?review_id=<%= review.getId() %>'" style="cursor: pointer;">
+                    <td><%= index++ %></td>
+                    <td><%= review.getComname() %></td>
+                    <td><%= review.getExperience() %></td>
+                    <td><%= review.getJob() %></td>
+                    <td><%= review.getRegion() %></td>
+                    <td><%= review.getCreatedDate() %></td> <!-- 등록 날짜 표시 -->
+                    <td><%= review.getLikes() %></td> <!-- 공감 수 표시 -->
+                </tr>
+                <%
+                    }
+                } else {
+                %>
+                <tr>
+                    <td colspan="7">등록된 면접 후기가 없습니다.</td>
+                </tr>
+                <% } %>
+                </tbody>
+
+            </table>
+
+        </div>
     </div>
-</div>
 
 </body>
 </html>
