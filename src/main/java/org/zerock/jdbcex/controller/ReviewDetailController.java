@@ -16,65 +16,170 @@ import java.io.IOException;
 import java.util.List;
 
 @WebServlet("/reviewDetail")
-public class ReviewDetailController extends HttpServlet{
+public class ReviewDetailController extends HttpServlet {
     private final ReviewDAO reviewDAO = new ReviewDAO();
     private final CommentDAO commentDAO = new CommentDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html; charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
 
         try {
-            // 리뷰 ID를 요청에서 가져옴
-            int reviewId = Integer.parseInt(request.getParameter("review_id"));
+            String action = request.getParameter("action");
 
-            // 해당 리뷰 ID로 세부 정보를 가져옴
-            ReviewDTO review = reviewDAO.getReviewById(reviewId);
-            System.out.println(review);
-
-            // 댓글 리스트 가져오기
-            List<CommentDTO> comments = commentDAO.getCommentsByReviewId(reviewId);
-
-            System.out.println(comments);
-
-            // JSP에 전달
-            request.setAttribute("review", review);
-            request.setAttribute("comments", comments);
-
-            request.getRequestDispatcher("/review_detail.jsp").forward(request, response);
-
+            if (action == null || action.isEmpty()) {
+                // 기본 상세보기 요청
+                handleDetailView(request, response);
+            } else {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("잘못된 요청입니다.");
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "세부 내용 로드 중 오류 발생");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "요청 처리 중 오류 발생");
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
+
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("loggedInUser") == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"error\": \"로그인이 필요합니다.\"}");
+            return;
+        }
+
+        UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
+
+        String action = request.getParameter("action");
+
         try {
-            // 댓글 작성 요청 처리
             int reviewId = Integer.parseInt(request.getParameter("review_id"));
-            String content = request.getParameter("content");
 
-            // 익명 처리 (익명 + 댓글 수로 생성)
-            int currentCount = commentDAO.getCommentCountByReviewId(reviewId);
-            String author = "익명 " + (currentCount + 1);
+            switch (action) {
+                case "like":
+                    // 좋아요 처리
+                    handleLikeAction(loggedInUser.getId(), reviewId, response);
+                    break;
 
-            // 댓글 객체 생성 및 데이터 삽입
-            CommentDTO comment = new CommentDTO();
-            comment.setReviewId(reviewId);
-            comment.setAuthor(author);
-            comment.setContent(content);
+                case "unlike":
+                    // 좋아요 취소 처리
+                    handleUnlikeAction(loggedInUser.getId(), reviewId, response);
+                    break;
 
-            commentDAO.insertComment(comment);
+                case "addComment":
+                    // 댓글 추가
+                    handleAddCommentAction(reviewId, request, response);
+                    break;
 
-            // 성공적으로 저장 후 다시 세부 페이지로 리다이렉트
-            response.sendRedirect("review_detail?review_id=" + reviewId);
+                case "replyComment":
+                    // 대댓글 추가
+                    handleReplyCommentAction(request, response);
+                    break;
 
+                default:
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"error\": \"잘못된 요청입니다.\"}");
+            }
+        } catch (NumberFormatException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"error\": \"유효하지 않은 리뷰 ID입니다.\"}");
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "댓글 작성 중 오류 발생");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "요청 처리 중 오류 발생");
         }
+    }
+
+    private void handleDetailView(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        int reviewId = Integer.parseInt(request.getParameter("review_id"));
+
+        // 리뷰 상세정보 가져오기
+        ReviewDTO review = reviewDAO.getReviewById(reviewId);
+
+        // 댓글 리스트 가져오기
+        List<CommentDTO> comments = commentDAO.getCommentsByReviewId(reviewId);
+
+        // 공감 여부 확인
+        HttpSession session = request.getSession(false);
+        boolean isLikedByUser = false;
+        if (session != null) {
+            UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
+            if (loggedInUser != null) {
+                isLikedByUser = reviewDAO.isLikedByUser(loggedInUser.getId(), reviewId);
+            }
+        }
+
+        // JSP에 전달
+        request.setAttribute("review", review);
+        request.setAttribute("comments", comments);
+        request.setAttribute("likedByUser", isLikedByUser);
+
+        request.getRequestDispatcher("/review_detail.jsp").forward(request, response);
+    }
+
+    private void handleLikeAction(String userId, int reviewId, HttpServletResponse response) throws Exception {
+        reviewDAO.likeReview(userId, reviewId);
+        int updatedLikes = reviewDAO.getLikes(reviewId);
+        response.getWriter().write("{\"likes\": " + updatedLikes + "}");
+    }
+
+    private void handleUnlikeAction(String userId, int reviewId, HttpServletResponse response) throws Exception {
+        reviewDAO.unlikeReview(userId, reviewId);
+        int updatedLikes = reviewDAO.getLikes(reviewId);
+        response.getWriter().write("{\"likes\": " + updatedLikes + "}");
+    }
+
+    private void handleAddCommentAction(int reviewId, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String content = request.getParameter("content");
+
+        CommentDTO comment = new CommentDTO();
+        comment.setReviewId(reviewId);
+        comment.setContent(content);
+
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
+            if (loggedInUser != null) {
+                comment.setAuthor(loggedInUser.getName());
+            } else {
+                comment.setAuthor("익명");
+            }
+        } else {
+            comment.setAuthor("익명");
+        }
+
+        commentDAO.insertComment(comment);
+
+        response.sendRedirect("reviewDetail?review_id=" + reviewId);
+    }
+
+    private void handleReplyCommentAction(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        int parentCommentId = Integer.parseInt(request.getParameter("parent_comment_id"));
+        String replyContent = request.getParameter("reply_content");
+
+        CommentDTO reply = new CommentDTO();
+        reply.setParentCommentId(parentCommentId);
+        reply.setReviewId(Integer.parseInt(request.getParameter("review_id")));
+        reply.setContent(replyContent);
+
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
+            if (loggedInUser != null) {
+                reply.setAuthor(loggedInUser.getName());
+            } else {
+                reply.setAuthor("익명");
+            }
+        } else {
+            reply.setAuthor("익명");
+        }
+
+        commentDAO.insertComment(reply);
+
+        response.sendRedirect("reviewDetail?review_id=" + request.getParameter("review_id"));
     }
 }
