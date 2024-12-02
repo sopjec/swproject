@@ -11,6 +11,11 @@ let isSpeaking = false; // 음성 재생 상태 플래그
 const urlParams = new URLSearchParams(window.location.search);
 const resumeId = urlParams.get('resumeId'); // URL에서 resumeId 값 추출
 
+if (!resumeId) {
+    alert('resumeId가 URL에 포함되지 않았습니다. URL을 확인하세요.');
+    throw new Error('resumeId가 누락되었습니다.');
+}
+
 // 텍스트 음성 읽기 함수
 function readTextAloud(text) {
     if (!window.speechSynthesis) {
@@ -20,8 +25,6 @@ function readTextAloud(text) {
 
     if (isSpeaking) {
         window.speechSynthesis.cancel(); // 현재 음성 정지
-        /*console.warn('이미 음성을 재생 중입니다.');
-        return; // 중복 실행 방지*/
     }
 
     const utterance = new SpeechSynthesisUtterance(text);
@@ -88,16 +91,6 @@ document.getElementById('start-interview').addEventListener('click', async () =>
         console.warn('첫 질문이 이미 출력되었습니다.');
         return; // 중복 실행 방지
     }
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const resumeId = urlParams.get('resumeId');
-
-    if (!resumeId) {
-        alert('resumeId가 없습니다. URL을 확인하세요.');
-        return;
-    }
-
-
 
     startInterview(); // 면접 시작
     startPageRecording();
@@ -210,15 +203,26 @@ async function startPageRecording() {
 }
 
 // 녹화 저장
-function saveRecording() {
+async function saveRecording() {
     const blob = new Blob(recordedChunks, { type: 'video/webm' });
-    const url = URL.createObjectURL(blob);
-    const downloadLink = document.createElement('a');
-    downloadLink.href = url;
-    downloadLink.download = 'recording.webm'; // 저장할 파일명
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    console.log('녹화본 저장 완료');
+    const formData = new FormData();
+    formData.append('videoFile', blob, 'recording.webm');
+    formData.append('resumeId', resumeId); // resumeId를 함께 전송
+
+    try {
+        const response = await fetch('/upload-video', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (response.ok) {
+            console.log('녹화본이 서버에 성공적으로 업로드되었습니다.');
+        } else {
+            console.error('녹화본 업로드 실패:', response.statusText);
+        }
+    } catch (error) {
+        console.error('녹화본 업로드 중 오류:', error);
+    }
 }
 
 // 녹화 종료
@@ -236,7 +240,6 @@ function stopRecording() {
         console.log('웹캠 스트림 중지');
     }
 }
-
 
 // 버튼 이벤트 리스너 설정
 document.getElementById('stop-recording').addEventListener('click', stopRecording);

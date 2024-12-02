@@ -7,60 +7,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/layout.css"> <!-- 올바른 경로 설정 -->
     <title>자기소개서 선택</title>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* 사이드바 스타일 */
-        .sidebar {
-            width: 200px;
-            padding: 20px;
-            background-color: white;
-            border-right: 1px solid #ddd;
-        }
-
-        .sidebar ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .sidebar ul li {
-            margin-bottom: 10px;
-        }
-
-        .sidebar ul li a {
-            text-decoration: none;
-            color: #333;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .sidebar li:hover {
-            background-color: #e0e0e0;
-        }
-
-        /* 메인 컨텐츠 */
-        .container {
-            display: flex;
-            max-width: 1200px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .content {
-            flex-grow: 1;
-            padding-left: 20px;
-        }
-
         h2 {
             text-align: center;
             margin-bottom: 20px;
