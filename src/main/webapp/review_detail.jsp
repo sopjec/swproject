@@ -1,318 +1,266 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.zerock.jdbcex.dto.ReviewDTO" %>
 <%@ page import="org.zerock.jdbcex.dto.CommentDTO" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>면접 후기 상세보기</title>
+  <title>리뷰 상세 보기</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
+      background-color: #f4f4f9;
       margin: 0;
       padding: 0;
     }
-
-    /* 전체 레이아웃 */
     .container {
-      display: flex;
-      max-width: 1200px;
+      max-width: 800px;
       margin: 20px auto;
-      padding: 0;
-      gap: 20px; /* 사이드바와 메인 콘텐츠 간격 */
-    }
-
-    /* 사이드바 스타일 */
-    .sidebar {
-      width: 200px;
       padding: 20px;
-      background-color: white;
-      border-right: 1px solid #ddd;
-      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
-
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
+    .review-header {
+      margin-bottom: 20px;
     }
-
-    .sidebar ul li {
-      margin-bottom: 15px;
-    }
-
-    .sidebar ul li a {
-      text-decoration: none;
-      color: #333;
-      font-size: 16px;
-      display: block;
-      padding: 10px;
-      border-radius: 5px;
-      transition: background-color 0.3s;
-    }
-
-    .sidebar ul li a:hover {
-      background-color: #f0f0f0;
-    }
-
-    /* 메인 콘텐츠 스타일 */
-    .content {
-      flex-grow: 1;
-      padding: 20px;
-      background-color: white;
-      border: 1px solid #ddd;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .review-title {
+    .review-header h3 {
       font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #ddd;
-      padding-bottom: 10px;
+      margin: 0;
+      color: #333;
     }
-
     .review-meta {
-      color: #666;
+      display: flex;
+      justify-content: space-between;
+      color: #888;
       font-size: 14px;
-      margin-bottom: 20px;
+      margin-top: 5px;
     }
-
     .review-content {
-      font-size: 16px;
+      margin-top: 20px;
+      padding-top: 10px;
+      border-top: 1px solid #ddd;
+      color: #555;
       line-height: 1.6;
-      margin-bottom: 40px;
-      background-color: #f9f9f9;
-      padding: 20px;
-      border-radius: 5px;
-      border: 1px solid #ddd;
     }
     .like-section {
-      margin-bottom: 20px;
+      margin-top: 20px;
+      padding-top: 10px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: space-between;
     }
-
-    .like-section button {
-      padding: 10px 20px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      background-color: #333;
+    .like-button {
+      background-color: #007bff;
       color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
       cursor: pointer;
+      font-size: 14px;
     }
-
-    .like-section button:hover {
-      background-color: #000;
+    .like-button:hover {
+      background-color: #0056b3;
     }
-
     .comment-section {
-      margin-top: 40px;
+      margin-top: 30px;
+      padding-top: 10px;
+      border-top: 1px solid #ddd;
     }
-
-    .comment-section h3 {
-      font-size: 20px;
-      margin-bottom: 15px;
-    }
-
     .comment-form textarea {
       width: 100%;
-      height: 100px;
-      margin-bottom: 10px;
       padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .comment-form button {
+      margin-top: 10px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .comment-form button:hover {
+      background-color: #218838;
+    }
+    .comment-box {
+      margin-top: 15px;
+      padding: 15px;
       border: 1px solid #ddd;
       border-radius: 5px;
-      font-size: 14px;
-      resize: none;
+      background-color: #f9f9f9;
     }
-
-    .comment-form button {
-      padding: 10px 20px;
-      border: none;
-      background-color: #333;
-      color: white;
+    .comment-header {
       font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
+      margin-bottom: 10px;
+      color: #333;
     }
-
-    .comment-form button:hover {
-      background-color: #000;
-    }
-
-    .comment-list {
-      margin-top: 20px;
-    }
-
-    .comment-item {
-      border-bottom: 1px solid #ddd;
-      padding: 15px 0;
-    }
-
-    .comment-author {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
     .comment-content {
       color: #555;
       margin-bottom: 10px;
     }
-
-    .reply-section {
+    .reply-box {
+      margin-left: 20px;
       margin-top: 10px;
-      padding-left: 20px;
-      display: none; /* 기본적으로 숨김 */
+      border-left: 2px solid #ddd;
+      padding-left: 10px;
     }
-
-    .reply-section textarea {
-      width: 90%;
-      height: 50px;
-      margin-bottom: 10px;
-      padding: 5px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
+    .reply-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 10px;
+      cursor: pointer;
       font-size: 14px;
     }
-
-    .reply-section button {
-      padding: 5px 15px;
-      border: 1px solid black;
-      background-color: white;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .reply-section button:hover {
-      background-color: #f0f0f0;
+    .reply-button:hover {
+      background-color: #0056b3;
     }
   </style>
-
-  <script>
-    function toggleReplyForm(commentId) {
-      const replyForm = document.getElementById('reply-form-' + commentId);
-      replyForm.style.display = replyForm.style.display === 'block' ? 'none' : 'block';
-    }
-    // 좋아요 및 좋아요 취소 처리
-    function handleLikeAction(reviewId, isLiked) {
-      const actionUrl = isLiked ? "reviewDetail?action=unlike" : "reviewDetail?action=like";
-
-      fetch(actionUrl + "&review_id=" + reviewId, {
-        method: 'POST'
-      })
-              .then(response => response.json())
-              .then(data => {
-                if (data.likes !== undefined) {
-                  // 좋아요 수 및 텍스트 업데이트
-                  document.getElementById("like-text").innerText = isLiked ? "공감하기" : "공감 취소";
-                  document.getElementById("like-count").innerText = data.likes;
-                } else {
-                  alert("처리 중 문제가 발생했습니다. 다시 시도해주세요.");
-                }
-              })
-              .catch(error => {
-                console.error("Error:", error);
-                alert("처리 중 문제가 발생했습니다.");
-              });
-    }
-
-  </script>
 </head>
 <body>
-
-<jsp:include page="header.jsp" />
-
 <div class="container">
-  <!-- 사이드바 -->
-  <div class="sidebar">
-    <ul>
-      <li><a href="#" onclick="checkSessionAndNavigate('reviewUpload'); return false;">기업 면접 후기</a></li>
-    </ul>
+  <%
+    // 리뷰 데이터
+    ReviewDTO review = (ReviewDTO) request.getAttribute("review");
+    List<CommentDTO> comments = (List<CommentDTO>) request.getAttribute("comments");
+    boolean isLikedByUser = (boolean) request.getAttribute("likedByUser");
+  %>
+  <!-- 리뷰 상세 정보 -->
+  <div class="review-header">
+    <h3><%= review.getComname() %></h3>
+    <div class="review-meta">
+      <div>
+        작성자: <%= review.getUserId() %> | 지역: <%= review.getRegion() %> | 경력: <%= review.getExperience()%>
+      </div>
+      <span id="like-count-<%= review.getId() %>">공감수: <%= review.getLikes() %></span>
+    </div>
+  </div>
+  <div class="review-content">
+    <p><%= review.getContent() %></p>
   </div>
 
-  <!-- 메인 콘텐츠 -->
-  <div class="content">
+  <!-- 공감 버튼 -->
+  <div class="like-section">
+    <button class="like-button" data-id="<%= review.getId() %>" data-action="<%= isLikedByUser ? "unlike" : "like" %>">
+      <%= isLikedByUser ? "공감 취소" : "공감" %>
+    </button>
+
+  </div>
+
+  <!-- 댓글 쓰기 -->
+  <div class="comment-section">
+    <h4>댓글</h4>
+    <form action="reviewDetail?action=addComment" method="post" class="comment-form">
+      <input type="hidden" name="parentCommentId" value="">
+      <input type="hidden" name="reviewId" value="<%= review.getId() %>">
+      <textarea name="content" placeholder="댓글을 입력하세요..." required></textarea>
+      <button type="submit">댓글 등록</button>
+    </form>
+
+    <!-- 댓글과 대댓글 -->
     <%
-      // 글 상세 정보 및 댓글 리스트 가져오기
-      ReviewDTO review = (ReviewDTO) request.getAttribute("review");
-      List<CommentDTO> comments = (List<CommentDTO>) request.getAttribute("comments");
+      if (comments != null && !comments.isEmpty()) {
+        for (CommentDTO comment : comments) {
+          if (comment.getParentCommentId() == null) { // 댓글만 렌더링
     %>
+    <div class="comment-box">
+      <div class="comment-header">작성자: <%= comment.getAuthor() %></div>
+      <div class="comment-content"><%= comment.getContent() %></div>
+      <button class="reply-button" onclick="toggleReplyForm('<%= comment.getId() %>')">답글</button>
 
-    <% if (review != null) { %>
-    <!-- 글 상세 정보 -->
-    <div class="review-title"><%= review.getComname() %> - <%= review.getJob() %></div>
-    <div class="review-meta">
-      작성자: <%= review.getUserId() %> | 지역: <%= review.getRegion() %> | 경력: <%= review.getExperience() %>
-    </div>
-    <div class="review-content">
-      <%= review.getContent() %>
-    </div>
+      <!-- 대댓글 -->
+      <div class="reply-box">
+        <%
+          for (CommentDTO reply : comments) {
+            if (reply.getParentCommentId() != null && reply.getParentCommentId().equals(comment.getId())) {
+        %>
+        <div class="comment-box">
+          <div class="comment-header">작성자: <%= reply.getAuthor() %></div>
+          <div class="comment-content"><%= reply.getContent() %></div>
+        </div>
+        <%
+            }
+          }
+        %>
+      </div>
 
+      <!-- 대댓글 작성 폼 -->
+      <div class="reply-form" id="reply-form-<%= comment.getId() %>" style="display:none;">
+        <form action="reviewDetail?action=addComment" method="post" class="comment-form">
+          <input type="hidden" name="parentCommentId" value="<%= comment.getId() %>">
+          <input type="hidden" name="reviewId" value="<%= review.getId() %>">
+          <textarea name="content" placeholder="대댓글을 입력하세요..." required></textarea>
+          <button type="submit">대댓글 등록</button>
+        </form>
+      </div>
+    </div>
     <%
-      Boolean isLikedByUser = (Boolean) request.getAttribute("likedByUser");
-      if (isLikedByUser == null) {
-        isLikedByUser = false; // 기본값 설정
+        }
       }
+    } else {
     %>
-    <!-- 공감 버튼 -->
-    <div class="like-section">
-      <button id="like-button" onclick="handleLikeAction('<%= review.getId() %>', <%= isLikedByUser %>)">
-        <span id="like-text"><%= isLikedByUser ? "공감 취소" : "공감하기" %></span>
-        (<span id="like-count"><%= review.getLikes() %></span>)
-      </button>
-    </div>
-
-    <!-- 댓글 입력 -->
-    <div class="comment-section">
-      <h3>댓글 달기</h3>
-      <form action="comment" method="post" class="comment-form">
-        <input name="review_id" value="<%= review.getId() %>" type="hidden">
-        <textarea name="content" placeholder="댓글 내용을 입력하세요..." required></textarea>
-        <button type="submit">댓글 등록</button>
-      </form>
-    </div>
-
-    <!-- 댓글 리스트 -->
-    <div class="comment-list">
-      <h3>댓글</h3>
-      <ul>
-        <% if (comments != null && !comments.isEmpty()) { %>
-        <% for (CommentDTO comment : comments) { %>
-        <li class="comment-item">
-          <div class="comment-author"><%= comment.getAuthor() %></div>
-          <div class="comment-content"><%= comment.getContent() %></div>
-          <small>(작성일: <%= comment.getCreatedDate() %>)</small>
-
-          <!-- 답글 버튼 -->
-          <button onclick="toggleReplyForm('<%= comment.getId() %>')">답글</button>
-
-          <!-- 대댓글 입력 -->
-          <div id="reply-form-<%= comment.getId() %>" class="reply-section">
-            <form action="reviewDetail" method="post">
-              <input type="hidden" name="action" value="replyComment">
-              <input type="hidden" name="parent_comment_id" value="<%= comment.getId() %>">
-              <input type="hidden" name="review_id" value="<%= review.getReviewId() %>">
-              <textarea name="reply_content" placeholder="답글을 입력하세요..." required></textarea>
-              <button type="submit">답글 등록</button>
-            </form>
-          </div>
-        </li>
-        <% } %>
-        <% } else { %>
-        <li>댓글이 없습니다.</li>
-        <% } %>
-      </ul>
-    </div>
-    <% } else { %>
-    <p>리뷰 정보를 불러올 수 없습니다. 잘못된 요청입니다.</p>
+    <p>댓글이 없습니다. 첫 댓글을 작성해보세요!</p>
     <% } %>
   </div>
 </div>
 
+<script>
+  document.querySelectorAll('.like-button').forEach(function(button) {
+    button.addEventListener('click', function() {
+      const reviewId = button.getAttribute('data-id');
+      const currentAction = button.getAttribute('data-action');
+
+      console.log("reviewId: " + reviewId);
+
+      fetch('/reviewDetail?action=' + currentAction, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviewId: reviewId }) // reviewId만 전송
+      })
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error("HTTP status " + response.status);
+                }
+                return response.json();
+              })
+              .then(data => {
+                console.log("Response data:", data);
+
+                // 공감 수 업데이트
+                const likeCountSpan = document.getElementById('like-count-' + reviewId);
+                if (likeCountSpan) {
+                  likeCountSpan.innerText = data.likes;
+                }
+
+                // 버튼 상태 업데이트
+                if (currentAction === 'like') {
+                  button.innerText = '공감 취소';
+                  button.setAttribute('data-action', 'unlike');
+                } else {
+                  button.innerText = '공감';
+                  button.setAttribute('data-action', 'like');
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+              });
+    });
+  });
+
+
+  function toggleReplyForm(id) {
+    const replyForm = document.getElementById('reply-form-' + id);
+    replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
+  }
+</script>
 </body>
 </html>
