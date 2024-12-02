@@ -198,6 +198,29 @@
       const replyForm = document.getElementById('reply-form-' + commentId);
       replyForm.style.display = replyForm.style.display === 'block' ? 'none' : 'block';
     }
+    // 좋아요 및 좋아요 취소 처리
+    function handleLikeAction(reviewId, isLiked) {
+      const actionUrl = isLiked ? "reviewDetail?action=unlike" : "reviewDetail?action=like";
+
+      fetch(actionUrl + "&review_id=" + reviewId, {
+        method: 'POST'
+      })
+              .then(response => response.json())
+              .then(data => {
+                if (data.likes !== undefined) {
+                  // 좋아요 수 및 텍스트 업데이트
+                  document.getElementById("like-text").innerText = isLiked ? "공감하기" : "공감 취소";
+                  document.getElementById("like-count").innerText = data.likes;
+                } else {
+                  alert("처리 중 문제가 발생했습니다. 다시 시도해주세요.");
+                }
+              })
+              .catch(error => {
+                console.error("Error:", error);
+                alert("처리 중 문제가 발생했습니다.");
+              });
+    }
+
   </script>
 </head>
 <body>
@@ -208,7 +231,7 @@
   <!-- 사이드바 -->
   <div class="sidebar">
     <ul>
-      <li><a href="review.jsp">기업 면접 후기</a></li>
+      <li><a href="#" onclick="checkSessionAndNavigate('reviewUpload'); return false;">기업 면접 후기</a></li>
     </ul>
   </div>
 
@@ -238,8 +261,9 @@
     %>
     <!-- 공감 버튼 -->
     <div class="like-section">
-      <button onclick="location.href='<%= isLikedByUser ? "unlikeReview" : "likeReview" %>?review_id=<%= review.getId() %>'">
-        <%= isLikedByUser ? "공감 취소" : "공감하기" %> (<%= review.getLikes() %>)
+      <button id="like-button" onclick="handleLikeAction('<%= review.getId() %>', <%= isLikedByUser %>)">
+        <span id="like-text"><%= isLikedByUser ? "공감 취소" : "공감하기" %></span>
+        (<span id="like-count"><%= review.getLikes() %></span>)
       </button>
     </div>
 

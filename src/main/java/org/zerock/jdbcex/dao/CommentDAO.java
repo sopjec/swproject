@@ -12,7 +12,7 @@ import java.util.List;
 public class CommentDAO {
     // 댓글 삽입
     public void insertComment(CommentDTO comment) throws Exception {
-        String sql = "INSERT INTO comments (review_id, parent_comment_id, author, content, created_date) VALUES (?, ?, ?, ?, NOW())";
+        String sql = "INSERT INTO comments (review_id, parent_comment_id, author, content, created_date, updated_date, parent_comment_id) VALUES (?, ?, ?, ?, NOW(), NOW())";
 
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -25,6 +25,10 @@ public class CommentDAO {
             }
             pstmt.setString(3, comment.getAuthor());
             pstmt.setString(4, comment.getContent());
+            if (comment.getCreatedDate() != null) {
+                pstmt.setInt(5, 'NULL');
+            }
+            pstmt.setInt(5, comment.getParentCommentId());
 
             pstmt.executeUpdate();
         }
