@@ -6,47 +6,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/layout.css"> <!-- 올바른 경로 설정 -->
     <title>면접후기</title> <!--커뮤니티/실제 기업 면접 후기 -->
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* 메인 레이아웃 설정 */
-        .container {
-            display: flex;
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
-        }
-        /* 왼쪽 사이드바 스타일 */
-        .sidebar {
-            width: 200px;
-            padding: 20px;
-            background-color: white;
-            border-right: 1px solid #ddd;
-        }
-        .sidebar ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .sidebar ul li {
-            margin-bottom: 10px;
-        }
-        .sidebar ul li a {
-            text-decoration: none;
-            color: #333;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        /* 오른쪽 메인 컨텐츠 */
-        .content {
-            flex-grow: 1;
-            padding-left: 20px;
-        }
         .search-bar {
             display: flex;
             margin-bottom: 20px;

@@ -5,57 +5,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/layout.css"> <!-- 올바른 경로 설정 -->
     <title>스크랩된 채용 공고</title>
     <style>
-        /* 공통 스타일 */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9fc;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            display: flex;
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
-        }
-
-        .sidebar {
-            width: 220px;
-            padding: 20px;
-            background-color: white;
-            border-right: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .sidebar ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .sidebar ul li {
-            margin-bottom: 15px;
-        }
-
-        .sidebar ul li a {
-            text-decoration: none;
-            color: #333;
-            font-size: 16px;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        .sidebar ul li a:hover {
-            color: #007bff;
-        }
-
-        .content {
-            flex-grow: 1;
-            padding-left: 20px;
-        }
 
         .job-listing {
             display: grid;
