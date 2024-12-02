@@ -114,7 +114,7 @@ public class ReviewDAO {
 
     //좋아요 갯수 가져오기
     public int getLikes(int reviewId) throws Exception {
-        String sql = "SELECT COUNT(*) FROM review_likes WHERE review_id = ?";
+        String sql = "SELECT COUNT(*) FROM likes WHERE review_id = ?";
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, reviewId);
