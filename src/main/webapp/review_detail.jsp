@@ -163,7 +163,7 @@
     <h3><%= review.getComname() %></h3>
     <div class="review-meta">
       <div>
-        작성자: <%= review.getUserId() %> | 지역: <%= review.getRegion() %> | 경력: <%= review.getExperience()%>
+        작성자: <%= review.getUserId() %> | 지역: <%= review.getRegion() %> | 경력: <%= review.getExperience() %>| 등록일:<%=review.getCreatedDate()%>
       </div>
       <span id="like-count-<%= review.getId() %>">공감수: <%= review.getLikes() %></span>
     </div>
