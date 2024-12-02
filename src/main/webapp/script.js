@@ -235,6 +235,81 @@ async function startInterview() {
     }
 }
 
+// 면접 종료 알림 모달 생성 함수
+function createEndInterviewModal() {
+    // 모달 요소가 이미 있다면 제거
+    const existingModal = document.getElementById('end-interview-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // 모달 요소 생성
+    const modal = document.createElement('div');
+    modal.id = 'end-interview-modal';
+    modal.style.position = 'fixed';
+    modal.style.top = '30%'; // 위치 조정
+    modal.style.left = '30%'; // 위치 조정
+    modal.style.width = '600px'; // 기존 가로 크기의 두 배
+    modal.style.height = '450px'; // 기존 세로 크기의 세 배
+    modal.style.backgroundColor = 'white';
+    modal.style.padding = '20px';
+    modal.style.boxShadow = '0 0 15px rgba(0, 0, 0, 0.5)';
+    modal.style.zIndex = '1000';
+    modal.style.textAlign = 'center';
+    modal.style.cursor = 'move'; // 드래그 시 손 모양으로 변경
+    modal.style.display = 'flex';
+    modal.style.flexDirection = 'column';
+    modal.style.justifyContent = 'space-between';
+
+    // 피드백 타이틀 생성
+    const feedbackTitle = document.createElement('h3');
+    feedbackTitle.innerText = '피드백 내용';
+    feedbackTitle.style.marginBottom = '10px'; // 타이틀과 텍스트창 사이 여백 추가
+    modal.appendChild(feedbackTitle);
+
+    // 피드백 입력 텍스트 창 생성
+    const feedbackTextarea = document.createElement('textarea');
+    feedbackTextarea.style.width = '100%';
+    feedbackTextarea.style.height = '200px';
+    feedbackTextarea.style.resize = 'none'; // 크기 조절 불가
+    feedbackTextarea.placeholder = '여기에 피드백을 입력하세요...';
+    modal.appendChild(feedbackTextarea);
+
+    // 확인 버튼 생성
+    const closeButton = document.createElement('button');
+    closeButton.innerText = '확인';
+    closeButton.style.alignSelf = 'center'; // 버튼을 중앙으로 정렬
+    closeButton.style.marginBottom = '10px'; // 모달 하단에서 약간의 여백 추가
+    closeButton.addEventListener('click', () => {
+        modal.remove(); // 모달 닫기
+    });
+    modal.appendChild(closeButton);
+
+    // 드래그 가능하도록 마우스 이벤트 추가
+    let offsetX, offsetY;
+
+    modal.addEventListener('mousedown', (e) => {
+        offsetX = e.clientX - modal.getBoundingClientRect().left;
+        offsetY = e.clientY - modal.getBoundingClientRect().top;
+
+        function mouseMoveHandler(e) {
+            modal.style.left = `${e.clientX - offsetX}px`;
+            modal.style.top = `${e.clientY - offsetY}px`;
+        }
+
+        function mouseUpHandler() {
+            document.removeEventListener('mousemove', mouseMoveHandler);
+            document.removeEventListener('mouseup', mouseUpHandler);
+        }
+
+        document.addEventListener('mousemove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler);
+    });
+
+    // 모달을 body에 추가
+    document.body.appendChild(modal);
+}
+
 // 이벤트 리스너 설정
 document.getElementById('start-interview').addEventListener('click', startInterview);
 
@@ -246,7 +321,8 @@ document.getElementById('next-question').addEventListener('click', () => {
         readTextAloud(question, startSpeechRecognition);
     } else {
         document.getElementById('interviewer-text-output').innerText = '모든 질문이 완료되었습니다.';
-        alert('면접이 종료되었습니다.');
+        alert('면접이종료되었습니다');
+        createEndInterviewModal(); // 질문이 더 이상 없을 때 모달 띄우기
     }
 });
 
