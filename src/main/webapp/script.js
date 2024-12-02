@@ -11,6 +11,11 @@ let isSpeaking = false; // 음성 재생 상태 플래그
 const urlParams = new URLSearchParams(window.location.search);
 const resumeId = urlParams.get('resumeId'); // URL에서 resumeId 값 추출
 
+if (!resumeId) {
+    alert('resumeId가 URL에 포함되지 않았습니다. URL을 확인하세요.');
+    throw new Error('resumeId가 누락되었습니다.');
+}
+
 // 텍스트 음성 읽기 함수
 function readTextAloud(text) {
     if (!window.speechSynthesis) {
@@ -86,16 +91,6 @@ document.getElementById('start-interview').addEventListener('click', async () =>
         console.warn('첫 질문이 이미 출력되었습니다.');
         return; // 중복 실행 방지
     }
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const resumeId = urlParams.get('resumeId');
-
-    if (!resumeId) {
-        alert('resumeId가 없습니다. URL을 확인하세요.');
-        return;
-    }
-
-
 
     startInterview(); // 면접 시작
     startPageRecording();
@@ -212,6 +207,7 @@ async function saveRecording() {
     const blob = new Blob(recordedChunks, { type: 'video/webm' });
     const formData = new FormData();
     formData.append('videoFile', blob, 'recording.webm');
+    formData.append('resumeId', resumeId); // resumeId를 함께 전송
 
     try {
         const response = await fetch('/upload-video', {
@@ -229,9 +225,6 @@ async function saveRecording() {
     }
 }
 
-
-
-
 // 녹화 종료
 function stopRecording() {
     if (mediaRecorder && mediaRecorder.state !== 'inactive') {
@@ -247,7 +240,6 @@ function stopRecording() {
         console.log('웹캠 스트림 중지');
     }
 }
-
 
 // 버튼 이벤트 리스너 설정
 document.getElementById('stop-recording').addEventListener('click', stopRecording);
