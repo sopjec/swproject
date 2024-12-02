@@ -60,13 +60,10 @@ public class ReviewDetailController extends HttpServlet {
 
         UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
 
-        // JSON 데이터 읽기
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> requestBody = objectMapper.readValue(request.getReader(), Map.class);
-
-        // reviewId 가져오기
-        int reviewId = (int) requestBody.get("reviewId");
+        // 액션 파라미터 읽기
         String action = request.getParameter("action");
+        int reviewId = Integer.parseInt(request.getParameter("reviewId"));
+
 
         // 로그 출력
         System.out.println("reviewId: " + reviewId);
@@ -77,23 +74,41 @@ public class ReviewDetailController extends HttpServlet {
             switch (action) {
                 case "like":
                     // 좋아요 처리
+                    if (session == null || session.getAttribute("loggedInUser") == null) {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.getWriter().write("{\"error\": \"로그인이 필요합니다.\"}");
+
+                        response.sendRedirect("login.jsp");
+                        return;
+                    }
                     handleLikeAction(loggedInUser.getId(), reviewId, response);
+                    response.sendRedirect("reviewDetail?review_id=" + reviewId);
                     break;
 
                 case "unlike":
                     // 좋아요 취소 처리
+                    if (session == null || session.getAttribute("loggedInUser") == null) {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.getWriter().write("{\"error\": \"로그인이 필요합니다.\"}");
+
+                        response.sendRedirect("login.jsp");
+                        return;
+                    }
                     handleUnlikeAction(loggedInUser.getId(), reviewId, response);
+                    response.sendRedirect("reviewDetail?review_id=" + reviewId);
                     break;
 
                 case "addComment":
                     // 댓글 추가
+                    if (session == null || session.getAttribute("loggedInUser") == null) {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.getWriter().write("{\"error\": \"로그인이 필요합니다.\"}");
+
+                        response.sendRedirect("login.jsp");
+                        return;
+                    }
                     System.out.println("addComment옴");
                     handleAddCommentAction(reviewId, request, response);
-                    break;
-
-                case "replyComment":
-                    // 대댓글 추가
-                    handleReplyCommentAction(request, response);
                     break;
 
                 default:
@@ -181,30 +196,4 @@ public class ReviewDetailController extends HttpServlet {
         response.sendRedirect("reviewDetail?review_id=" + reviewId);
     }
 
-    private void handleReplyCommentAction(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        int parentCommentId = Integer.parseInt(request.getParameter("parent_comment_id"));
-        System.out.println("controller" + parentCommentId);
-        String replyContent = request.getParameter("reply_content");
-
-        CommentDTO reply = new CommentDTO();
-        reply.setParentCommentId(parentCommentId);
-        reply.setReviewId(Integer.parseInt(request.getParameter("review_id")));
-        reply.setContent(replyContent);
-
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
-            if (loggedInUser != null) {
-                reply.setAuthor(loggedInUser.getId());
-            } else {
-                reply.setAuthor("익명");
-            }
-        } else {
-            reply.setAuthor("익명");
-        }
-
-        commentDAO.insertComment(reply);
-
-        response.sendRedirect("reviewDetail?review_id=" + request.getParameter("review_id"));
-    }
 }
