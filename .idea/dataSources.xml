@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="merijob_db@localhost" uuid="766c22ff-48fc-45e1-8bb3-b89409fc7dd5">
+    <data-source source="LOCAL" name="swproject@localhost" uuid="32511687-8714-4801-bcf9-11b55466d44a">
       <driver-ref>mariadb</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>

@@ -8,53 +8,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/layout.css"> <!-- 올바른 경로 설정 -->
     <title>면접 보기</title>
     <!-- TensorFlow.js 및 Face-api.js -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.1/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-        }
-        /* 메인 레이아웃 설정 */
-        .container {
-            display: flex;
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
-        }
-        /* 메인 컨텐츠 */
-        .content {
-            flex-grow: 1;
-            padding-left: 20px;
-        }
-        /* 왼쪽 사이드바 스타일 */
-        .sidebar {
-            width: 200px;
-            padding: 20px;
-            background-color: white;
-            border-right: 1px solid #ddd;
-        }
-        .sidebar ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .sidebar ul li {
-            margin-bottom: 10px;
-        }
-        .sidebar ul li a {
-            text-decoration: none;
-            color: #333;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .sidebar li:hover {
-            background-color: #e0e0e0;
-        }
         /*오른쪽 컨텐츠 스타일*/
         h2 {
             color: #333;

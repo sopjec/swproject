@@ -11,7 +11,7 @@ import java.util.List;
 public class ReviewDAO {
     //리뷰 데이터 삽입 메서드
     public void insertReview(ReviewDTO review) throws Exception {
-        String sql = "INSERT INTO interview_review (user_id, content, job, region, comname, experience) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO review (user_id, content, job, region, comname, experience) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -28,7 +28,7 @@ public class ReviewDAO {
     }
     // 데이터 조회 메서드
     public List<ReviewDTO> getAllReviews() throws Exception {
-        String sql = "SELECT id, comname, job, experience, region, content FROM interview_review";
+        String sql = "SELECT id, comname, job, experience, region, content FROM review";
 
         List<ReviewDTO> reviews = new ArrayList<>();
 
@@ -52,7 +52,7 @@ public class ReviewDAO {
     }
 
     public ReviewDTO getReviewById(int reviewId) throws Exception {
-        String sql = "SELECT * FROM interview_review WHERE id = ?";
+        String sql = "SELECT * FROM review WHERE id = ?";
 
 
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
