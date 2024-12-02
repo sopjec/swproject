@@ -12,6 +12,7 @@ public class ReviewDTO {
     private String region;      // 지역
     private String content;     // 면접 내용
     private String userId;      // 사용자 ID
-
-
+    private String createdDate; // 등록 날짜
+    private int likes;          //좋아요 수
+    private int reviewId; // 리뷰 ID
 }
