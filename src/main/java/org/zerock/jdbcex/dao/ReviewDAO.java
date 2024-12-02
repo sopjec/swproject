@@ -27,27 +27,53 @@ public class ReviewDAO {
         }
     }
     // 데이터 조회 메서드
-    public List<ReviewDTO> getAllReviews() throws Exception {
-        String sql = "SELECT id, comname, job, experience, region, content, count_likes, created_date FROM review";
+    public List<ReviewDTO> getAllReviews(String sort, String experience, String region) throws Exception {
+        StringBuilder sql = new StringBuilder("SELECT id, comname, job, experience, region, content, created_date, count_likes FROM review WHERE 1=1");
+
+        // 조건 추가
+        if (experience != null && !experience.isEmpty()) {
+            sql.append(" AND experience = ?");
+        }
+        if (region != null && !region.isEmpty()) {
+            sql.append(" AND region = ?");
+        }
+        if (sort != null) {
+            if (sort.equals("최신순")) {
+                sql.append(" ORDER BY created_date DESC");
+            } else if (sort.equals("인기순")) {
+                sql.append(" ORDER BY count_likes DESC");
+            } else {
+                sql.append(" ORDER BY id ASC"); // 기본 정렬
+            }
+        }
 
         List<ReviewDTO> reviews = new ArrayList<>();
 
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+             PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
 
-            while (rs.next()) {
-                ReviewDTO review = new ReviewDTO();
-                review.setComname(rs.getString("comname"));
-                review.setJob(rs.getString("job"));
-                review.setExperience(rs.getString("experience"));
-                review.setRegion(rs.getString("region"));
-                review.setContent(rs.getString("content"));
-                review.setId(Integer.parseInt(rs.getString("id")));
-                review.setLikes(rs.getInt("count_likes"));
-                review.setCreatedDate(rs.getTimestamp("created_date").toString()); // 날짜 설정
+            int paramIndex = 1;
 
-                reviews.add(review); // 리스트에 데이터 추가
+            if (experience != null && !experience.isEmpty()) {
+                pstmt.setString(paramIndex++, experience);
+            }
+            if (region != null && !region.isEmpty()) {
+                pstmt.setString(paramIndex++, region);
+            }
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    ReviewDTO review = new ReviewDTO();
+                    review.setId(rs.getInt("id"));
+                    review.setComname(rs.getString("comname"));
+                    review.setJob(rs.getString("job"));
+                    review.setExperience(rs.getString("experience"));
+                    review.setRegion(rs.getString("region"));
+                    review.setContent(rs.getString("content"));
+                    review.setCreatedDate(rs.getTimestamp("created_date").toLocalDateTime());
+                    review.setLikes(rs.getInt("count_likes"));
+                    reviews.add(review);
+                }
             }
         }
         return reviews;
@@ -74,7 +100,7 @@ public class ReviewDAO {
                     review.setRegion(rs.getString("region"));
                     review.setContent(rs.getString("content"));
                     review.setLikes(rs.getInt("count_likes"));
-                    review.setCreatedDate(rs.getTimestamp("created_date").toString()); // 날짜 설정
+                    review.setCreatedDate(rs.getTimestamp("created_date").toLocalDateTime()); // 날짜 설정
                     return review;
                 }
             }
@@ -128,4 +154,55 @@ public class ReviewDAO {
             }
         }
     }
+
+    public List<ReviewDTO> getFilteredReviews(String sort, String experience, String region) throws Exception {
+        StringBuilder sql = new StringBuilder("SELECT id, comname, job, experience, region, content, created_date, count_likes FROM review WHERE 1=1");
+
+        // 조건에 따라 쿼리 추가
+        if (experience != null && !experience.isEmpty()) {
+            sql.append(" AND experience = ?");
+        }
+        if (region != null && !region.isEmpty()) {
+            sql.append(" AND region = ?");
+        }
+        if ("최신순".equals(sort)) {
+            sql.append(" ORDER BY created_date DESC");
+        } else if ("인기순".equals(sort)) {
+            sql.append(" ORDER BY count_likes DESC");
+        }
+
+        List<ReviewDTO> reviews = new ArrayList<>();
+
+        try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+
+            int paramIndex = 1;
+
+            // 조건에 따라 파라미터 바인딩
+            if (experience != null && !experience.isEmpty()) {
+                pstmt.setString(paramIndex++, experience);
+            }
+            if (region != null && !region.isEmpty()) {
+                pstmt.setString(paramIndex++, region);
+            }
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    ReviewDTO review = new ReviewDTO();
+                    review.setId(rs.getInt("id"));
+                    review.setComname(rs.getString("comname"));
+                    review.setJob(rs.getString("job"));
+                    review.setExperience(rs.getString("experience"));
+                    review.setRegion(rs.getString("region"));
+                    review.setContent(rs.getString("content"));
+                    review.setCreatedDate(rs.getTimestamp("created_date").toLocalDateTime());
+                    review.setLikes(rs.getInt("count_likes"));
+
+                    reviews.add(review);
+                }
+            }
+        }
+        return reviews;
+    }
+
 }
