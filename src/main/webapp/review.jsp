@@ -6,47 +6,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/layout.css"> <!-- 올바른 경로 설정 -->
     <title>면접후기</title> <!--커뮤니티/실제 기업 면접 후기 -->
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* 메인 레이아웃 설정 */
-        .container {
-            display: flex;
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
-        }
-        /* 왼쪽 사이드바 스타일 */
-        .sidebar {
-            width: 200px;
-            padding: 20px;
-            background-color: white;
-            border-right: 1px solid #ddd;
-        }
-        .sidebar ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .sidebar ul li {
-            margin-bottom: 10px;
-        }
-        .sidebar ul li a {
-            text-decoration: none;
-            color: #333;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        /* 오른쪽 메인 컨텐츠 */
-        .content {
-            flex-grow: 1;
-            padding-left: 20px;
-        }
         .search-bar {
             display: flex;
             margin-bottom: 20px;
@@ -115,23 +77,6 @@
         th {
             background-color: #f2f2f2;
         }
-
-
-        .pagination {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .pagination a {
-            padding: 10px 15px;
-            margin: 0 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            color: #333;
-            text-decoration: none;
-        }
-        .pagination a:hover {
-            background-color: #ddd;
-        }
     </style>
 
 </head>
@@ -157,50 +102,31 @@
         <!-- 메인 컨텐츠 -->
         <div class="content">
             <!-- 검색바 -->
-            <div class="search-bar">
-                <input type="text" placeholder="기업명 및 키워드를 입력해주세요..">
-                <button type="button">검색하기</button>
-            </div>
+            <form action="reviewUpload" method="get" class="search-bar">
+                <input type="text" name="search" placeholder="기업명 및 키워드를 입력해주세요.." value="<%= request.getParameter("search") %>">
+                <button type="submit">검색하기</button>
+            </form>
 
             <!-- 필터 -->
-            <div class="filters">
-                <select>
-                    <option value="정렬순">정렬순</option>
-                    <option value="최신순">최신순</option>
-                    <option value="인기순">인기순</option>
+            <form action="reviewUpload" method="get" class="filters">
+                <select name="sort">
+                    <option value="정렬순" <%= "정렬순".equals(request.getParameter("sort")) ? "selected" : "" %>>정렬순</option>
+                    <option value="최신순" <%= "최신순".equals(request.getParameter("sort")) ? "selected" : "" %>>최신순</option>
+                    <option value="인기순" <%= "인기순".equals(request.getParameter("sort")) ? "selected" : "" %>>인기순</option>
                 </select>
-                <select>
-                    <option value="경력">경력전체</option>
-                    <option value="신입">신입</option>
-                    <option value="인턴">인턴</option>>
-                    <option value="경력">경력</option>
-                    <option value="경력무관">경력 무관</option>
+                <select name="experience">
+                    <option value="">경력 전체</option>
+                    <option value="신입" <%= "신입".equals(request.getParameter("experience")) ? "selected" : "" %>>신입</option>
+                    <option value="인턴" <%= "인턴".equals(request.getParameter("experience")) ? "selected" : "" %>>인턴</option>
+                    <option value="경력" <%= "경력".equals(request.getParameter("experience")) ? "selected" : "" %>>경력</option>
                 </select>
-                <select>
-                    <option value="업종">직무·직업 전체</option>
-                    <option value="IT개발">IT개발</option>
-                    <option value="마케팅·홍보">마케팅·홍보</option>
-                    <option value="기획·전략">기획·전략</option>
-                    <option value="디자인">디자인</option>
-                    <option value="회계·세무·재무">회계·세무·재무</option>
-                    <option value="서비스">서비스</option>
-                    <option value="건설·건축">건설·건축</option>
-                    <option value="생산">생산</option>
-                    <option value="기타">기타</option>
+                <select name="region">
+                    <option value="">지역 전체</option>
+                    <option value="서울" <%= "서울".equals(request.getParameter("region")) ? "selected" : "" %>>서울</option>
+                    <option value="경기도" <%= "경기도".equals(request.getParameter("region")) ? "selected" : "" %>>경기도</option>
                 </select>
-                <select>
-                    <option value="지역">지역</option>
-                    <option value="서울">서울</option>
-                    <option value="경기도">경기도</option>
-                    <option value="강원도">강원도</option>
-                    <option value="충청북도">충청북도</option>
-                    <option value="충청남도">충청남도</option>
-                    <option value="전라북도">전라북도</option>
-                    <option value="전라남도">전라남도</option>
-                    <option value="경상북도">경상북도</option>
-                    <option value="경상남도">경상남도</option>
-                </select>
-            </div>
+                <button type="submit">필터 적용</button>
+            </form>
 
             <!-- 테이블과 등록하기 버튼 -->
             <div class="table-container">
@@ -219,6 +145,8 @@
                     <th>직무·직업</th>
                     <th>경력</th>
                     <th>지역</th>
+                    <th>등록 날짜</th> <!-- 등록 날짜 컬럼 추가 -->
+                    <th>공감 수</th> <!-- 공감 수 컬럼 추가 -->
                 </tr>
                 </thead>
                 <tbody>
@@ -234,29 +162,21 @@
                     <td><%= review.getExperience() %></td>
                     <td><%= review.getJob() %></td>
                     <td><%= review.getRegion() %></td>
+                    <td><%= review.getCreatedDate().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) %></td> <!-- 등록 날짜 표시 -->
+                    <td><%= review.getLikes() %></td> <!-- 공감 수 표시 -->
                 </tr>
                 <%
                     }
                 } else {
                 %>
                 <tr>
-                    <td colspan="5">등록된 면접 후기가 없습니다.</td>
+                    <td colspan="7">등록된 면접 후기가 없습니다.</td>
                 </tr>
                 <% } %>
                 </tbody>
 
             </table>
 
-            <!-- 페이지네이션 -->
-            <div class="pagination">
-                <a href="#">&laquo; Previous</a>
-                <a href="#">1</a>
-                <a href="#">2</a>
-                <a href="#">3</a>
-                <a href="#">...</a>
-                <a href="#">60</a>
-                <a href="#">Next &raquo;</a>
-            </div>
         </div>
     </div>
 
