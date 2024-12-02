@@ -7,6 +7,22 @@
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
+    <servlet>
+        <servlet-name>GenerateQuestionServlet</servlet-name>
+        <servlet-class>org.zerock.jdbcex.servlet.GenerateQuestionServlet</servlet-class>
+        <multipart-config>
+            <location>${project.basedir}/src/main/webapp/videos</location>
+            <max-file-size>52428800</max-file-size> <!-- 50MB -->
+            <max-request-size>104857600</max-request-size> <!-- 100MB -->
+            <file-size-threshold>2097152</file-size-threshold> <!-- 2MB -->
+        </multipart-config>
+
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>GenerateQuestionServlet</servlet-name>
+        <url-pattern>/api/interview</url-pattern>
+    </servlet-mapping>
 
 </web-app>
 

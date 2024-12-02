@@ -20,8 +20,6 @@ function readTextAloud(text) {
 
     if (isSpeaking) {
         window.speechSynthesis.cancel(); // 현재 음성 정지
-        /*console.warn('이미 음성을 재생 중입니다.');
-        return; // 중복 실행 방지*/
     }
 
     const utterance = new SpeechSynthesisUtterance(text);
@@ -210,16 +208,29 @@ async function startPageRecording() {
 }
 
 // 녹화 저장
-function saveRecording() {
+async function saveRecording() {
     const blob = new Blob(recordedChunks, { type: 'video/webm' });
-    const url = URL.createObjectURL(blob);
-    const downloadLink = document.createElement('a');
-    downloadLink.href = url;
-    downloadLink.download = 'recording.webm'; // 저장할 파일명
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    console.log('녹화본 저장 완료');
+    const formData = new FormData();
+    formData.append('videoFile', blob, 'recording.webm');
+
+    try {
+        const response = await fetch('/upload-video', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (response.ok) {
+            console.log('녹화본이 서버에 성공적으로 업로드되었습니다.');
+        } else {
+            console.error('녹화본 업로드 실패:', response.statusText);
+        }
+    } catch (error) {
+        console.error('녹화본 업로드 중 오류:', error);
+    }
 }
+
+
+
 
 // 녹화 종료
 function stopRecording() {
