@@ -94,7 +94,7 @@
     <div class="container">
         <div class="sidebar">
             <ul>
-                <li><a href="#" onclick="checkSessionAndNavigate('reviewUpload'); return false;">기업 면접 후기</a></li>
+                <li><a href="#" onclick="checkSessionAndNavigate('review.jsp'); return false;">기업 면접 후기</a></li>
             </ul>
         </div>
 
