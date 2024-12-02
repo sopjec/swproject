@@ -162,7 +162,7 @@
                     <td><%= review.getExperience() %></td>
                     <td><%= review.getJob() %></td>
                     <td><%= review.getRegion() %></td>
-                    <td><%= review.getCreatedDate() %></td> <!-- 등록 날짜 표시 -->
+                    <td><%= review.getCreatedDate().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) %></td> <!-- 등록 날짜 표시 -->
                     <td><%= review.getLikes() %></td> <!-- 공감 수 표시 -->
                 </tr>
                 <%

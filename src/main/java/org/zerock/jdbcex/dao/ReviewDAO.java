@@ -28,7 +28,7 @@ public class ReviewDAO {
     }
     // 데이터 조회 메서드
     public List<ReviewDTO> getAllReviews() throws Exception {
-        String sql = "SELECT id, comname, job, experience, region, content FROM review";
+        String sql = "SELECT id, comname, job, experience, region, content, count_likes, created_date FROM review";
 
         List<ReviewDTO> reviews = new ArrayList<>();
 
@@ -44,6 +44,8 @@ public class ReviewDAO {
                 review.setRegion(rs.getString("region"));
                 review.setContent(rs.getString("content"));
                 review.setId(Integer.parseInt(rs.getString("id")));
+                review.setLikes(rs.getInt("count_likes"));
+                review.setCreatedDate(rs.getTimestamp("created_date").toLocalDateTime()); // 날짜 설정
 
                 reviews.add(review); // 리스트에 데이터 추가
             }
@@ -51,6 +53,7 @@ public class ReviewDAO {
         return reviews;
     }
 
+    //리뷰 상세 조회 메서드
     public ReviewDTO getReviewById(int reviewId) throws Exception {
         String sql = "SELECT * FROM review WHERE id = ?";
 
@@ -71,6 +74,7 @@ public class ReviewDAO {
                     review.setRegion(rs.getString("region"));
                     review.setContent(rs.getString("content"));
                     review.setLikes(rs.getInt("count_likes"));
+                    review.setCreatedDate(rs.getTimestamp("created_date").toLocalDateTime()); // 날짜 설정
                     return review;
                 }
             }
