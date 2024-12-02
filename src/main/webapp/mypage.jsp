@@ -275,9 +275,34 @@
             alert('이미지를 선택해주세요!');
         }
 
-        function updateProfileImage(newImageUrl) {
-            const profileImage = document.getElementById('mainProfileImage');
-            profileImage.src = newImageUrl; // 이미지 태그의 src를 변경된 URL로 갱신
+        function updateProfileImage(imageUrl) {
+            const profilePicElement = document.getElementById("header-profile-pic");
+            if (profilePicElement) {
+                profilePicElement.src = imageUrl + "?timestamp=" + new Date().getTime(); // 캐싱 방지
+            }
+        }
+
+        function handleProfileUpdate() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "/updateProfileImage", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            const newImageUrl = "path/to/new/image.jpg"; // 사용자가 업로드한 이미지 경로
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        // 서버 응답에서 새 이미지 URL 가져오기
+                        const updatedImageUrl = response.imageUrl; // 서버가 반환한 이미지 URL
+                        updateProfileImage(updatedImageUrl); // 헤더 이미지 업데이트
+                    } else {
+                        alert("프로필 이미지를 업데이트하지 못했습니다: " + response.message);
+                    }
+                }
+            };
+
+            // 서버에 데이터 전송
+            xhr.send(JSON.stringify({ imageUrl: newImageUrl }));
         }
 
     });

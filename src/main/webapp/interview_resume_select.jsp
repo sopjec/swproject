@@ -211,7 +211,7 @@
     <div class="sidebar">
         <ul>
             <li><a href="/resume?action=interview">면접 보기</a></li>
-            <li><a href="interview_view.jsp">면접 기록 조회</a></li>
+            <li><a href="interviewView">면접 기록 조회</a></li>
         </ul>
     </div>
 
@@ -241,7 +241,16 @@
                 } else {
                 %>
                 <tr>
-                    <td colspan="2">등록된 자기소개서가 없습니다.</td>
+                <tr>
+                    <td colspan="3">
+                        <div class="no-records">
+                            <p>등록된 자기소개서가 없습니다.</p>
+                            <p>
+                                <a href="resume.jsp" style="text-decoration-line: none; font-size: 15px; color: #333;">자기소개서 등록하러가기</a>
+                            </p>
+                        </div>
+                    </td>
+                </tr>
                 </tr>
                 <%
                     }
