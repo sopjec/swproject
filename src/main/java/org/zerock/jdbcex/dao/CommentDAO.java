@@ -25,10 +25,6 @@ public class CommentDAO {
             }
             pstmt.setString(3, comment.getAuthor());
             pstmt.setString(4, comment.getContent());
-            if (comment.getCreatedDate() != null) {
-                pstmt.setInt(5, 'NULL');
-            }
-            pstmt.setInt(5, comment.getParentCommentId());
 
             pstmt.executeUpdate();
         }

@@ -70,6 +70,7 @@ public class ReviewDAO {
                     review.setExperience(rs.getString("experience"));
                     review.setRegion(rs.getString("region"));
                     review.setContent(rs.getString("content"));
+                    review.setLikes(rs.getInt("count_likes"));
                     return review;
                 }
             }
@@ -77,7 +78,7 @@ public class ReviewDAO {
         return null;
     }
 
-    //좋아요 여부 확인
+    // 좋아요 여부 확인
     public boolean isLikedByUser(String userId, int reviewId) throws Exception {
         String sql = "SELECT COUNT(*) FROM likes WHERE user_id = ? AND review_id = ?";
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
