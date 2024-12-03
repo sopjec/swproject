@@ -12,13 +12,6 @@
       margin: 0;
       padding: 0;
     }
-    .section {
-      display: none;
-      width: 100%;
-    }
-    .section.active {
-      display: block;
-    }
     /* 상단바 스타일 */
     .header {
       display: flex;
@@ -31,11 +24,16 @@
     .logo {
       width: 100px;
       height: 50px;
-      /*background-image: url('logo.png'); /* 로고 이미지 경로 */
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
       margin-right: auto;
+    }
+    /* 로고 이미지에 예외 스타일 적용 */
+    #logo-img {
+      border: none;
+      border-radius: 0; /* 필요 시 둥글게 만든 스타일 제거 */
+      box-sizing: content-box; /* 기존 스타일로 복구 */
     }
     .header nav a {
       margin-left: 20px;
@@ -84,7 +82,7 @@
       background-color: #f0f0f0;
       border-color: #bbb;
     }
-  </style>
+    </style>
   <script>
     // checkSessionAndNavigate 함수를 전역 스코프로 정의
     function checkSessionAndNavigate(url) {
