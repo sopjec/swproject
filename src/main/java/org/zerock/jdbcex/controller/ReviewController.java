@@ -17,6 +17,7 @@ import javax.servlet.http.HttpSession;
 
 @WebServlet("/reviewUpload")
 public class ReviewController extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
@@ -26,6 +27,7 @@ public class ReviewController extends HttpServlet {
 
         try {
             // 필터 조건 가져오기
+            String search = request.getParameter("search"); // 검색어
             String sort = request.getParameter("sort"); // 정렬 기준
             String experience = request.getParameter("experience"); // 경력 필터
             String region = request.getParameter("region"); // 지역 필터

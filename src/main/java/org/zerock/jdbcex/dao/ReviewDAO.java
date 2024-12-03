@@ -155,10 +155,16 @@ public class ReviewDAO {
         }
     }
 
-    public List<ReviewDTO> getFilteredReviews(String sort, String experience, String region) throws Exception {
-        StringBuilder sql = new StringBuilder("SELECT id, comname, job, experience, region, content, created_date, count_likes FROM review WHERE 1=1");
+    //필터 적용
+    public List<ReviewDTO> getFilteredReviews(String search, String sort, String experience, String region) throws Exception {
+        StringBuilder sql = new StringBuilder(
+                "SELECT id, comname, job, experience, region, content, created_date, count_likes FROM review WHERE 1=1"
+        );
 
         // 조건에 따라 쿼리 추가
+        if (search != null && !search.isEmpty()) {
+            sql.append(" AND (comname LIKE ? OR content LIKE ?)");
+        }
         if (experience != null && !experience.isEmpty()) {
             sql.append(" AND experience = ?");
         }
@@ -179,12 +185,16 @@ public class ReviewDAO {
             int paramIndex = 1;
 
             // 조건에 따라 파라미터 바인딩
+            if (search != null && !search.isEmpty()) {
+                pstmt.setString(paramIndex++, "%" + search + "%"); // `comname` 검색
+                pstmt.setString(paramIndex++, "%" + search + "%"); // `content` 검색
+            } //검섹어 조건 바인딩
             if (experience != null && !experience.isEmpty()) {
                 pstmt.setString(paramIndex++, experience);
-            }
+            }//경험 필터 바인딩
             if (region != null && !region.isEmpty()) {
                 pstmt.setString(paramIndex++, region);
-            }
+            }//지역필터 바인딩
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
