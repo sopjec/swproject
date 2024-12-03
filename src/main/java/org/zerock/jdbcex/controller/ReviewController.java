@@ -17,23 +17,27 @@ import javax.servlet.http.HttpSession;
 
 @WebServlet("/reviewUpload")
 public class ReviewController extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");
 
-        ReviewDAO reviewDAO = new ReviewDAO();
+        // 필터 조건 가져오기
+        String search = request.getParameter("search"); // 검색어
+        String sort = request.getParameter("sort"); // 정렬 기준
+        String experience = request.getParameter("experience"); // 경력 필터
+        String region = request.getParameter("region"); // 지역 필터
+
 
         try {
-            // 필터 조건 가져오기
-            String sort = request.getParameter("sort"); // 정렬 기준
-            String experience = request.getParameter("experience"); // 경력 필터
-            String region = request.getParameter("region"); // 지역 필터
+            //필터링 리뷰 가져오기
+            ReviewDAO reviewDAO = new ReviewDAO();
 
             // DAO에서 필터 조건에 맞는 데이터 조회
-            List<ReviewDTO> reviews = reviewDAO.getAllReviews(sort, experience, region);
+            List<ReviewDTO> reviews = reviewDAO.getAllReviews(search, sort, experience, region);
 
-            //조회된 데이터 jsp에 전달
+            //결과 jsp에 전달
             request.setAttribute("reviews", reviews); // 요청 속성에 데이터 저장
             request.getRequestDispatcher("/review.jsp").forward(request, response); // JSP로 전달
         } catch (Exception e) {

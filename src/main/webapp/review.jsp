@@ -103,7 +103,9 @@
         <div class="content">
             <!-- 검색바 -->
             <form action="reviewUpload" method="get" class="search-bar">
-                <input type="text" name="search" placeholder="기업명 및 키워드를 입력해주세요.." value="<%= request.getParameter("search") %>">
+                <input type="text" name="search"
+                       placeholder="기업명 및 키워드를 입력해주세요.."
+                       value="<%= (request.getParameter("search") != null) ? request.getParameter("search") : "" %>">
                 <button type="submit">검색하기</button>
             </form>
 
