@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="swproject@localhost" uuid="32511687-8714-4801-bcf9-11b55466d44a">
+    <data-source source="LOCAL" name="merijobdb" uuid="f5523902-e236-4153-8a9c-6037c34dcb3d">
       <driver-ref>mariadb</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mariadb://localhost:3306/merijob_db?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false</jdbc-url>
+      <jdbc-url>jdbc:mariadb://localhost:3007/merijob_db</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />

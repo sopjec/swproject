@@ -11,7 +11,7 @@ import java.util.List;
 public class ReviewDAO {
     //리뷰 데이터 삽입 메서드
     public void insertReview(ReviewDTO review) throws Exception {
-        String sql = "INSERT INTO review (user_id, content, job, region, comname, experience) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO review (user_id, content, job, region, comname, experience, created_date) VALUES (?, ?, ?, ?, ?, ?, NOW())";
 
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
