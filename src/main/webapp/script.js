@@ -182,7 +182,13 @@ async function startPageRecording() {
             }
         };
 
-        mediaRecorder.onstop = saveRecording;
+        mediaRecorder.onstop = () => {
+            saveRecording();
+            console.log('녹화 중지');
+            // 녹화 종료 후 interview_view.jsp로 이동
+            window.location.href = 'interview_view.jsp';
+        };
+
         mediaRecorder.start();
 
         // 화면 녹화가 시작된 후 질문 생성 및 음성 출력
@@ -335,4 +341,5 @@ document.getElementById('stop-recording').addEventListener('click', () => {
         webcamStream.getTracks().forEach(track => track.stop());
         console.log('웹캠 스트림 중지');
     }
+
 });
