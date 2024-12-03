@@ -124,6 +124,13 @@
                     <option value="">지역 전체</option>
                     <option value="서울" <%= "서울".equals(request.getParameter("region")) ? "selected" : "" %>>서울</option>
                     <option value="경기도" <%= "경기도".equals(request.getParameter("region")) ? "selected" : "" %>>경기도</option>
+                    <option value="강원도" <%= "강원도".equals(request.getParameter("region")) ? "selected" : "" %>>강원도</option>
+                    <option value="충청북도" <%= "충청북도".equals(request.getParameter("region")) ? "selected" : "" %>>충청북도</option>
+                    <option value="충청남도" <%= "충청남도".equals(request.getParameter("region")) ? "selected" : "" %>>충청남도</option>
+                    <option value="전라북도" <%= "전라북도".equals(request.getParameter("region")) ? "selected" : "" %>>전라북도</option>
+                    <option value="전라남도" <%= "전라남도".equals(request.getParameter("region")) ? "selected" : "" %>>전라남도</option>
+                    <option value="경상북도" <%= "경상북도".equals(request.getParameter("region")) ? "selected" : "" %>>경상북도</option>
+                    <option value="경상남도" <%= "경상남도".equals(request.getParameter("region")) ? "selected" : "" %>>경상남도</option>
                 </select>
                 <button type="submit">필터 적용</button>
             </form>
