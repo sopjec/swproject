@@ -324,7 +324,7 @@ document.getElementById('next-question').addEventListener('click', () => {
         alert('면접이종료되었습니다');
         createEndInterviewModal(); // 질문이 더 이상 없을 때 모달 띄우기
     }
-});
+    });
 
 document.getElementById('stop-recording').addEventListener('click', () => {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
