@@ -1,27 +1,22 @@
 package org.zerock.jdbcex.servlet;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import org.json.JSONObject;
-import org.json.JSONArray;
 import org.zerock.jdbcex.dto.UserDTO;
 import org.zerock.jdbcex.util.ConnectionUtil;
+
+import org.json.JSONObject;
+import org.json.JSONArray;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @WebServlet("/api/generate-question")
 public class GenerateQuestionServlet extends HttpServlet {
