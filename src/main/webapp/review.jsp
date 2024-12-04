@@ -1,9 +1,11 @@
+<!--왜 나만 안되는건지fkfwlfkwlf-->
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.zerock.jdbcex.dto.ReviewDTO" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <jsp:include page="checkSession.jsp"/>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/layout.css"> <!-- 올바른 경로 설정 -->
@@ -94,7 +96,7 @@
 <div class="container">
     <div class="sidebar">
         <ul>
-            <li><a href="#" onclick="checkSessionAndNavigate('reviewUpload'); return false;">기업 면접 후기</a></li>
+            <li><a href="reviewUpload">기업 면접 후기</a></li>
         </ul>
     </div>
 

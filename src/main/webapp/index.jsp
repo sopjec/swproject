@@ -4,6 +4,7 @@
 <html lang="ko">
 
 <head>
+    <jsp:include page="checkSession.jsp"/>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>메인 페이지</title>
@@ -153,45 +154,6 @@
         }
 
     </style>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const modal = document.getElementById("login-modal");
-            const closeModal = document.getElementById("close-modal");
-            const goLogin = document.getElementById("go-login");
-
-            closeModal.addEventListener("click", () => {
-                modal.style.display = "none";
-            });
-
-            goLogin.addEventListener("click", () => {
-                window.location.href = "login.jsp";
-            });
-
-            function checkSessionAndNavigate(url) {
-                const xhr = new XMLHttpRequest();
-                xhr.open("GET", "/checkSession", true);
-                xhr.onload = function () {
-                    if (xhr.status === 200) {
-                        const response = JSON.parse(xhr.responseText);
-                        if (response.isLoggedIn) {
-                            // 세션이 있으면 URL로 이동
-                            window.location.href = url;
-                        } else {
-                            // 세션이 없으면 모달창 표시
-                            modal.style.display = "block";
-                        }
-                    } else {
-                        console.error("세션 확인 중 오류 발생");
-                    }
-                };
-                xhr.send();
-            }
-
-            // 페이지 내에서 사용하는 함수도 이벤트 리스너 안에 포함
-            window.checkSessionAndNavigate = checkSessionAndNavigate;
-        });
-
-    </script>
 </head>
 
 <body>

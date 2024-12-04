@@ -50,13 +50,6 @@ public class ReviewDetailController extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("loggedInUser") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"error\": \"로그인이 필요합니다.\"}");
-
-            response.sendRedirect("login.jsp");
-            return;
-        }
 
         UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
 

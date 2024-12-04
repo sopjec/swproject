@@ -23,10 +23,6 @@ public class ResumeViewController  extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("loggedInUser") == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
 
         UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
         String userId = loggedInUser.getId();
