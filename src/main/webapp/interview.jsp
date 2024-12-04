@@ -4,6 +4,7 @@
 <%@ page import="java.io.*" %>
 <%@ page import="java.net.*" %>
 <!DOCTYPE html>
+<jsp:include page="checkSession.jsp"/>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -85,8 +86,8 @@
 <div class="container">
     <div class="sidebar">
         <ul>
-            <li><a href="/resume?action=interview">면접 보기</a></li>
-            <li><a href="interviewView">면접 기록 조회</a></li>
+            <li><a href="#" onclick="checkSessionAndNavigate('/resume?action=interview'); return false;">면접 보러가기</a></li>
+            <li><a href="#" onclick="checkSessionAndNavigate('interviewView'); return false;">면접 녹화기록 조회</a></li>
         </ul>
     </div>
 

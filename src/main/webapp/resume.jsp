@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <jsp:include page="checkSession.jsp"/>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/layout.css"> <!-- 올바른 경로 설정 -->
@@ -206,9 +207,9 @@
     <!-- 사이드바 -->
     <div class="sidebar">
         <ul>
-            <li><a href="resume.jsp">자기소개서 등록</a></li>
-            <li><a href="resume_view">자기소개서 조회</a></li>
-            <li><a href="resume_analyze.jsp">자기소개서 분석</a></li>
+            <li><a href="#" onclick="checkSessionAndNavigate('resume.jsp'); return false;">자기소개서 등록</a></li>
+            <li><a href="#" onclick="checkSessionAndNavigate('resume_view'); return false;">자기소개서 조회</a></li>
+            <li><a href="#" onclick="checkSessionAndNavigate('resume_analyze.jsp'); return false;">자기소개서 분석</a></li>
         </ul>
     </div>
 

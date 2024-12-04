@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <jsp:include page="checkSession.jsp"/>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
@@ -83,49 +84,6 @@
       border-color: #bbb;
     }
     </style>
-  <script>
-    // checkSessionAndNavigate 함수를 전역 스코프로 정의
-    function checkSessionAndNavigate(url) {
-      const xhr = new XMLHttpRequest();
-      xhr.open("GET", "/checkSession", true);
-      xhr.onload = function () {
-        if (xhr.status === 200) {
-          const response = JSON.parse(xhr.responseText);
-          if (response.isLoggedIn) {
-            window.location.href = url;
-          } else {
-            // 세션이 없으면 모달창 표시
-            const modal = document.getElementById("login-modal");
-            if (modal) {
-              modal.style.display = "block";
-            }
-          }
-        } else {
-          console.error("세션 확인 중 오류 발생");
-        }
-      };
-      xhr.send();
-    }
-
-    // DOMContentLoaded 이벤트 처리
-    document.addEventListener("DOMContentLoaded", function () {
-      const modal = document.getElementById("login-modal");
-      const closeModal = document.getElementById("close-modal");
-      const goLogin = document.getElementById("go-login");
-
-      if (closeModal) {
-        closeModal.addEventListener("click", () => {
-          modal.style.display = "none";
-        });
-      }
-
-      if (goLogin) {
-        goLogin.addEventListener("click", () => {
-          window.location.href = "login.jsp";
-        });
-      }
-    });
-  </script>
 
 </head>
 

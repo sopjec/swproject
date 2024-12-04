@@ -21,10 +21,6 @@ public class ScrapStatusController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("loggedInUser") == null) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
 
         UserDTO user = (UserDTO) session.getAttribute("loggedInUser");
         List<String> scrapedKeys;
