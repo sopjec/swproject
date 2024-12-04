@@ -27,7 +27,7 @@ public class ReviewDAO {
         }
     }
     // 데이터 조회 메서드
-    public List<ReviewDTO> getAllReviews(String sort, String experience, String region) throws Exception {
+    public List<ReviewDTO> getAllReviews(String sort, String experience, String region, String s) throws Exception {
         StringBuilder sql = new StringBuilder("SELECT id, comname, job, experience, region, content, created_date, count_likes FROM review WHERE 1=1");
 
         // 조건 추가
@@ -155,20 +155,31 @@ public class ReviewDAO {
         }
     }
 
-    public List<ReviewDTO> getFilteredReviews(String sort, String experience, String region) throws Exception {
-        StringBuilder sql = new StringBuilder("SELECT id, comname, job, experience, region, content, created_date, count_likes FROM review WHERE 1=1");
+    //필터 적용
+    public List<ReviewDTO> getFilteredReviews(String search, String sort, String experience, String region) throws Exception {
+        StringBuilder sql = new StringBuilder(
+                "SELECT id, comname, job, experience, region, content, created_date, count_likes FROM review WHERE 1=1"
+        );
 
         // 조건에 따라 쿼리 추가
+        //1. 검색 조건 추가
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append(" AND (comname LIKE ? OR content LIKE ?)");
+        }
+        //2. 기타 조건 추가
         if (experience != null && !experience.isEmpty()) {
-            sql.append(" AND experience = ?");
+            sql.append(" AND experience = ?"); //경력
         }
         if (region != null && !region.isEmpty()) {
-            sql.append(" AND region = ?");
+            sql.append(" AND region = ?"); //지역
         }
+        //정렬 조건 추가
         if ("최신순".equals(sort)) {
             sql.append(" ORDER BY created_date DESC");
         } else if ("인기순".equals(sort)) {
             sql.append(" ORDER BY count_likes DESC");
+        } else {
+            sql.append(" ORDER BY id ASC");
         }
 
         List<ReviewDTO> reviews = new ArrayList<>();
@@ -179,13 +190,20 @@ public class ReviewDAO {
             int paramIndex = 1;
 
             // 조건에 따라 파라미터 바인딩
+            if (search != null && !search.trim().isEmpty()) {
+                pstmt.setString(1, "%" + search + "%");
+                pstmt.setString(2, "%" + search + "%");
+            } //검색어 조건 바인딩
+
             if (experience != null && !experience.isEmpty()) {
                 pstmt.setString(paramIndex++, experience);
-            }
+            }//경험 필터 바인딩
+
             if (region != null && !region.isEmpty()) {
                 pstmt.setString(paramIndex++, region);
-            }
+            }//지역필터 바인딩
 
+            //결과
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     ReviewDTO review = new ReviewDTO();
