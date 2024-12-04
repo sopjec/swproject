@@ -186,7 +186,7 @@ async function startPageRecording() {
             saveRecording();
             console.log('녹화 중지');
             // 녹화 종료 후 interview_view.jsp로 이동
-            window.location.href = 'interview_view.jsp';
+            window.location.href = 'interviewView';
         };
 
         mediaRecorder.start();
