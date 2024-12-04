@@ -1,3 +1,4 @@
+<!--왜 나만 안되는건지-->
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.zerock.jdbcex.dto.ReviewDTO" %>
