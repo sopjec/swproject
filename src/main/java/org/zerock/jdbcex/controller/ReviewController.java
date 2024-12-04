@@ -31,15 +31,23 @@ public class ReviewController extends HttpServlet {
 
 
         try {
-            //필터링 리뷰 가져오기
             ReviewDAO reviewDAO = new ReviewDAO();
 
-            // DAO에서 필터 조건에 맞는 데이터 조회
-            List<ReviewDTO> reviews = reviewDAO.getAllReviews(search, sort, experience, region);
+            // 파라미터가 모두 null 또는 비어있으면 전체 리뷰 조회
+            List<ReviewDTO> reviews;
+            if ((search == null || search.trim().isEmpty()) &&
+                    (sort == null || sort.trim().isEmpty()) &&
+                    (experience == null || experience.trim().isEmpty()) &&
+                    (region == null || region.trim().isEmpty())) {
+                // 기본적으로 모든 리뷰 조회 (최신순)
+                reviews = reviewDAO.getAllReviews(null, "최신순", null, null);
+            } else {
+                // 필터링 된 리뷰 조회
+                reviews = reviewDAO.getAllReviews(search, sort, experience, region);
+            }
 
-            //결과 jsp에 전달
-            request.setAttribute("reviews", reviews); // 요청 속성에 데이터 저장
-            request.getRequestDispatcher("/review.jsp").forward(request, response); // JSP로 전달
+            request.setAttribute("reviews", reviews);
+            request.getRequestDispatcher("/review.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "리뷰 조회 중 오류 발생");
