@@ -1,3 +1,4 @@
+<!--왜 나만 안되는건지fkfwlfkwlf-->
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.zerock.jdbcex.dto.ReviewDTO" %>
@@ -113,7 +114,7 @@
         <!-- 필터 -->
         <form action="reviewUpload" method="get" class="filters">
             <select name="sort">
-                <option value="정렬순" <%= "정렬순".equals(request.getParameter("sort")) ? "selected" : "" %>>정렬순</option>
+                <option value="" <%= (request.getAttribute("sortParam") == null || "".equals(request.getAttribute("sortParam"))) ? "selected" : "" %>>정렬순</option>
                 <option value="최신순" <%= "최신순".equals(request.getParameter("sort")) ? "selected" : "" %>>최신순</option>
                 <option value="인기순" <%= "인기순".equals(request.getParameter("sort")) ? "selected" : "" %>>인기순</option>
             </select>
