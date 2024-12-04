@@ -81,96 +81,6 @@ public class GenerateQuestionServlet extends HttpServlet {
         }
     }
 
-    private StringBuilder getResumeContent(String resumeId, Connection conn) throws SQLException {
-        StringBuilder resumeContent = new StringBuilder();
-        String query = "SELECT question, answer FROM resume_qna WHERE resume_id = ?";
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, Integer.parseInt(resumeId));
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    resumeContent.append("Q: ").append(rs.getString("question"))
-                            .append("\nA: ").append(rs.getString("answer"))
-                            .append("\n\n");
-                }
-            }
-        }
-        return resumeContent;
-    }
-
-    private List<String> ensureMinimumQuestions(String rawResponse, String prompt) throws Exception {
-        List<String> questions = Arrays.stream(rawResponse.split("\n"))
-                .filter(q -> q.trim().matches("^\\d+\\.\\s+.*")) // 번호가 있는 질문 필터링
-                .map(q -> q.replaceFirst("^\\d+\\.\\s+", "")) // 번호 제거
-                .collect(Collectors.toList());
-
-        int maxRetries = 3; // 최대 추가 호출 횟수
-        int retries = 0;
-
-        while (questions.size() < 5 && retries < maxRetries) {
-            retries++;
-            String additionalPrompt = "현재 질문은 " + questions.size() + "개입니다. 추가로 " + (5 - questions.size())
-                    + "개의 질문을 생성해 주세요. 질문은 번호를 매겨 출력하세요.";
-            String additionalResponse = callOpenAI(prompt + "\n" + additionalPrompt);
-
-            List<String> additionalQuestions = Arrays.stream(additionalResponse.split("\n"))
-                    .filter(q -> q.trim().matches("^\\d+\\.\\s+.*"))
-                    .map(q -> q.replaceFirst("^\\d+\\.\\s+", ""))
-                    .collect(Collectors.toList());
-
-            for (String question : additionalQuestions) {
-                if (!questions.contains(question)) {
-                    questions.add(question);
-                }
-            }
-        }
-
-        while (questions.size() < 5) {
-            questions.add("기본 질문 " + (questions.size() + 1));
-        }
-
-        return questions;
-    }
-
-    private void saveInterviewData(String userId, String resumeTitle, Connection conn) throws Exception {
-        int interviewCount = getInterviewCount(userId, resumeTitle, conn);
-        String interviewTitle = resumeTitle + "_" + interviewCount;
-        String interviewDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
-        String insertSQL = "INSERT INTO interview (user_id, title, interview_date) VALUES (?, ?, ?)";
-        try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, userId);
-            pstmt.setString(2, interviewTitle);
-            pstmt.setString(3, interviewDate);
-            pstmt.executeUpdate();
-        }
-    }
-
-    private String getResumeTitle(String resumeId, Connection conn) throws SQLException {
-        String query = "SELECT title FROM resume WHERE id = ?";
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, Integer.parseInt(resumeId));
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("title");
-                }
-            }
-        }
-        return null;
-    }
-
-    private int getInterviewCount(String userId, String resumeTitle, Connection conn) throws SQLException {
-        String query = "SELECT COUNT(*) FROM interview WHERE user_id = ? AND title LIKE ?";
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, userId);
-            pstmt.setString(2, resumeTitle + "_%");
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) + 1;
-                }
-            }
-        }
-        return 1;
-    }
-
     private String callOpenAI(String prompt) throws Exception {
         String apiUrl = "https://api.openai.com/v1/chat/completions";
         HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
@@ -210,4 +120,101 @@ public class GenerateQuestionServlet extends HttpServlet {
             return jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
         }
     }
+
+    //자소서 아이디 불러오기    
+    private StringBuilder getResumeContent(String resumeId, Connection conn) throws SQLException {
+        StringBuilder resumeContent = new StringBuilder();
+        String query = "SELECT question, answer FROM resume_qna WHERE resume_id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, Integer.parseInt(resumeId));
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    resumeContent.append("Q: ").append(rs.getString("question"))
+                            .append("\nA: ").append(rs.getString("answer"))
+                            .append("\n\n");
+                }
+            }
+        }
+        return resumeContent;
+    }
+
+    //최소 질문 개수
+    private List<String> ensureMinimumQuestions(String rawResponse, String prompt) throws Exception {
+        List<String> questions = Arrays.stream(rawResponse.split("\n"))
+                .filter(q -> q.trim().matches("^\\d+\\.\\s+.*")) // 번호가 있는 질문 필터링
+                .map(q -> q.replaceFirst("^\\d+\\.\\s+", "")) // 번호 제거
+                .collect(Collectors.toList());
+
+        int maxRetries = 3; // 최대 추가 호출 횟수
+        int retries = 0;
+
+        while (questions.size() < 5 && retries < maxRetries) {
+            retries++;
+            String additionalPrompt = "현재 질문은 " + questions.size() + "개입니다. 추가로 " + (5 - questions.size())
+                    + "개의 질문을 생성해 주세요. 질문은 번호를 매겨 출력하세요.";
+            String additionalResponse = callOpenAI(prompt + "\n" + additionalPrompt);
+
+            List<String> additionalQuestions = Arrays.stream(additionalResponse.split("\n"))
+                    .filter(q -> q.trim().matches("^\\d+\\.\\s+.*"))
+                    .map(q -> q.replaceFirst("^\\d+\\.\\s+", ""))
+                    .collect(Collectors.toList());
+
+            for (String question : additionalQuestions) {
+                if (!questions.contains(question)) {
+                    questions.add(question);
+                }
+            }
+        }
+
+        while (questions.size() < 5) {
+            questions.add("기본 질문 " + (questions.size() + 1));
+        }
+
+        return questions;
+    }
+
+    //인터뷰 데이터 저장
+    private void saveInterviewData(String userId, String resumeTitle, Connection conn) throws Exception {
+        int interviewCount = getInterviewCount(userId, resumeTitle, conn);
+        String interviewTitle = resumeTitle + "_" + interviewCount;
+        String interviewDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
+        String insertSQL = "INSERT INTO interview (user_id, title, interview_date) VALUES (?, ?, ?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, userId);
+            pstmt.setString(2, interviewTitle);
+            pstmt.setString(3, interviewDate);
+            pstmt.executeUpdate();
+        }
+    }
+
+    //자소서 제목 불러오기
+    private String getResumeTitle(String resumeId, Connection conn) throws SQLException {
+        String query = "SELECT title FROM resume WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, Integer.parseInt(resumeId));
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("title");
+                }
+            }
+        }
+        return null;
+    }
+
+    //인터뷰 갯수 conut
+    private int getInterviewCount(String userId, String resumeTitle, Connection conn) throws SQLException {
+        String query = "SELECT COUNT(*) FROM interview WHERE user_id = ? AND title LIKE ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, userId);
+            pstmt.setString(2, resumeTitle + "_%");
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) + 1;
+                }
+            }
+        }
+        return 1;
+    }
+
+
 }
