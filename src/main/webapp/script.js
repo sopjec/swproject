@@ -349,6 +349,8 @@ document.getElementById('stop-recording').addEventListener('click', () => {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
         mediaRecorder.stop();
         console.log('녹화 중지');
+        // 녹화 종료 후 interview_view.jsp로 이동
+            window.location.href = 'interview_view.jsp';
     }
     if (webcamStream) {
         webcamStream.getTracks().forEach(track => track.stop());
