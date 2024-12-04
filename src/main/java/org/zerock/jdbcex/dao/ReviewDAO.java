@@ -27,7 +27,7 @@ public class ReviewDAO {
         }
     }
     // 데이터 조회 메서드
-    public List<ReviewDTO> getAllReviews(String sort, String experience, String region, String s) throws Exception {
+    public List<ReviewDTO> getAllReviews(String search, String sort, String experience, String region) throws Exception {
         StringBuilder sql = new StringBuilder("SELECT id, comname, job, experience, region, content, created_date, count_likes FROM review WHERE 1=1");
 
         // 조건 추가
