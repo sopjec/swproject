@@ -227,8 +227,9 @@ async function saveRecording() {
     const blob = new Blob(recordedChunks, { type: 'video/webm' });
     const fileName = `recording_${interviewId || 'unknown'}.webm`; // 인터뷰 ID를 파일명에 포함
     const formData = new FormData();
-    formData.append('videoFile', blob, 'recording.webm');
+    formData.append('videoFile', blob, fileName); // 파일명 동기화
     formData.append('resumeId', resumeId); // resumeId를 함께 전송
+    formData.append('interviewId', interviewId); // interviewId도 전송
 
     try {
         const response = await fetch('/upload-video', {
@@ -237,7 +238,7 @@ async function saveRecording() {
         });
 
         if (response.ok) {
-            console.log('녹화본이 서버에 성공적으로 업로드되었습니다.');
+            console.log(`녹화본이 서버에 성공적으로 업로드되었습니다.: ${fileName}`);
         } else {
             console.error('녹화본 업로드 실패:', response.statusText);
         }
@@ -245,6 +246,7 @@ async function saveRecording() {
         console.error('녹화본 업로드 중 오류:', error);
     }
 }
+
 
 // 면접 시작
 async function startInterview() {

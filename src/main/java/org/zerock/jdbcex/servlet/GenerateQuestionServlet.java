@@ -74,15 +74,11 @@ public class GenerateQuestionServlet extends HttpServlet {
             jsonResponse.put("interviewId", interviewId);
 
             response.getWriter().write(jsonResponse.toString());
-        } catch (SQLException e) {
-            e.printStackTrace();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
-
 
     private String callOpenAI(String prompt) throws Exception {
         String apiUrl = "https://api.openai.com/v1/chat/completions";
@@ -178,31 +174,50 @@ public class GenerateQuestionServlet extends HttpServlet {
 
     //인터뷰 데이터 저장, 인터뷰 id 불러오기
     private int saveInterviewData(String userId, String resumeTitle, Connection conn) throws Exception {
-        int interviewId = -1; // 초기화
+        int interviewId = -1;
         String interviewDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
         String insertSQL = "INSERT INTO interview (user_id, title, interview_date) VALUES (?, ?, ?)";
 
-        try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
-            // 제목 형식: 자기소개서제목_temp
-            String tempTitle = resumeTitle + "_temp";
+        try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, PreparedStatement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, userId);
-            pstmt.setString(2, tempTitle);
+            pstmt.setString(2, resumeTitle);
             pstmt.setString(3, interviewDate);
             pstmt.executeUpdate();
 
-            // 생성된 ID 가져오기
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     interviewId = generatedKeys.getInt(1);
-
-                    // 인터뷰 제목 업데이트: 자기소개서제목_interviewId
-                    String finalTitle = resumeTitle + "_" + interviewId;
-                    updateInterviewTitle(interviewId, finalTitle, conn);
+                    System.out.println("Generated Interview ID: " + interviewId);
                 }
             }
         }
-        return interviewId; // 인터뷰 ID 반환
+        return interviewId;
     }
+
+    // 비디오 저장 경로 설정 및 파일 생성
+    private String saveVideoPath(HttpServletRequest request, String finalTitle) {
+        // 웹 애플리케이션의 상대 경로 기준으로 설정
+        String relativePath = "/videos/" + finalTitle + ".webm";
+
+        // 애플리케이션 루트 경로 가져오기
+        String absolutePath = request.getServletContext().getRealPath(relativePath);
+
+        File file = new File(absolutePath);
+        try {
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs(); // 디렉토리 생성
+            }
+            // 기존 파일명이 있다면 무조건 덮어씁니다.
+            if (!file.exists()) {
+                file.createNewFile(); // 파일 생성
+            }
+            System.out.println("File successfully created: " + file.getPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return relativePath; // 상대 경로 반환
+    }
+
 
 
     //자소서 제목 불러오기
@@ -219,21 +234,6 @@ public class GenerateQuestionServlet extends HttpServlet {
         return null;
     }
 
-    //인터뷰 갯수 conut
-    private int getInterviewCount(String userId, String resumeTitle, Connection conn) throws SQLException {
-        String query = "SELECT COUNT(*) FROM interview WHERE user_id = ? AND title LIKE ?";
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, userId);
-            pstmt.setString(2, resumeTitle + "_%");
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) + 1;
-                }
-            }
-        }
-        return 1;
-    }
-
     // 인터뷰 제목 업데이트 메서드
     private void updateInterviewTitle(int interviewId, String finalTitle, Connection conn) throws SQLException {
         String updateSQL = "UPDATE interview SET title = ? WHERE id = ?";
@@ -243,7 +243,4 @@ public class GenerateQuestionServlet extends HttpServlet {
             pstmt.executeUpdate();
         }
     }
-
-
-
 }
