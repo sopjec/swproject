@@ -143,6 +143,10 @@ async function generateQuestionAndSpeak() {
             const data = await response.json();
             console.log("서버 응답 데이터:", data); // 서버 응답 확인
 
+            // 인터뷰 ID 저장
+            interviewId = data.interviewId;
+            console.log("인터뷰 ID:", interviewId);
+
             // 응답 데이터 처리
             if (data.questions && Array.isArray(data.questions)) {
                 questions = data.questions; // 질문 배열 저장
@@ -221,6 +225,7 @@ async function startPageRecording() {
 // 녹화 저장
 async function saveRecording() {
     const blob = new Blob(recordedChunks, { type: 'video/webm' });
+    const fileName = `recording_${interviewId || 'unknown'}.webm`; // 인터뷰 ID를 파일명에 포함
     const formData = new FormData();
     formData.append('videoFile', blob, 'recording.webm');
     formData.append('resumeId', resumeId); // resumeId를 함께 전송

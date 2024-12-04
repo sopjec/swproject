@@ -31,55 +31,58 @@ public class GenerateQuestionServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
-            System.out.println("세션이 없거나 로그인된 사용자가 없습니다.");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 Unauthorized
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
         UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
         String userId = loggedInUser.getId();
-        System.out.println("로그인된 User ID: " + userId);
 
         String resumeId = request.getParameter("resumeId");
         if (resumeId == null || resumeId.isEmpty()) {
-            System.out.println("resumeId가 전달되지 않았습니다.");
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400 Bad Request
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection()) {
-            System.out.println("데이터베이스 연결 성공");
+            System.out.println("Database connection established.");
 
+            // Get resume content
             StringBuilder resumeContent = getResumeContent(resumeId, conn);
             if (resumeContent.length() == 0) {
-                JSONObject errorResponse = new JSONObject();
-                errorResponse.put("error", "No data found for resume_id: " + resumeId);
-                response.getWriter().write(errorResponse.toString());
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
 
-            System.out.println("DB 조회 결과: " + resumeContent.toString());
-
-            String prompt = "다음 자소서 데이터를 바탕으로 최소 5개의 면접 질문을 생성해 주세요. 질문은 번호를 매겨 출력하세요:\n" + resumeContent.toString();
+            // Generate questions
+            String prompt = "Generate questions based on the resume content.";
             String rawResponse = callOpenAI(prompt);
             List<String> questions = ensureMinimumQuestions(rawResponse, prompt);
 
+            // Save interview data
             String resumeTitle = getResumeTitle(resumeId, conn);
-            if (resumeTitle != null) {
-                saveInterviewData(userId, resumeTitle, conn);
-            } else {
-                System.out.println("resumeTitle이 null입니다.");
+            if (resumeTitle == null) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return;
             }
 
+            int interviewId = saveInterviewData(userId, resumeTitle, conn);
+
+            // Send JSON response
             JSONObject jsonResponse = new JSONObject();
             jsonResponse.put("questions", new JSONArray(questions));
+            jsonResponse.put("interviewId", interviewId);
 
             response.getWriter().write(jsonResponse.toString());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             e.printStackTrace();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500 Internal Server Error
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
+
 
     private String callOpenAI(String prompt) throws Exception {
         String apiUrl = "https://api.openai.com/v1/chat/completions";
@@ -121,7 +124,7 @@ public class GenerateQuestionServlet extends HttpServlet {
         }
     }
 
-    //자소서 아이디 불러오기    
+    //자소서 아이디 불러오기
     private StringBuilder getResumeContent(String resumeId, Connection conn) throws SQLException {
         StringBuilder resumeContent = new StringBuilder();
         String query = "SELECT question, answer FROM resume_qna WHERE resume_id = ?";
@@ -173,19 +176,34 @@ public class GenerateQuestionServlet extends HttpServlet {
         return questions;
     }
 
-    //인터뷰 데이터 저장
-    private void saveInterviewData(String userId, String resumeTitle, Connection conn) throws Exception {
-        int interviewCount = getInterviewCount(userId, resumeTitle, conn);
-        String interviewTitle = resumeTitle + "_" + interviewCount;
+    //인터뷰 데이터 저장, 인터뷰 id 불러오기
+    private int saveInterviewData(String userId, String resumeTitle, Connection conn) throws Exception {
+        int interviewId = -1; // 초기화
         String interviewDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
         String insertSQL = "INSERT INTO interview (user_id, title, interview_date) VALUES (?, ?, ?)";
+
         try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
+            // 제목 형식: 자기소개서제목_temp
+            String tempTitle = resumeTitle + "_temp";
             pstmt.setString(1, userId);
-            pstmt.setString(2, interviewTitle);
+            pstmt.setString(2, tempTitle);
             pstmt.setString(3, interviewDate);
             pstmt.executeUpdate();
+
+            // 생성된 ID 가져오기
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    interviewId = generatedKeys.getInt(1);
+
+                    // 인터뷰 제목 업데이트: 자기소개서제목_interviewId
+                    String finalTitle = resumeTitle + "_" + interviewId;
+                    updateInterviewTitle(interviewId, finalTitle, conn);
+                }
+            }
         }
+        return interviewId; // 인터뷰 ID 반환
     }
+
 
     //자소서 제목 불러오기
     private String getResumeTitle(String resumeId, Connection conn) throws SQLException {
@@ -215,6 +233,17 @@ public class GenerateQuestionServlet extends HttpServlet {
         }
         return 1;
     }
+
+    // 인터뷰 제목 업데이트 메서드
+    private void updateInterviewTitle(int interviewId, String finalTitle, Connection conn) throws SQLException {
+        String updateSQL = "UPDATE interview SET title = ? WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
+            pstmt.setString(1, finalTitle);
+            pstmt.setInt(2, interviewId);
+            pstmt.executeUpdate();
+        }
+    }
+
 
 
 }
