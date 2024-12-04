@@ -132,29 +132,48 @@ function startSpeechRecognition() {
 
 // 질문 생성 및 음성 출력
 async function generateQuestionAndSpeak() {
-    const response = await fetch('/api/generate-question', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ resumeId }),
-    });
+    try {
+        const response = await fetch('/api/generate-question', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ resumeId }),
+        });
 
-    if (response.ok) {
-        const data = await response.json();
-        questions = data.question.split('\n').filter(q => q.trim() !== '').map(q => q.replace(/^\d+\.\s*/, ''));
-        currentQuestionIndex = 0;
+        if (response.ok) {
+            const data = await response.json();
+            console.log("서버 응답 데이터:", data); // 서버 응답 확인
 
-        if (questions.length > 0) {
-            const question = `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
-            document.getElementById('interviewer-text-output').innerHTML = question;
-            readTextAloud(question, startSpeechRecognition);
+            // 응답 데이터 처리
+            if (data.questions && Array.isArray(data.questions)) {
+                questions = data.questions; // 질문 배열 저장
+                currentQuestionIndex = 0; // 첫 번째 질문으로 초기화
+
+                if (questions.length > 0) {
+                    const question = `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
+                    // 질문 텍스트를 interviewer-text-output에 출력
+                    document.getElementById('interviewer-text-output').innerText = question;
+                    console.log('현재 질문 출력:', question);
+
+                    // 음성으로 읽기 및 음성 인식 시작
+                    readTextAloud(question, startSpeechRecognition);
+                } else {
+                    console.error('질문 데이터가 비어 있습니다.');
+                    document.getElementById('interviewer-text-output').innerText = '질문 데이터가 없습니다.';
+                }
+            } else {
+                console.error('서버 응답에 질문 데이터가 없습니다:', data);
+                document.getElementById('interviewer-text-output').innerText = '질문 데이터 처리 중 오류 발생';
+            }
         } else {
-            document.getElementById('interviewer-text-output').innerText = '질문 데이터가 없습니다.';
+            console.error('서버 오류:', response.statusText);
+            document.getElementById('interviewer-text-output').innerText = '질문 생성 중 서버 오류 발생';
         }
-    } else {
-        console.error('서버 오류:', response.statusText);
+    } catch (error) {
+        console.error('질문 생성 중 오류:', error);
         document.getElementById('interviewer-text-output').innerText = '질문 생성 중 오류 발생';
     }
 }
+
 
 // 페이지 녹화 시작
 async function startPageRecording() {
@@ -324,12 +343,14 @@ document.getElementById('next-question').addEventListener('click', () => {
         alert('면접이종료되었습니다');
         createEndInterviewModal(); // 질문이 더 이상 없을 때 모달 띄우기
     }
-    });
+});
 
 document.getElementById('stop-recording').addEventListener('click', () => {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
         mediaRecorder.stop();
         console.log('녹화 중지');
+        // 녹화 종료 후 interview_view.jsp로 이동
+            window.location.href = 'interview_view.jsp';
     }
     if (webcamStream) {
         webcamStream.getTracks().forEach(track => track.stop());
