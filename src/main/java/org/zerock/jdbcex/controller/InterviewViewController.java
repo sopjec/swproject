@@ -20,10 +20,6 @@ public class InterviewViewController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
 
-        if (session == null || session.getAttribute("loggedInUser") == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
 
         // 세션에서 사용자 정보 가져오기
         Object loggedInUser = session.getAttribute("loggedInUser");

@@ -74,7 +74,11 @@ dependencies {
 
 }
 
-
 test {
   useJUnitPlatform() // JUnit 5 사용 설정
+}
+
+war {
+  // videos 폴더를 제외하여 WAR 파일에서 제거
+  exclude 'videos/**'
 }

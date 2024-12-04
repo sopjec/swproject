@@ -5,6 +5,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <jsp:include page="checkSession.jsp"/>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>리뷰 상세 보기</title>
@@ -147,7 +148,7 @@
 <div class="container">
   <div class="sidebar">
     <ul>
-      <li><a href="#" onclick="checkSessionAndNavigate('reviewUpload'); return false;">기업 면접 후기</a></li>
+      <li><a href="reviewUpload">기업 면접 후기</a></li>
     </ul>
   </div>
 <div class="content">

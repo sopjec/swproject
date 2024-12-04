@@ -28,10 +28,7 @@ public class SpellCheckController extends HttpServlet {
         resp.setContentType("application/json; charset=UTF-8");
 
         HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("loggedInUser") == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
+
 
         // 입력 JSON 읽기
         String body = req.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);

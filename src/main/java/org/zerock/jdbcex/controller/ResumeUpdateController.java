@@ -26,10 +26,7 @@ public class ResumeUpdateController extends HttpServlet {
         resp.setContentType("application/json;charset=UTF-8");
 
         HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("loggedInUser") == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
+
         String path = req.getServletPath(); // 요청 경로 확인
         Gson gson = new Gson();
 

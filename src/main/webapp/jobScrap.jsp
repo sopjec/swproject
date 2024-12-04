@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <jsp:include page="checkSession.jsp"/>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/layout.css"> <!-- 올바른 경로 설정 -->
@@ -155,8 +156,8 @@
 <div class="container">
     <div class="sidebar">
         <ul>
-            <li><a href="jobPosting.jsp">기업 채용 공고</a></li>
-            <li><a href="jobScrap.jsp">저장된 공고 목록</a></li>
+            <li><a href="jobPosting.jsp">채용공고 보러가기</a></li>
+            <li><a href="#" onclick="checkSessionAndNavigate('scrap'); return false;">저장된 공고 목록</a></li>
         </ul>
     </div>
     <div class="content">

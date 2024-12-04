@@ -26,10 +26,7 @@ public class ResumeDetailController extends HttpServlet {
             return;
         }
         HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("loggedInUser") == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
+
         try {
             int resumeId = Integer.parseInt(idParam);
 

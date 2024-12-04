@@ -132,9 +132,9 @@ public class GenerateQuestionServlet extends HttpServlet {
     }
 
     private void saveInterviewData(String userId, String resumeTitle, Connection conn) throws Exception {
-        String interviewTitle = resumeTitle + " - 면접 " + getInterviewCount(userId, resumeTitle, conn);
+        int interviewCount = getInterviewCount(userId, resumeTitle, conn);
+        String interviewTitle = resumeTitle + "_" + interviewCount;
         String interviewDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
-
         String insertSQL = "INSERT INTO interview (user_id, title, interview_date) VALUES (?, ?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, userId);
@@ -161,7 +161,7 @@ public class GenerateQuestionServlet extends HttpServlet {
         String query = "SELECT COUNT(*) FROM interview WHERE user_id = ? AND title LIKE ?";
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, userId);
-            pstmt.setString(2, resumeTitle + "%");
+            pstmt.setString(2, resumeTitle + "_%");
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1) + 1;

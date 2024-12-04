@@ -174,7 +174,6 @@ async function generateQuestionAndSpeak() {
     }
 }
 
-
 // 페이지 녹화 시작
 async function startPageRecording() {
     try {
@@ -201,7 +200,13 @@ async function startPageRecording() {
             }
         };
 
-        mediaRecorder.onstop = saveRecording;
+        mediaRecorder.onstop = () => {
+            saveRecording();
+            console.log('녹화 중지');
+            // 녹화 종료 후 interview_view.jsp로 이동
+            window.location.href = 'interviewView';
+        };
+
         mediaRecorder.start();
 
         // 화면 녹화가 시작된 후 질문 생성 및 음성 출력
@@ -337,10 +342,16 @@ document.getElementById('next-question').addEventListener('click', () => {
         currentQuestionIndex++;
         const question = `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
         document.getElementById('interviewer-text-output').innerHTML = question;
+
+        // 면접자 텍스트창 내용 초기화
+        setTimeout(() => {
+            document.getElementById('user-text-output').innerHTML = '';
+        }, 100); // 약간의 지연시간을 주어 초기화가 확실히 되도록 함
+
         readTextAloud(question, startSpeechRecognition);
     } else {
         document.getElementById('interviewer-text-output').innerText = '모든 질문이 완료되었습니다.';
-        alert('면접이종료되었습니다');
+        alert('면접이 종료되었습니다');
         createEndInterviewModal(); // 질문이 더 이상 없을 때 모달 띄우기
     }
 });
