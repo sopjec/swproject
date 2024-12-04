@@ -88,7 +88,7 @@ public class ReviewController extends HttpServlet {
         } catch (Exception e) {
             // 예외 처리: 로그 출력 및 오류 페이지로 이동
             e.printStackTrace();
-            //response.sendRedirect("review.jsp");
+            response.sendRedirect("review.jsp");
         }
     }
 }
