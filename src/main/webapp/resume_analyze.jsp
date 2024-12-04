@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <jsp:include page="checkSession.jsp"/>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/layout.css"> <!-- 올바른 경로 설정 -->
@@ -78,9 +79,9 @@
 <div class="container">
         <div class="sidebar">
             <ul>
-                <li><a href="resume.jsp">자기소개서 등록</a></li>
-                <li><a href="resume_view">자기소개서 조회</a></li>
-                <li><a href="resume_analyze.jsp">자기소개서 분석</a></li>
+                <li><a href="#" onclick="checkSessionAndNavigate('resume.jsp'); return false;">자기소개서 등록</a></li>
+                <li><a href="#" onclick="checkSessionAndNavigate('resume_view'); return false;">자기소개서 조회</a></li>
+                <li><a href="#" onclick="checkSessionAndNavigate('resume_analyze.jsp'); return false;">자기소개서 분석</a></li>
             </ul>
         </div>
 
@@ -114,7 +115,7 @@
 
             console.log("Answer:", answerText);
 
-            fetch('/spellcheck', {
+            fetch('/aiCoaching', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
@@ -130,12 +131,12 @@
                         const resultBox = document.getElementById("analysisOutput");;
                         resultBox.textContent = data.replacedText;
                     } else {
-                        alert('어휘 교체 중 오류가 발생했습니다.');
+                        alert('AI 코칭 중 오류가 발생했습니다.');
                     }
                 })
                 .catch(error => {
                     console.error("Error:", error);
-                    alert('어휘 교체 요청 실패.resume_analyze.jsp');
+                    alert('AI 코칭 교체 요청 실패.resume_analyze.jsp');
                 });
         });
 

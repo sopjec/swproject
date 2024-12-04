@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 
+<jsp:include page="checkSession.jsp"/>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -96,8 +97,8 @@
 <div class="container">
     <div class="sidebar">
         <ul>
-            <li><a href="/resume?action=interview">면접 보기</a></li>
-            <li><a href="interviewView">면접 기록 조회</a></li>
+            <li><a href="#" onclick="checkSessionAndNavigate('/resume?action=interview'); return false;">면접 보러가기</a></li>
+            <li><a href="#" onclick="checkSessionAndNavigate('interviewView'); return false;">면접 녹화기록 조회</a></li>
         </ul>
     </div>
 
