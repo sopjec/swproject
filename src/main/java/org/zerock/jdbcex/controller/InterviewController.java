@@ -16,10 +16,6 @@ public class InterviewController extends HttpServlet {
         System.out.println(resumeId);
 
         HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("loggedInUser") == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
 
         if (resumeId == null || resumeId.isEmpty()) {
             // resumeId가 없는 경우 오류 페이지로 리다이렉트

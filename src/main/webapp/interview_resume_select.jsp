@@ -3,6 +3,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="ko">
+<jsp:include page="checkSession.jsp"/>
 
 <head>
     <meta charset="UTF-8">
@@ -149,13 +150,7 @@
 
 <jsp:include page="header.jsp"/>
 
-<!-- 로그인 모달 -->
-<div id="login-modal" class="modal">
-    <div class="modal-content">
-        <p>로그인이 필요합니다.</p>
-        <button onclick="redirectToLogin()">로그인 페이지로 이동</button>
-    </div>
-</div>
+
 
 <div class="container">
     <div class="sidebar">
@@ -180,10 +175,11 @@
                 <%
                     List<ResumeDTO> resumes = (List<ResumeDTO>) request.getAttribute("resumes");
                     if (resumes != null && !resumes.isEmpty()) {
+                        int index = 1; // 순차적인 번호를 위한 변수
                         for (ResumeDTO resume : resumes) {
                 %>
                 <tr data-id="<%= resume.getId() %>">
-                    <td><%= resume.getId() %></td>
+                    <td><%= index++ %></td> <!-- 순차적인 번호 출력 -->
                     <td><%= resume.getTitle() %></td>
                 </tr>
                 <%
@@ -213,6 +209,7 @@
         </form>
     </div>
 </div>
+<jsp:include page="checkSession.jsp"/>
 </body>
 
 </html>

@@ -32,10 +32,6 @@ public class ResumeController extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
 
         HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("loggedInUser") == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
 
         // 사용자 정보 확인
         UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
