@@ -1,6 +1,10 @@
 package org.zerock.jdbcex.controller;
 
 
+import org.zerock.jdbcex.dto.InterviewQnADTO;
+import org.zerock.jdbcex.dto.UserDTO;
+import org.zerock.jdbcex.service.InterviewQnAService;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -31,5 +35,29 @@ public class InterviewController extends HttpServlet {
 
         // interview.jsp로 전달
         req.getRequestDispatcher("interview.jsp").forward(req, resp);
+    }
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        InterviewQnAService interviewQnAService = new InterviewQnAService();
+        InterviewQnADTO qna = new InterviewQnADTO();
+
+        int interviewId = Integer.parseInt(req.getParameter("interviewId"));
+        String question = req.getParameter("question");
+        String answer = req.getParameter("answer");
+
+        HttpSession session = req.getSession(false);
+
+        // 사용자 정보 확인
+        UserDTO loggedInUser = (UserDTO) session.getAttribute("loggedInUser");
+        String userId = loggedInUser.getId(); // User ID 가져오기
+
+        qna.setInterviewId(interviewId);
+        qna.setQuestion(question);
+        qna.setAnswer(answer);
+        qna.setUser_id(userId);
+
+        int num = interviewQnAService.insertQnA(qna);
+        System.out.println(num + "행 추가되었습니다. ");
+
     }
 }

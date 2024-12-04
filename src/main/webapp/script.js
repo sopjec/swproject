@@ -348,6 +348,7 @@ document.getElementById('next-question').addEventListener('click', () => {
         const question = `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
         document.getElementById('interviewer-text-output').innerHTML = question;
 
+
         // 면접자 텍스트창 내용 초기화
         setTimeout(() => {
             document.getElementById('user-text-output').innerHTML = '';
