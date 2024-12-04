@@ -164,7 +164,7 @@ public class ReviewDAO {
         // 조건에 따라 쿼리 추가
         //1. 검색 조건 추가
         if (search != null && !search.trim().isEmpty()) {
-            sql.append(" WHERE comname LIKE ? OR content LIKE ?");
+            sql.append(" AND (comname LIKE ? OR content LIKE ?)");
         }
         //2. 기타 조건 추가
         if (experience != null && !experience.isEmpty()) {
