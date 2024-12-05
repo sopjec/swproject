@@ -40,40 +40,24 @@
       line-height: 1.6;
     }
 
-    .like-button {
+    .like-section {
+      margin-top: 20px;
+      padding-top: 10px;
       display: flex;
       align-items: center;
-      background: none;
-      border: none;
+      justify-content: center; /* 공감 버튼 가운데 정렬 */
+    }
+
+    .like-button {
+      background-color: white;
+      color: black ;
+      border: 1px solid #272727;
+      border-radius: 4px;
+      padding: 8px 16px;
       cursor: pointer;
-      font-size: 16px;
-      color: #555;
-      transition: all 0.3s ease;
+      font-size: 18px; /* 공감 버튼 글씨 크기 키움 */
+      transition: background-color 0.3s;
     }
-
-    .like-button:hover {
-      color: #333;
-    }
-
-    .like-icon {
-      width: 20px;
-      height: 20px;
-      margin-right: 8px;
-      transition: transform 0.3s ease;
-    }
-
-    .like-button:hover .like-icon {
-      transform: scale(1.2);
-    }
-
-    .like-text {
-      margin-right: 5px;
-    }
-
-    .like-count {
-      font-weight: bold;
-    }
-
 
     .comment-section {
       margin-top: 30px;
@@ -187,23 +171,16 @@
 
   <!-- 공감 버튼 (폼 방식) -->
   <div class="like-section">
-    <form action="reviewDetail" method="post" id="like-form">
+    <form action="reviewDetail" method="post">
       <input type="hidden" name="action" value="<%= isLikedByUser ? "unlike" : "like" %>">
       <input type="hidden" name="reviewId" value="<%= review.getId() %>">
-      <button class="like-button" type="button" onclick="toggleLike(this)">
-        <img
-                src="<%= isLikedByUser ? "yesheart.png" : "noheart.png" %>"
-                class="like-icon"
-                alt="like-icon">
-        <span class="like-text">공감</span>
-        <span class="like-count"><%= review.getLikes() %></span>
+      <button class = "like-button" type="submit">
+        <img src="<%= isLikedByUser ? "/img/heart/yes.png" : "/img/heart/no.png" %>" alt="like status" style="width:20px; height:20px;">
+        <span><%= isLikedByUser ? "  공감취소" : "  공감" %></span>
+
       </button>
     </form>
   </div>
-
-
-
-
 
   <!-- 댓글 쓰기 -->
   <div class="comment-section">
@@ -265,41 +242,10 @@
 
 </div>
 <script>
-  function toggleLike(button) {
-    const form = document.getElementById('like-form');
-    const likeIcon = button.querySelector('.like-icon');
-    const likeCount = button.querySelector('.like-count');
-    const currentAction = form.querySelector("input[name='action']").value;
-    const isLiked = currentAction === "unlike";
-
-    // 상태 전환
-    form.querySelector("input[name='action']").value = isLiked ? "like" : "unlike";
-
-    // 서버 요청
-    fetch(form.action, {
-      method: 'POST',
-      body: new FormData(form),
-    })
-            .then(response => {
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-              }
-              return response.json();
-            })
-            .then(data => {
-              if (data.error) {
-                alert(data.error);
-              } else {
-                likeCount.textContent = data.likes; // 공감수 업데이트
-                likeIcon.src = isLiked ? "noheart.png" : "yesheart.png"; // 아이콘 업데이트
-              }
-            })
-            .catch(error => {
-              console.error("서버 요청 중 오류 발생:", error);
-              alert("서버와 통신 중 문제가 발생했습니다.");
-            });
+  function toggleReplyForm(id) {
+    const replyForm = document.getElementById('reply-form-' + id);
+    replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
   }
 </script>
-
 </body>
 </html>
