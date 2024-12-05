@@ -13,6 +13,10 @@ public class UserDTO {
     private String profileUrl;
     private String dateOfBirth;
 
+    public UserDTO() {
+
+    }
+
     public String getProfileUrl() {
         return profileUrl;
     }

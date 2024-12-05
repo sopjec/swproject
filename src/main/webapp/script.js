@@ -266,103 +266,63 @@ async function startInterview() {
     }
 }
 
-// 면접 종료 알림 모달 생성 함수
-function createEndInterviewModal() {
-    // 모달 요소가 이미 있다면 제거
-    const existingModal = document.getElementById('end-interview-modal');
-    if (existingModal) {
-        existingModal.remove();
+
+// 질답 저장 함수
+async function saveQuestionAndAnswer(question, answer) {
+    try {
+        const response = await fetch('/interview', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                interviewId: interviewId,
+                question: question,
+                answer: answer || "", // 답변이 없으면 빈 문자열
+            }),
+        });
+
+        if (response.ok) {
+            console.log(`질문과 답변 저장 성공: ${question}, ${answer}`);
+        } else {
+            console.error('질문과 답변 저장 실패:', response.statusText);
+        }
+    } catch (error) {
+        console.error('질문과 답변 저장 중 오류:', error);
     }
-
-    // 모달 요소 생성
-    const modal = document.createElement('div');
-    modal.id = 'end-interview-modal';
-    modal.style.position = 'fixed';
-    modal.style.top = '30%'; // 위치 조정
-    modal.style.left = '30%'; // 위치 조정
-    modal.style.width = '600px'; // 기존 가로 크기의 두 배
-    modal.style.height = '450px'; // 기존 세로 크기의 세 배
-    modal.style.backgroundColor = 'white';
-    modal.style.padding = '20px';
-    modal.style.boxShadow = '0 0 15px rgba(0, 0, 0, 0.5)';
-    modal.style.zIndex = '1000';
-    modal.style.textAlign = 'center';
-    modal.style.cursor = 'move'; // 드래그 시 손 모양으로 변경
-    modal.style.display = 'flex';
-    modal.style.flexDirection = 'column';
-    modal.style.justifyContent = 'space-between';
-
-    // 피드백 타이틀 생성
-    const feedbackTitle = document.createElement('h3');
-    feedbackTitle.innerText = '피드백 내용';
-    feedbackTitle.style.marginBottom = '10px'; // 타이틀과 텍스트창 사이 여백 추가
-    modal.appendChild(feedbackTitle);
-
-    // 피드백 입력 텍스트 창 생성
-    const feedbackTextarea = document.createElement('textarea');
-    feedbackTextarea.style.width = '100%';
-    feedbackTextarea.style.height = '200px';
-    feedbackTextarea.style.resize = 'none'; // 크기 조절 불가
-    feedbackTextarea.placeholder = '여기에 피드백을 입력하세요...';
-    modal.appendChild(feedbackTextarea);
-
-    // 확인 버튼 생성
-    const closeButton = document.createElement('button');
-    closeButton.innerText = '확인';
-    closeButton.style.alignSelf = 'center'; // 버튼을 중앙으로 정렬
-    closeButton.style.marginBottom = '10px'; // 모달 하단에서 약간의 여백 추가
-    closeButton.addEventListener('click', () => {
-        modal.remove(); // 모달 닫기
-    });
-    modal.appendChild(closeButton);
-
-    // 드래그 가능하도록 마우스 이벤트 추가
-    let offsetX, offsetY;
-
-    modal.addEventListener('mousedown', (e) => {
-        offsetX = e.clientX - modal.getBoundingClientRect().left;
-        offsetY = e.clientY - modal.getBoundingClientRect().top;
-
-        function mouseMoveHandler(e) {
-            modal.style.left = `${e.clientX - offsetX}px`;
-            modal.style.top = `${e.clientY - offsetY}px`;
-        }
-
-        function mouseUpHandler() {
-            document.removeEventListener('mousemove', mouseMoveHandler);
-            document.removeEventListener('mouseup', mouseUpHandler);
-        }
-
-        document.addEventListener('mousemove', mouseMoveHandler);
-        document.addEventListener('mouseup', mouseUpHandler);
-    });
-
-    // 모달을 body에 추가
-    document.body.appendChild(modal);
 }
+
 
 // 이벤트 리스너 설정
 document.getElementById('start-interview').addEventListener('click', startInterview);
 
-document.getElementById('next-question').addEventListener('click', () => {
-    if (currentQuestionIndex + 1 < questions.length) {
+document.getElementById('next-question').addEventListener('click', async () => {
+    const userTextOutput = document.getElementById('user-text-output');
+    const currentAnswer = userTextOutput.innerText.trim(); // 사용자가 입력한 답변 가져오기
+
+    if (currentQuestionIndex < questions.length) {
+        const currentQuestion = questions[currentQuestionIndex];
+
+        // 질문과 답변을 저장
+        await saveQuestionAndAnswer(currentQuestion, currentAnswer);
+
+        // 다음 질문으로 이동
         currentQuestionIndex++;
-        const question = `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
-        document.getElementById('interviewer-text-output').innerHTML = question;
+        if (currentQuestionIndex < questions.length) {
+            const nextQuestion = `질문 ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex]}`;
+            document.getElementById('interviewer-text-output').innerText = nextQuestion;
 
-        // 면접자 텍스트창 내용 초기화
-        setTimeout(() => {
-            document.getElementById('user-text-output').innerHTML = '';
-        }, 100); // 약간의 지연시간을 주어 초기화가 확실히 되도록 함
+            // 면접자 텍스트창 내용 초기화
+            setTimeout(() => {
+                userTextOutput.innerText = '';
+            }, 100); // 약간의 지연시간을 주어 초기화가 확실히 되도록 함
 
-        readTextAloud(question, startSpeechRecognition);
-    } else {
-        document.getElementById('interviewer-text-output').innerText = '모든 질문이 완료되었습니다.';
-        alert('면접이 종료되었습니다');
-        createEndInterviewModal(); // 질문이 더 이상 없을 때 모달 띄우기
+            readTextAloud(nextQuestion, startSpeechRecognition);
+        } else {
+            document.getElementById('interviewer-text-output').innerText = '모든 질문이 완료되었습니다.';
+            alert('면접이 종료되었습니다.');
+            await generateAndSaveFeedback();
+        }
     }
 });
-
 document.getElementById('stop-recording').addEventListener('click', () => {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
         mediaRecorder.stop();
@@ -373,3 +333,50 @@ document.getElementById('stop-recording').addEventListener('click', () => {
         console.log('웹캠 스트림 중지');
     }
 });
+
+// 질문 및 피드백 생성 및 업데이트 함수
+async function generateAndSaveFeedback() {
+    // 모달 열기 및 초기 메시지 설정
+    openModal('피드백을 생성 중입니다. 잠시만 기다려주세요...');
+
+    try {
+        // 데이터베이스에서 질문과 답변 가져오기
+        const fetchResponse = await fetch(`/api/get-questions-and-answers?interviewId=${interviewId}`);
+        if (!fetchResponse.ok) {
+            throw new Error(`질문과 답변 데이터를 가져오는데 실패했습니다: ${fetchResponse.statusText}`);
+        }
+
+        const questionsAndAnswers = await fetchResponse.json();
+        console.log('데이터베이스에서 가져온 질문과 답변 데이터:', questionsAndAnswers);
+
+        // 질문과 답변이 모두 비어 있는지 확인
+        const hasValidAnswers = questionsAndAnswers.some(qa => qa.answer.trim() !== "");
+        if (!hasValidAnswers) {
+            openModal('모든 질문에 대한 답변이 비어 있습니다. 피드백을 생성할 수 없습니다.');
+            return; // 피드백 생성 중단
+        }
+
+        // GPT API를 통해 피드백 요청
+        const response = await fetch('/api/generate-feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                interviewId: interviewId, // 현재 인터뷰 ID
+                data: questionsAndAnswers // 질문과 답변 배열
+            }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log("피드백 생성 완료:", data.feedback);
+
+            // 모달에 생성된 피드백 표시
+            openModal(`피드백 생성 완료:\n\n${data.feedback}`);
+        } else {
+            throw new Error(`피드백 생성 실패: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error('피드백 생성 중 오류:', error);
+        openModal('피드백 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+}

@@ -53,7 +53,7 @@ public class SpellCheckController extends HttpServlet {
 
         // OpenAI 요청 데이터 생성
         JsonObject requestBody = new JsonObject();
-        requestBody.addProperty("model", "gpt-4-turbo");
+        requestBody.addProperty("model", "gpt-3.5-turbo");
         requestBody.addProperty("max_tokens", 500);
         requestBody.addProperty("temperature", 0.7); // 창의성 정도
         requestBody.addProperty("top_p", 1.0); // 다양성 설정
