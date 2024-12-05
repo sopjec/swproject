@@ -230,6 +230,30 @@ public class GenerateQuestionServlet extends HttpServlet {
         return null;
     }
 
+    // 비디오 저장 경로 설정 및 파일 생성
+    private String saveVideoPath(HttpServletRequest request, String finalTitle) {
+        // 웹 애플리케이션의 상대 경로 기준으로 설정
+        String relativePath = "/videos/" + finalTitle + ".webm";
+
+        // 애플리케이션 루트 경로 가져오기
+        String absolutePath = request.getServletContext().getRealPath(relativePath);
+
+        File file = new File(absolutePath);
+        try {
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs(); // 디렉토리 생성
+            }
+            // 기존 파일명이 있다면 무조건 덮어씁니다.
+            if (!file.exists()) {
+                file.createNewFile(); // 파일 생성
+            }
+            System.out.println("File successfully created: " + file.getPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return relativePath; // 상대 경로 반환
+    }
+
     //인터뷰 갯수 conut
     private int getInterviewCount(String userId, String resumeTitle, Connection conn) throws SQLException {
         String query = "SELECT COUNT(*) FROM interview WHERE user_id = ? AND title LIKE ?";

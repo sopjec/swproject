@@ -1,20 +1,17 @@
 package org.zerock.jdbcex.servlet;
 
+import org.zerock.jdbcex.util.ConnectionUtil;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
-
-import org.zerock.jdbcex.util.ConnectionUtil;
 
 @WebServlet("/upload-video")
 @MultipartConfig(
@@ -24,27 +21,26 @@ import org.zerock.jdbcex.util.ConnectionUtil;
 )
 public class VideoUploadServlet extends HttpServlet {
 
+    // C 드라이브의 upload/videos 디렉토리로 설정
+    private static final String VIDEO_FOLDER = "C:/upload/videos";
+
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
         PrintWriter writer = response.getWriter();
 
-        // 요청 파라미터 확인
-        request.getParameterMap().forEach((key, value) -> {
-            System.out.println("Key: " + key + ", Value: " + String.join(", ", value));
-        });
-
-        // URL에서 resumeId 가져오기
+        // URL에서 resumeId와 interviewId 가져오기
         String resumeId = request.getParameter("resumeId");
-        if (resumeId == null || resumeId.isEmpty()) {
-            writer.println("resumeId가 전달되지 않았습니다.");
+        String interviewId = request.getParameter("interviewId");
+
+        if (resumeId == null || resumeId.isEmpty() || interviewId == null || interviewId.isEmpty()) {
+            writer.println("resumeId 또는 interviewId가 전달되지 않았습니다.");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        // 데이터베이스에서 resumeId에 해당하는 title 가져오기
+        // 자소서 제목 조회
         String resumeTitle = getResumeTitle(resumeId);
         if (resumeTitle == null) {
             writer.println("해당 resumeId에 대한 자소서를 찾을 수 없습니다.");
@@ -54,28 +50,25 @@ public class VideoUploadServlet extends HttpServlet {
 
         System.out.println("조회된 resumeTitle: " + resumeTitle);
 
-        // 저장 경로를 상대 경로로 설정
-        String relativePath = "/videos"; // 상대 경로 설정
-        String savePath = getServletContext().getRealPath(relativePath);
-        File uploadDir = new File(savePath);
+        // 저장 경로를 "C:/upload/videos/자소서제목_인터뷰ID.webm"으로 설정
+        String folderName = resumeTitle + "_" + interviewId; // 파일명 생성
+        File videoDir = new File(VIDEO_FOLDER);
 
-        // 디렉토리 생성
-        if (!uploadDir.exists() && !uploadDir.mkdirs()) {
+        // videos 디렉토리 생성
+        if (!videoDir.exists() && !videoDir.mkdirs()) {
             writer.println("업로드 디렉토리 생성에 실패했습니다.");
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
 
+        // 저장할 파일 경로
+        File fileToSave = new File(videoDir, folderName + ".webm");
+
         // 파일 업로드 처리
         for (Part part : request.getParts()) {
             String originalFileName = extractFileName(part);
             if (originalFileName != null && !originalFileName.isEmpty()) {
-                String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-                String uniqueFileName = generateUniqueFileName(savePath, resumeTitle, fileExtension);
-
-                File fileToSave = new File(savePath, uniqueFileName);
                 part.write(fileToSave.getAbsolutePath());
-
                 writer.println("파일 저장 완료: " + fileToSave.getAbsolutePath());
                 System.out.println("파일 저장 완료: " + fileToSave.getAbsolutePath());
             }
@@ -84,7 +77,7 @@ public class VideoUploadServlet extends HttpServlet {
         writer.println("파일 업로드 성공!");
     }
 
-    // 데이터베이스에서 resumeId에 해당하는 title 조회
+    // 자소서 제목 가져오기
     private String getResumeTitle(String resumeId) {
         String title = null;
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection()) {
@@ -103,21 +96,7 @@ public class VideoUploadServlet extends HttpServlet {
         return title;
     }
 
-    // 파일 이름 생성 로직
-    private String generateUniqueFileName(String savePath, String baseName, String fileExtension) {
-        String uniqueFileName = baseName + fileExtension;
-        File file = new File(savePath, uniqueFileName);
-        int counter = 1;
-
-        while (file.exists()) {
-            uniqueFileName = baseName + "_" + counter + fileExtension;
-            file = new File(savePath, uniqueFileName);
-            counter++;
-        }
-        return uniqueFileName;
-    }
-
-    // 원본 파일 이름 추출
+    // 원본 파일명 추출
     private String extractFileName(Part part) {
         String contentDisp = part.getHeader("content-disposition");
         for (String content : contentDisp.split(";")) {
