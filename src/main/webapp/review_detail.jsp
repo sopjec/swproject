@@ -187,20 +187,19 @@
 
   <!-- 공감 버튼 (폼 방식) -->
   <div class="like-section">
-    <form action="reviewDetail" method="post">
-      <input type="hidden" name="action" value="like">
-      <input type="hidden" name="reviewId" value="6">
+    <form action="reviewDetail" method="post" id="like-form">
+      <input type="hidden" name="action" value="<%= isLikedByUser ? "unlike" : "like" %>">
+      <input type="hidden" name="reviewId" value="<%= review.getId() %>">
       <button class="like-button" type="button" onclick="toggleLike(this)">
         <img
-                src="noheart.png"
+                src="<%= isLikedByUser ? "yesheart.png" : "noheart.png" %>"
                 class="like-icon"
                 alt="like-icon">
         <span class="like-text">공감</span>
-        <span class="like-count">0</span>
+        <span class="like-count"><%= review.getLikes() %></span>
       </button>
     </form>
   </div>
-
 
 
 
@@ -267,25 +266,14 @@
 </div>
 <script>
   function toggleLike(button) {
-    const form = button.closest('form'); // 버튼의 부모 form을 찾습니다.
-    if (!form) {
-      console.error("Form not found for the like button.");
-      return;
-    }
-
+    const form = document.getElementById('like-form');
     const likeIcon = button.querySelector('.like-icon');
     const likeCount = button.querySelector('.like-count');
-    const actionInput = form.querySelector("input[name='action']");
-    if (!actionInput) {
-      console.error("Action input not found in the form.");
-      return;
-    }
-
-    const currentAction = actionInput.value;
+    const currentAction = form.querySelector("input[name='action']").value;
     const isLiked = currentAction === "unlike";
 
     // 상태 전환
-    actionInput.value = isLiked ? "like" : "unlike";
+    form.querySelector("input[name='action']").value = isLiked ? "like" : "unlike";
 
     // 서버 요청
     fetch(form.action, {
@@ -311,7 +299,6 @@
               alert("서버와 통신 중 문제가 발생했습니다.");
             });
   }
-
 </script>
 
 </body>
