@@ -141,7 +141,6 @@ public class GenerateQuestionServlet extends HttpServlet {
         return resumeContent;
     }
 
-    //최소 질문 개수
     private List<String> ensureMinimumQuestions(String rawResponse, String prompt) throws Exception {
         List<String> questions = Arrays.stream(rawResponse.split("\n"))
                 .filter(q -> q.trim().matches("^\\d+\\.\\s+.*")) // 번호가 있는 질문 필터링
@@ -153,6 +152,8 @@ public class GenerateQuestionServlet extends HttpServlet {
 
         while (questions.size() < 5 && retries < maxRetries) {
             retries++;
+            System.out.println("현재 질문 수: " + questions.size() + ", 추가 요청 횟수: " + retries);
+
             String additionalPrompt = "현재 질문은 " + questions.size() + "개입니다. 추가로 " + (5 - questions.size())
                     + "개의 질문을 생성해 주세요. 질문은 번호를 매겨 출력하세요.";
             String additionalResponse = callOpenAI(prompt + "\n" + additionalPrompt);
@@ -162,19 +163,29 @@ public class GenerateQuestionServlet extends HttpServlet {
                     .map(q -> q.replaceFirst("^\\d+\\.\\s+", ""))
                     .collect(Collectors.toList());
 
+            // 중복 확인 후 추가
             for (String question : additionalQuestions) {
                 if (!questions.contains(question)) {
                     questions.add(question);
                 }
             }
+
+            // 추가 질문이 없으면 종료
+            if (additionalQuestions.isEmpty()) {
+                System.out.println("추가 질문 생성 실패. 기본 질문으로 대체합니다.");
+                break;
+            }
         }
 
+        // 여전히 5개 미만이면 기본 질문 추가
         while (questions.size() < 5) {
             questions.add("기본 질문 " + (questions.size() + 1));
         }
 
+        System.out.println("최종 질문 목록: " + questions);
         return questions;
     }
+
 
     //인터뷰 데이터 저장, 인터뷰 id 불러오기
     private int saveInterviewData(String userId, String resumeTitle, Connection conn) throws Exception {

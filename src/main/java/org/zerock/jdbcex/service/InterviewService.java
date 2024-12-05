@@ -12,4 +12,7 @@ public class InterviewService {
     public List<InterviewDTO> getInterviewsByUserId(String userId) throws Exception {
         return interviewDAO.findInterviewsByUserId(userId);
     }
+    public void updateFeedback(int interviewId, String feedback) throws Exception {
+        interviewDAO.updateFeedback(interviewId, feedback);
+    }
 }

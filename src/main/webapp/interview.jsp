@@ -45,16 +45,17 @@
             gap: 10px;
         }
 
-       .video-section img {
+        .video-section img {
             width: 100%;
             max-height: 300px;
             box-sizing: border-box;
         }
+
         .video-section video {
-              width: 100%;
-              max-height: 300px;
-              border: 1px solid #333;
-              box-sizing: border-box;
+            width: 100%;
+            max-height: 300px;
+            border: 1px solid #333;
+            box-sizing: border-box;
         }
 
         .text-output {
@@ -104,6 +105,53 @@
 
         .button-container button:hover {
             background-color: #555;
+        }
+        /* 모달 스타일 */
+        #feedback-modal {
+            width: 500px;
+            height: 800px;
+            left : 36%;
+            margin-top: 300px;
+            background-color: white;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+        }
+
+        .modal {
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+
+        .modal p {
+            margin: 20px 0;
+            font-size: 16px;
+        }
+
+        #close-modal {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #close-modal:hover {
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -160,6 +208,39 @@
         <button id="stop-recording">녹화 종료</button>
     </div>
 </div>
+
+<!-- 모달 창 -->
+<div class="modal-overlay" id="modal-overlay"></div>
+<div class="modal" id="feedback-modal">
+    <h3>피드백 생성</h3>
+    <p id="modal-message">피드백을 생성 중입니다. 잠시만 기다려주세요...</p>
+    <button id="close-modal">닫기</button>
+</div>
+
+<script>
+    // 모달 열기 함수
+    function openModal(message) {
+        const modal = document.getElementById('feedback-modal');
+        const overlay = document.getElementById('modal-overlay');
+        const modalMessage = document.getElementById('modal-message');
+
+        modal.style.display = 'block';
+        overlay.style.display = 'block';
+        modalMessage.innerText = message;
+    }
+
+    // 모달 닫기 함수
+    function closeModal() {
+        const modal = document.getElementById('feedback-modal');
+        const overlay = document.getElementById('modal-overlay');
+
+        modal.style.display = 'none';
+        overlay.style.display = 'none';
+    }
+
+    document.getElementById('close-modal').addEventListener('click', closeModal);
+
+</script>
 
 <script src="script.js"></script>
 
