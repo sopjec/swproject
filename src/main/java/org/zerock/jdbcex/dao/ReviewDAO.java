@@ -31,6 +31,9 @@ public class ReviewDAO {
         StringBuilder sql = new StringBuilder("SELECT id, comname, job, experience, region, content, created_date, count_likes FROM review WHERE 1=1");
 
         // 조건 추가
+        if(search != null && !search.isEmpty()) {
+            sql.append(" AND (comname LIKE ? OR content LIKE ?)");
+        }
         if (experience != null && !experience.isEmpty()) {
             sql.append(" AND experience = ?");
         }
@@ -54,6 +57,11 @@ public class ReviewDAO {
 
             int paramIndex = 1;
 
+            if (search != null && !search.equals("")) {
+                String searchParam = "%" + search + "%";
+                pstmt.setString(paramIndex++, searchParam); // comname 조건
+                pstmt.setString(paramIndex++, searchParam); // content 조건
+            }
             if (experience != null && !experience.isEmpty()) {
                 pstmt.setString(paramIndex++, experience);
             }
