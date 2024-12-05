@@ -152,6 +152,8 @@
 </head>
 
 <body>
+
+
 <jsp:include page="header.jsp"/>
 
 <div class="container">
@@ -210,6 +212,8 @@
         <button id="next-question">다음 질문</button>
     </div>
 </div>
+
+<script src="script.js"></script>
 <script>
     // 모달 열기 함수
     function openModal(message) {
@@ -219,17 +223,19 @@
         modalMessage.innerText = message;
     }
 
+
     function closeModalAndRedirect() {
-        const feedbackModal = document.getElementById("feedback-modal");
-        if (feedbackModal) {
-            feedbackModal.style.display = "none"; // 모달 닫기
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+            console.log('녹화 중지');
         }
-        // interviewView 페이지로 이동
-        window.location.href = "interviewView";
+        if (webcamStream) {
+            webcamStream.getTracks().forEach(track => track.stop());
+            console.log('웹캠 스트림 중지');
+        }
     }
 </script>
 
-<script src="script.js"></script>
 
 </body>
 </html>
