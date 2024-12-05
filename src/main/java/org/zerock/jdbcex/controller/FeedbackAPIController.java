@@ -44,7 +44,7 @@ public class FeedbackAPIController extends HttpServlet {
             boolean allAnswersEmpty = true;
 
             // 질문과 답변 데이터를 문자열로 조합
-            StringBuilder promptBuilder = new StringBuilder("다음은 면접 질문과 답변입니다. 답변에 대한 피드백을 작성해 주세요:\n");
+            StringBuilder promptBuilder = new StringBuilder("다음은 면접 질문과 답변입니다. 답변에 대한 피드백을 구체적이고 간결하게 작성해 주세요:\n");
             for (int i = 0; i < data.length(); i++) {
                 JSONObject qa = data.getJSONObject(i);
                 String question = qa.getString("question");

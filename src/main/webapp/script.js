@@ -8,6 +8,8 @@ let isFirstQuestionDisplayed = false; // 첫 질문 출력 여부 플래그
 let isSpeaking = false; // 음성 재생 상태 플래그
 let recognition; // 음성 인식 객체
 
+
+
 // URL에서 resumeId 가져오기
 const urlParams = new URLSearchParams(window.location.search);
 const resumeId = urlParams.get('resumeId'); // URL에서 resumeId 값 추출
@@ -102,6 +104,7 @@ function initSpeechRecognition() {
     return recognizer;
 }
 
+
 // 음성 인식 시작
 function startSpeechRecognition() {
     const userTextOutput = document.getElementById('user-text-output');
@@ -111,13 +114,22 @@ function startSpeechRecognition() {
 
     recognition.start();
     console.log('음성 인식 시작');
+    isRecording = true;
+
+    let previousTranscript = ''; // 이전 텍스트 추적
 
     recognition.onresult = (event) => {
         let transcript = '';
         for (let i = event.resultIndex; i < event.results.length; ++i) {
             transcript += event.results[i][0].transcript;
         }
-        userTextOutput.innerHTML += ' ' + transcript; // 텍스트를 누적하여 출력
+
+        // 새로 인식된 부분만 추가
+        if (transcript.trim() !== previousTranscript.trim()) {
+            userTextOutput.innerHTML = transcript.trim(); // 텍스트 갱신
+            previousTranscript = transcript; // 현재 텍스트를 이전 텍스트로 저장
+        }
+
         console.log('음성 인식 결과:', transcript);
     };
 
@@ -126,10 +138,10 @@ function startSpeechRecognition() {
     };
 
     recognition.onend = () => {
-        console.log('음성 인식 종료');
+        console.log('음성 인식 종료.');
+        isRecording = false;
     };
 }
-
 // 질문 생성 및 음성 출력
 async function generateQuestionAndSpeak() {
     try {
@@ -291,13 +303,24 @@ async function saveQuestionAndAnswer(question, answer) {
 
 // 이벤트 리스너 설정
 document.getElementById('start-interview').addEventListener('click', startInterview);
+// 음성 인식 종료
+function stopSpeechRecognition() {
+    if (recognition && isRecording) {
+        recognition.stop();
+        isRecording = false;
+        console.log('음성 녹음 종료');
+    }
+}
 
 document.getElementById('next-question').addEventListener('click', async () => {
     const userTextOutput = document.getElementById('user-text-output');
     const currentAnswer = userTextOutput.innerText.trim(); // 사용자가 입력한 답변 가져오기
 
+    // 질문 데이터가 존재할때만 처리함
     if (currentQuestionIndex < questions.length) {
         const currentQuestion = questions[currentQuestionIndex];
+        // 음성 녹음 종료
+        stopSpeechRecognition();
 
         // 질문과 답변을 저장
         await saveQuestionAndAnswer(currentQuestion, currentAnswer);
@@ -309,10 +332,9 @@ document.getElementById('next-question').addEventListener('click', async () => {
             document.getElementById('interviewer-text-output').innerText = nextQuestion;
 
             // 면접자 텍스트창 내용 초기화
-            setTimeout(() => {
-                userTextOutput.innerText = '';
-            }, 100); // 약간의 지연시간을 주어 초기화가 확실히 되도록 함
+            userTextOutput.innerText = '';
 
+            // 새 질문 읽어주고 음성 녹음 시작
             readTextAloud(nextQuestion, startSpeechRecognition);
         } else {
             document.getElementById('interviewer-text-output').innerText = '모든 질문이 완료되었습니다.';
