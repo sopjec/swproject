@@ -90,9 +90,7 @@ public class ReviewDAO {
 
     //리뷰 상세 조회 메서드
     public ReviewDTO getReviewById(int reviewId) throws Exception {
-        String sql = "SELECT * FROM review WHERE id = ?";
-
-
+        String sql = "SELECT id, user_id, comname, job, experience, region, content, count_likes, created_date FROM review WHERE id = ?";
         try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -101,21 +99,22 @@ public class ReviewDAO {
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     ReviewDTO review = new ReviewDTO();
-                    review.setId(Integer.parseInt(rs.getString("id")));
+                    review.setId(rs.getInt("id"));
                     review.setUserId(rs.getString("user_id"));
                     review.setComname(rs.getString("comname"));
                     review.setJob(rs.getString("job"));
                     review.setExperience(rs.getString("experience"));
                     review.setRegion(rs.getString("region"));
                     review.setContent(rs.getString("content"));
-                    review.setLikes(rs.getInt("count_likes"));
-                    review.setCreatedDate(rs.getTimestamp("created_date").toLocalDateTime()); // 날짜 설정
+                    review.setLikes(rs.getInt("count_likes")); // 공감수 가져오기
+                    review.setCreatedDate(rs.getTimestamp("created_date").toLocalDateTime());
                     return review;
                 }
             }
         }
         return null;
     }
+
 
     // 좋아요 여부 확인
     public boolean isLikedByUser(String userId, int reviewId) throws Exception {
@@ -130,27 +129,40 @@ public class ReviewDAO {
         }
     }
 
-    //좋아요 추가
+    // 좋아요 추가
     public void likeReview(String userId, int reviewId) throws Exception {
-        String sql = "INSERT INTO likes (user_id, review_id) VALUES (?, ?)";
-        try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, userId);
-            pstmt.setInt(2, reviewId);
-            pstmt.executeUpdate();
+        String likeSql = "INSERT INTO likes (user_id, review_id) VALUES (?, ?)";
+        String updateReviewSql = "UPDATE review SET count_likes = count_likes + 1 WHERE id = ?";
+        try (Connection conn = ConnectionUtil.INSTANCE.getConnection()) {
+            try (PreparedStatement pstmt = conn.prepareStatement(likeSql)) {
+                pstmt.setString(1, userId);
+                pstmt.setInt(2, reviewId);
+                pstmt.executeUpdate();
+            }
+            try (PreparedStatement pstmt = conn.prepareStatement(updateReviewSql)) {
+                pstmt.setInt(1, reviewId);
+                pstmt.executeUpdate();
+            }
         }
     }
 
-    //좋아요 삭제
+    // 좋아요 삭제
     public void unlikeReview(String userId, int reviewId) throws Exception {
-        String sql = "DELETE FROM likes WHERE user_id = ? AND review_id = ?";
-        try (Connection conn = ConnectionUtil.INSTANCE.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, userId);
-            pstmt.setInt(2, reviewId);
-            pstmt.executeUpdate();
+        String unlikeSql = "DELETE FROM likes WHERE user_id = ? AND review_id = ?";
+        String updateReviewSql = "UPDATE review SET count_likes = count_likes - 1 WHERE id = ?";
+        try (Connection conn = ConnectionUtil.INSTANCE.getConnection()) {
+            try (PreparedStatement pstmt = conn.prepareStatement(unlikeSql)) {
+                pstmt.setString(1, userId);
+                pstmt.setInt(2, reviewId);
+                pstmt.executeUpdate();
+            }
+            try (PreparedStatement pstmt = conn.prepareStatement(updateReviewSql)) {
+                pstmt.setInt(1, reviewId);
+                pstmt.executeUpdate();
+            }
         }
     }
+
 
     //좋아요 갯수 가져오기
     public int getLikes(int reviewId) throws Exception {
