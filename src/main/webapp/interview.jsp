@@ -21,6 +21,49 @@
             padding-right: 10px;
         }
 
+
+        #feedback-modal {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            text-align: center;
+        }
+
+        #feedback-modal h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        #feedback-modal p {
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        #feedback-modal button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #feedback-modal button:hover {
+            background-color: #0056b3;
+        }
+
         .content {
             display: flex;
             flex-direction: column;
@@ -50,7 +93,6 @@
             max-height: 300px;
             box-sizing: border-box;
         }
-
         .video-section video {
             width: 100%;
             max-height: 300px;
@@ -106,53 +148,6 @@
         .button-container button:hover {
             background-color: #555;
         }
-        /* 모달 스타일 */
-        #feedback-modal {
-            width: 500px;
-            height: 800px;
-            left : 36%;
-            margin-top: 300px;
-            background-color: white;
-        }
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-        }
-
-        .modal {
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 300px;
-            text-align: center;
-            border-radius: 8px;
-        }
-
-
-        .modal p {
-            margin: 20px 0;
-            font-size: 16px;
-        }
-
-        #close-modal {
-            background-color: #333;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        #close-modal:hover {
-            opacity: 0.8;
-        }
     </style>
 </head>
 
@@ -165,6 +160,14 @@
             <li><a href="/resume?action=interview">면접 보기</a></li>
             <li><a href="interviewView">면접 기록 조회</a></li>
         </ul>
+    </div>
+
+    <!-- 모달 창 -->
+    <div class="modal" id="feedback-modal">
+        <h3>피드백 생성</h3>
+        <p id="modal-message">피드백을 생성 중입니다. 잠시만 기다려주세요...</p>
+        <button id="close-modal" onclick="closeModalAndRedirect()">닫기</button>
+
     </div>
 
     <!-- 메인 컨텐츠 -->
@@ -205,41 +208,25 @@
     <div class="button-container">
         <button id="start-interview">면접 시작</button>
         <button id="next-question">다음 질문</button>
-        <button id="stop-recording">녹화 종료</button>
     </div>
 </div>
-
-<!-- 모달 창 -->
-<div class="modal-overlay" id="modal-overlay"></div>
-<div class="modal" id="feedback-modal">
-    <h3>피드백 생성</h3>
-    <p id="modal-message">피드백을 생성 중입니다. 잠시만 기다려주세요...</p>
-    <button id="close-modal">닫기</button>
-</div>
-
 <script>
     // 모달 열기 함수
     function openModal(message) {
         const modal = document.getElementById('feedback-modal');
-        const overlay = document.getElementById('modal-overlay');
         const modalMessage = document.getElementById('modal-message');
-
         modal.style.display = 'block';
-        overlay.style.display = 'block';
         modalMessage.innerText = message;
     }
 
-    // 모달 닫기 함수
-    function closeModal() {
-        const modal = document.getElementById('feedback-modal');
-        const overlay = document.getElementById('modal-overlay');
-
-        modal.style.display = 'none';
-        overlay.style.display = 'none';
+    function closeModalAndRedirect() {
+        const feedbackModal = document.getElementById("feedback-modal");
+        if (feedbackModal) {
+            feedbackModal.style.display = "none"; // 모달 닫기
+        }
+        // interviewView 페이지로 이동
+        window.location.href = "interviewView";
     }
-
-    document.getElementById('close-modal').addEventListener('click', closeModal);
-
 </script>
 
 <script src="script.js"></script>
