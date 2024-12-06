@@ -14,6 +14,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -26,8 +27,10 @@ public class GenerateQuestionServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json");
+        request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json; charset=UTF-8");
+
 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
@@ -66,7 +69,7 @@ public class GenerateQuestionServlet extends HttpServlet {
                 return;
             }
 
-            int interviewId = saveInterviewData(userId, resumeTitle, conn);
+            int interviewId = saveInterviewData(userId, resumeTitle, Integer.parseInt(resumeId), conn);
 
             // Send JSON response
             JSONObject jsonResponse = new JSONObject();
@@ -83,13 +86,12 @@ public class GenerateQuestionServlet extends HttpServlet {
         }
     }
 
-
     private String callOpenAI(String prompt) throws Exception {
         String apiUrl = "https://api.openai.com/v1/chat/completions";
         HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Authorization", "Bearer " + GPT_API_KEY);
-        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
         connection.setDoOutput(true);
 
         JSONObject requestBody = new JSONObject();
@@ -102,17 +104,19 @@ public class GenerateQuestionServlet extends HttpServlet {
         requestBody.put("max_tokens", 1000);
         requestBody.put("temperature", 0.7);
 
+        // 요청 전송
         try (OutputStream os = connection.getOutputStream()) {
-            os.write(requestBody.toString().getBytes("UTF-8"));
+            os.write(requestBody.toString().getBytes(StandardCharsets.UTF_8)); // UTF-8로 인코딩
             os.flush();
         }
 
         int responseCode = connection.getResponseCode();
         if (responseCode != 200) {
-            throw new IOException("OpenAI API 호출 실패");
+            throw new IOException("OpenAI API 호출 실패: " + responseCode);
         }
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"))) {
+        // 응답 수신
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
             StringBuilder responseString = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
@@ -123,6 +127,7 @@ public class GenerateQuestionServlet extends HttpServlet {
             return jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
         }
     }
+
 
     //자소서 아이디 불러오기
     private StringBuilder getResumeContent(String resumeId, Connection conn) throws SQLException {
@@ -188,10 +193,10 @@ public class GenerateQuestionServlet extends HttpServlet {
 
 
     //인터뷰 데이터 저장, 인터뷰 id 불러오기
-    private int saveInterviewData(String userId, String resumeTitle, Connection conn) throws Exception {
+    private int saveInterviewData(String userId, String resumeTitle, int resume_id, Connection conn) throws Exception {
         int interviewId = -1; // 초기화
         String interviewDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
-        String insertSQL = "INSERT INTO interview (user_id, title, interview_date) VALUES (?, ?, ?)";
+        String insertSQL = "INSERT INTO interview (user_id, title, interview_date, resume_id) VALUES (?, ?, ?, ?)";
 
         try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
             // 제목 형식: 자기소개서제목_temp
@@ -199,6 +204,7 @@ public class GenerateQuestionServlet extends HttpServlet {
             pstmt.setString(1, userId);
             pstmt.setString(2, tempTitle);
             pstmt.setString(3, interviewDate);
+            pstmt.setInt(4, resume_id);
             pstmt.executeUpdate();
 
             // 생성된 ID 가져오기
@@ -230,44 +236,6 @@ public class GenerateQuestionServlet extends HttpServlet {
         return null;
     }
 
-    // 비디오 저장 경로 설정 및 파일 생성
-    private String saveVideoPath(HttpServletRequest request, String finalTitle) {
-        // 웹 애플리케이션의 상대 경로 기준으로 설정
-        String relativePath = "/videos/" + finalTitle + ".webm";
-
-        // 애플리케이션 루트 경로 가져오기
-        String absolutePath = request.getServletContext().getRealPath(relativePath);
-
-        File file = new File(absolutePath);
-        try {
-            if (!file.getParentFile().exists()) {
-                file.getParentFile().mkdirs(); // 디렉토리 생성
-            }
-            // 기존 파일명이 있다면 무조건 덮어씁니다.
-            if (!file.exists()) {
-                file.createNewFile(); // 파일 생성
-            }
-            System.out.println("File successfully created: " + file.getPath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return relativePath; // 상대 경로 반환
-    }
-
-    //인터뷰 갯수 conut
-    private int getInterviewCount(String userId, String resumeTitle, Connection conn) throws SQLException {
-        String query = "SELECT COUNT(*) FROM interview WHERE user_id = ? AND title LIKE ?";
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, userId);
-            pstmt.setString(2, resumeTitle + "_%");
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) + 1;
-                }
-            }
-        }
-        return 1;
-    }
 
     // 인터뷰 제목 업데이트 메서드
     private void updateInterviewTitle(int interviewId, String finalTitle, Connection conn) throws SQLException {
