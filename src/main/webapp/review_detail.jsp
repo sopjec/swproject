@@ -49,18 +49,14 @@
     }
 
     .like-button {
-      background-color: #007bff;
-      color: white;
-      border: none;
+      background-color: white;
+      color: black ;
+      border: 1px solid #272727;
       border-radius: 4px;
       padding: 8px 16px;
       cursor: pointer;
       font-size: 18px; /* 공감 버튼 글씨 크기 키움 */
       transition: background-color 0.3s;
-    }
-
-    .like-button:hover {
-      background-color: #0099ff;
     }
 
     .comment-section {
@@ -179,7 +175,9 @@
       <input type="hidden" name="action" value="<%= isLikedByUser ? "unlike" : "like" %>">
       <input type="hidden" name="reviewId" value="<%= review.getId() %>">
       <button class = "like-button" type="submit">
-        <%= isLikedByUser ? "공감 취소" : "공감" %>
+        <img src="<%= isLikedByUser ? "/img/heart/yes.png" : "/img/heart/no.png" %>" alt="like status" style="width:20px; height:20px;">
+        <span><%= isLikedByUser ? "  공감취소" : "  공감" %></span>
+
       </button>
     </form>
   </div>

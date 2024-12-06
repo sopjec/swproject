@@ -66,7 +66,6 @@ public class ReviewDetailController extends HttpServlet {
 
             switch (action) {
                 case "like":
-                    // 좋아요 처리
                     if (session == null || session.getAttribute("loggedInUser") == null) {
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.getWriter().write("{\"error\": \"로그인이 필요합니다.\"}");
@@ -79,7 +78,6 @@ public class ReviewDetailController extends HttpServlet {
                     break;
 
                 case "unlike":
-                    // 좋아요 취소 처리
                     if (session == null || session.getAttribute("loggedInUser") == null) {
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.getWriter().write("{\"error\": \"로그인이 필요합니다.\"}");
@@ -90,6 +88,7 @@ public class ReviewDetailController extends HttpServlet {
                     handleUnlikeAction(loggedInUser.getId(), reviewId, response);
                     response.sendRedirect("reviewDetail?review_id=" + reviewId);
                     break;
+
 
                 case "addComment":
                     // 댓글 추가
@@ -145,6 +144,7 @@ public class ReviewDetailController extends HttpServlet {
     }
 
     private void handleLikeAction(String userId, int reviewId, HttpServletResponse response) throws Exception {
+        response.setContentType("application/json;charset=UTF-8"); // JSON 응답 설정
         System.out.println("reviewId : " + reviewId);
         reviewDAO.likeReview(userId, reviewId);
         int updatedLikes = reviewDAO.getLikes(reviewId);
@@ -161,11 +161,10 @@ public class ReviewDetailController extends HttpServlet {
         String content = request.getParameter("content");
         String parentCommentId = request.getParameter("parentCommentId");
 
-        System.out.println("reviewId : " + reviewId + " content: " + content);
         CommentDTO comment = new CommentDTO();
         comment.setReviewId(reviewId);
 
-        if(Objects.equals(parentCommentId, "")) {
+        if (parentCommentId == null || parentCommentId.isEmpty()) {
             comment.setParentCommentId(null);
         } else {
             comment.setParentCommentId(Integer.valueOf(parentCommentId));
@@ -185,8 +184,8 @@ public class ReviewDetailController extends HttpServlet {
         }
 
         commentDAO.insertComment(comment);
-
         response.sendRedirect("reviewDetail?review_id=" + reviewId);
     }
+
 
 }
