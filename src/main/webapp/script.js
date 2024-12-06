@@ -60,7 +60,21 @@ async function loadModels() {
     }
 }
 
-// 실시간 감정 분석
+// 감정 데이터 저장 함수 (서버에 전송)
+async function saveEmotionsToServer(interviewId, emotionsData) {
+    try {
+        for (const emotion of emotionsData) {
+            await saveExpression(
+                interviewId,
+                emotion.type,
+                emotion.value
+            );
+        }
+    } catch (error) {
+        console.error('감정 데이터 저장 중 오류:', error);
+    }
+}
+// 실시간 감정 분석 및 저장
 async function analyzeExpressions() {
     const video = document.getElementById('user-webcam');
     const expressionOutput = document.getElementById('user-expression-output'); // 웹캠 아래 텍스트 출력
@@ -77,8 +91,19 @@ async function analyzeExpressions() {
                     expressions[a] > expressions[b] ? a : b
                 );
 
+                // 감정 데이터 수집
+                const emotionData = {
+                    type: dominantExpression,
+                    value: expressions[dominantExpression],
+                    interviewId: interviewId
+                };
+
                 expressionOutput.innerHTML = `현재 표정: ${dominantExpression} (${(expressions[dominantExpression] * 100).toFixed(2)}%)`;
                 console.log('감정 분석 결과:', expressions);
+
+                // 감정 데이터를 서버에 실시간으로 전송
+                saveEmotionsToServer(interviewId, [emotionData]);
+
             } else {
                 expressionOutput.innerHTML = '얼굴이 감지되지 않았습니다.';
                 console.warn('얼굴이 감지되지 않았습니다.');
@@ -86,7 +111,28 @@ async function analyzeExpressions() {
         } catch (error) {
             console.error('감정 분석 중 오류:', error);
         }
-    }, 500); // 500ms 간격으로 분석
+    }, 1000); // 1초 간격으로 분석 및 서버에 전송
+}
+
+
+
+// 감정 데이터 저장 함수
+async function saveExpression(interviewId, type, value) {
+    try {
+        const response = await fetch('/api/save-expression', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+            body: JSON.stringify({ interviewId, type, value })
+        });
+
+        if (response.ok) {
+            console.log('감정 데이터 저장 성공');
+        } else {
+            console.error('감정 데이터 저장 실패:', response.statusText);
+        }
+    } catch (error) {
+        console.error('감정 데이터 저장 중 오류:', error);
+    }
 }
 
 // 음성 인식 초기화
@@ -233,14 +279,13 @@ async function startPageRecording() {
         console.error('녹화 시작 중 오류:', error);
     }
 }
-
-// 녹화 저장
 async function saveRecording() {
     const blob = new Blob(recordedChunks, { type: 'video/webm' });
     const fileName = `recording_${interviewId || 'unknown'}.webm`; // 인터뷰 ID를 파일명에 포함
     const formData = new FormData();
-    formData.append('videoFile', blob, 'recording.webm');
+    formData.append('videoFile', blob, fileName); // 파일명 동기화
     formData.append('resumeId', resumeId); // resumeId를 함께 전송
+    formData.append('interviewId', interviewId); // interviewId도 전송
 
     try {
         const response = await fetch('/upload-video', {
@@ -249,7 +294,7 @@ async function saveRecording() {
         });
 
         if (response.ok) {
-            console.log('녹화본이 서버에 성공적으로 업로드되었습니다.');
+            console.log(`녹화본이 서버에 성공적으로 업로드되었습니다.: ${fileName}`);
         } else {
             console.error('녹화본 업로드 실패:', response.statusText);
         }
@@ -257,6 +302,8 @@ async function saveRecording() {
         console.error('녹화본 업로드 중 오류:', error);
     }
 }
+
+
 
 // 면접 시작
 async function startInterview() {
@@ -298,6 +345,132 @@ async function saveQuestionAndAnswer(question, answer) {
     } catch (error) {
         console.error('질문과 답변 저장 중 오류:', error);
     }
+}
+// 질문 및 피드백 생성 및 업데이트 함수
+async function generateAndSaveFeedback() {
+    // 모달 열기 및 초기 메시지 설정
+    openModal('감정 분석 결과를 불러오고 있습니다...');
+
+    try {
+        // 1. 데이터베이스에서 감정 분석 데이터 가져오기
+        const emotionFetchResponse = await fetch(`/api/get-emotions?interviewId=${interviewId}`);
+        if (!emotionFetchResponse.ok) {
+            throw new Error(`감정 데이터를 가져오는 데 실패했습니다: ${emotionFetchResponse.statusText}`);
+        }
+
+        const emotionsData = await emotionFetchResponse.json();
+        console.log('데이터베이스에서 가져온 감정 데이터:', emotionsData);
+
+        // 2. 감정 데이터를 이용해 파이 차트 생성
+        drawPieChart(emotionsData);
+
+        // 3. 감정 피드백을 모달에 표시
+        //let emotionFeedback = '감정 분석 결과:\n';
+        //emotionsData.forEach((emotion, index) => {
+        //    emotionFeedback += `#${index + 1} ${emotion.type}: ${(emotion.value * 100).toFixed(2)}%\n`;
+        //});
+        openModal(`${emotionFeedback}\n피드백을 생성 중입니다. 잠시만 기다려주세요...`);
+
+        // 3. 데이터베이스에서 질문과 답변 가져오기
+        const fetchResponse = await fetch(`/api/get-questions-and-answers?interviewId=${interviewId}`);
+        if (!fetchResponse.ok) {
+            throw new Error(`질문과 답변 데이터를 가져오는 데 실패했습니다: ${fetchResponse.statusText}`);
+        }
+
+        const questionsAndAnswers = await fetchResponse.json();
+        console.log('데이터베이스에서 가져온 질문과 답변 데이터:', questionsAndAnswers);
+
+        // 4. 질문과 답변이 모두 비어 있는지 확인
+        const hasValidAnswers = questionsAndAnswers.some(qa => qa.answer.trim() !== "");
+        if (!hasValidAnswers) {
+            openModal(`${emotionFeedback}\n\n모든 질문에 대한 답변이 비어 있습니다. 피드백을 생성할 수 없습니다.`);
+            return; // 피드백 생성 중단
+        }
+
+        // 5. GPT API를 통해 피드백 요청
+        const response = await fetch('/api/generate-feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                interviewId: interviewId, // 현재 인터뷰 ID
+                data: questionsAndAnswers // 질문과 답변 배열
+            }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log("피드백 생성 완료:", data.feedback);
+
+            // 6. 모달에 생성된 피드백 표시
+            openModal(`${emotionFeedback}\n\n질문 피드백:\n${data.feedback}`);
+        } else {
+            throw new Error(`피드백 생성 실패: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error('피드백 생성 중 오류:', error);
+        openModal('피드백 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+}
+
+// 감정 데이터를 바탕으로 파이 차트를 그리는 함수 (감정 빈도 합이 100%가 되도록 조정)
+function drawPieChart(emotionsData) {
+    const svg = document.querySelector('#emotion-pie-chart svg');
+    svg.innerHTML = ''; // 이전 차트 내용 초기화
+
+    // 1. 감정 빈도 계산
+    const frequencyMap = emotionsData.reduce((acc, emotion) => {
+        acc[emotion.type] = (acc[emotion.type] || 0) + 1;
+        return acc;
+    }, {});
+
+    // 2. 감정 빈도를 비율로 변환 (각 감정의 빈도를 전체 빈도로 나누어 100%로 맞춤)
+    const total = Object.values(frequencyMap).reduce((sum, count) => sum + count, 0);
+    let currentAngle = 0;
+
+    Object.entries(frequencyMap).forEach(([type, count], index) => {
+        const sliceAngle = (count / total) * 2 * Math.PI;
+
+        // 각 슬라이스의 경로 그리기
+        const x1 = 200 + 150 * Math.cos(currentAngle);
+        const y1 = 200 + 150 * Math.sin(currentAngle);
+        const x2 = 200 + 150 * Math.cos(currentAngle + sliceAngle);
+        const y2 = 200 + 150 * Math.sin(currentAngle + sliceAngle);
+
+        const largeArcFlag = sliceAngle > Math.PI ? 1 : 0;
+        const pathData = `M200,200 L${x1},${y1} A150,150 0 ${largeArcFlag} 1 ${x2},${y2} Z`;
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathData);
+        path.setAttribute('fill', `hsl(${index * 360 / Object.keys(frequencyMap).length}, 70%, 50%)`);
+
+        svg.appendChild(path);
+
+        // 텍스트 라벨 추가
+        const labelAngle = currentAngle + sliceAngle / 2;
+        const labelX = 200 + 180 * Math.cos(labelAngle);
+        const labelY = 200 + 180 * Math.sin(labelAngle);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', labelX);
+        text.setAttribute('y', labelY);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', '14');
+        text.textContent = `${type}: ${((count / total) * 100).toFixed(2)}%`;
+
+        svg.appendChild(text);
+
+        currentAngle += sliceAngle;
+    });
+}
+
+// 랜덤 색상 생성 함수
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }
 
 
@@ -354,49 +527,4 @@ document.getElementById('stop-recording').addEventListener('click', () => {
     }
 });
 
-// 질문 및 피드백 생성 및 업데이트 함수
-async function generateAndSaveFeedback() {
-    // 모달 열기 및 초기 메시지 설정
-    openModal('피드백을 생성 중입니다. 잠시만 기다려주세요...');
 
-    try {
-        // 데이터베이스에서 질문과 답변 가져오기
-        const fetchResponse = await fetch(`/api/get-questions-and-answers?interviewId=${interviewId}`);
-        if (!fetchResponse.ok) {
-            throw new Error(`질문과 답변 데이터를 가져오는데 실패했습니다: ${fetchResponse.statusText}`);
-        }
-
-        const questionsAndAnswers = await fetchResponse.json();
-        console.log('데이터베이스에서 가져온 질문과 답변 데이터:', questionsAndAnswers);
-
-        // 질문과 답변이 모두 비어 있는지 확인
-        const hasValidAnswers = questionsAndAnswers.some(qa => qa.answer.trim() !== "");
-        if (!hasValidAnswers) {
-            openModal('모든 질문에 대한 답변이 비어 있습니다. 피드백을 생성할 수 없습니다.');
-            return; // 피드백 생성 중단
-        }
-
-        // GPT API를 통해 피드백 요청
-        const response = await fetch('/api/generate-feedback', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                interviewId: interviewId, // 현재 인터뷰 ID
-                data: questionsAndAnswers // 질문과 답변 배열
-            }),
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            console.log("피드백 생성 완료:", data.feedback);
-
-            // 모달에 생성된 피드백 표시
-            openModal(`피드백 생성 완료:\n\n${data.feedback}`);
-        } else {
-            throw new Error(`피드백 생성 실패: ${response.statusText}`);
-        }
-    } catch (error) {
-        console.error('피드백 생성 중 오류:', error);
-        openModal('피드백 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
-    }
-}

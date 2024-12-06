@@ -88,6 +88,27 @@
             text-align: center;
             cursor: pointer;
         }
+        .video-details {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .video-details h3 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .video-details p {
+            font-size: 16px;
+            color: #555;
+        }
+        .video-details p {
+            font-size: 16px;
+            color: #555;
+            white-space: pre-wrap; /* 줄바꿈을 유지 */
+        }
+
     </style>
 </head>
 
@@ -119,11 +140,14 @@
                     int index = 1; // 순번을 위한 변수
                     for (InterviewDTO interview : interviews) {
             %>
-            <tr onclick="showVideo('<%= java.net.URLEncoder.encode(interview.getTitle(), "UTF-8") %>')">
-            <td><%= index++ %></td>
-                <td><%= interview.getTitle() %></td>
-                <td><%= interview.getInterviewDate() %></td>
+            <tr onclick="showVideo('<%= interview.getTitle() != null ? java.net.URLEncoder.encode(interview.getTitle(), "UTF-8") : "" %>', '<%= interview.getFeedback() != null ? java.net.URLEncoder.encode(interview.getFeedback(), "UTF-8") : "답변이 없어 피드백을 생성하지 못하였습니다. " %>', <%= interview.getResume_id() %>)">
+                <td><%= index++ %></td>
+                <td><%= interview.getTitle() != null ? interview.getTitle() : "제목 없음" %></td>
+                <td><%= interview.getInterviewDate() != null ? interview.getInterviewDate() : "날짜 없음" %></td>
             </tr>
+
+
+
             <%
                 }
             } else {
@@ -151,21 +175,39 @@
                 <source src="" type="video/webm">
                 브라우저에서 동영상을 지원하지 않습니다.
             </video>
+            <div class="video-details">
+                <h3 id="video-title"></h3>
+                <p id="video-feedback"></p>
+                <p><a href="#" class="resume-link">면접 다시 보러가기</a></p>
+            </div>
         </div>
     </div>
 </div>
-
 <script>
-    function showVideo(title) {
+    function showVideo(encodedTitle, encodedFeedback, resumeId) {
         const table = document.querySelector(".interviewTable");
         const videoContainer = document.getElementById("video-container");
         const videoPlayer = document.getElementById("video-player");
+        const videoTitle = document.getElementById("video-title");
+        const videoFeedback = document.getElementById("video-feedback");
+
+        // URL 디코딩
+        const title = decodeURIComponent(encodedTitle);
+        const feedback = decodeURIComponent(encodedFeedback).replace(/\+/g, " ").replace(/-/g, "\n").replace(/질문 \d+/g, "\n$&");
 
         // 테이블 숨기기
         table.style.display = "none";
 
-        // 동영상 소스 설정 (URL 인코딩)
-        videoPlayer.src = "../videos/" + title + ".webm";
+        // 동영상 소스 설정 (서블릿 경로 사용)
+        videoPlayer.src = "/videos/" + encodeURIComponent(title) + ".webm";
+
+        // 제목과 피드백 설정
+        videoTitle.textContent = title + "에 대한 피드백 내용";
+        videoFeedback.textContent = feedback;
+
+        // "면접 다시 보러가기" 링크 설정
+        const link = document.querySelector(".video-details a");
+        link.href = "/interview?resumeId=" + resumeId;
 
         // 비디오 컨테이너 표시
         videoContainer.style.display = "block";
@@ -175,6 +217,8 @@
         const table = document.querySelector(".interviewTable");
         const videoContainer = document.getElementById("video-container");
         const videoPlayer = document.getElementById("video-player");
+        const videoTitle = document.getElementById("video-title");
+        const videoFeedback = document.getElementById("video-feedback");
 
         // 테이블 보이기
         table.style.display = "table";
@@ -184,8 +228,11 @@
 
         // 동영상 소스 초기화
         videoPlayer.src = "";
+        videoTitle.textContent = "";
+        videoFeedback.textContent = "";
     }
 </script>
+
 
 </body>
 </html>

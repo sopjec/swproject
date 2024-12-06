@@ -136,7 +136,7 @@ public class FeedbackAPIController extends HttpServlet {
 
         // 응답 읽기
         StringBuilder responseBuilder = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),"UTF-8"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 responseBuilder.append(line);

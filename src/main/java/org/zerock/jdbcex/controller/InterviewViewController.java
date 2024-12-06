@@ -37,6 +37,10 @@ public class InterviewViewController extends HttpServlet {
             var interviewList = interviewService.getInterviewsByUserId(user.getId());
             req.setAttribute("interviewList", interviewList);
 
+            for (InterviewDTO dto : interviewList) {
+                System.out.println("Resume ID: " + dto.getResume_id());
+            }
+
             req.getRequestDispatcher("interview_view.jsp").forward(req, resp);
         } catch (Exception e) {
             e.printStackTrace();
