@@ -414,35 +414,53 @@ async function generateAndSaveFeedback() {
 
 // 감정 데이터를 기반으로 파이 차트를 그리는 함수
 function drawPieChart(emotionsData) {
-    const svgContainer = document.getElementById('emotion-pie-chart');
-    if (svgContainer) {
-        svgContainer.innerHTML = ''; // 기존 차트를 제거하고 새로 생성
+    const svg = document.querySelector('#emotion-pie-chart svg');
+    svg.innerHTML = ''; // 이전 차트 내용 초기화
 
-        const total = emotionsData.reduce((sum, emotion) => sum + emotion.value, 0);
-        let cumulativeAngle = 0;
+    // 1. 감정 빈도 계산
+    const frequencyMap = emotionsData.reduce((acc, emotion) => {
+        acc[emotion.type] = (acc[emotion.type] || 0) + 1;
+        return acc;
+    }, {});
 
-        emotionsData.forEach((emotion, index) => {
-            const sliceAngle = (emotion.value / total) * 360;
-            const largeArcFlag = sliceAngle > 180 ? 1 : 0;
-            cumulativeAngle += sliceAngle;
+    // 2. 감정 빈도를 비율로 변환
+    const total = Object.values(frequencyMap).reduce((sum, count) => sum + count, 0);
+    let currentAngle = 0;
 
-            const endX = 200 + 150 * Math.cos((cumulativeAngle * Math.PI) / 180);
-            const endY = 200 + 150 * Math.sin((cumulativeAngle * Math.PI) / 180);
+    Object.entries(frequencyMap).forEach(([type, count], index) => {
+        const sliceAngle = (count / total) * 2 * Math.PI;
 
-            const pathData = `
-                M 200 200
-                L ${200 + 150 * Math.cos(((cumulativeAngle - sliceAngle) * Math.PI) / 180)} 
-                  ${200 + 150 * Math.sin(((cumulativeAngle - sliceAngle) * Math.PI) / 180)}
-                A 150 150 0 ${largeArcFlag} 1 ${endX} ${endY}
-                Z
-            `;
+        // 각 슬라이스의 경로 그리기
+        const x1 = 200 + 150 * Math.cos(currentAngle);
+        const y1 = 200 + 150 * Math.sin(currentAngle);
+        const x2 = 200 + 150 * Math.cos(currentAngle + sliceAngle);
+        const y2 = 200 + 150 * Math.sin(currentAngle + sliceAngle);
 
-            const slice = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            slice.setAttribute('d', pathData);
-            slice.setAttribute('fill', getRandomColor());
-            svgContainer.appendChild(slice);
-        });
-    }
+        const largeArcFlag = sliceAngle > Math.PI ? 1 : 0;
+        const pathData = `M200,200 L${x1},${y1} A150,150 0 ${largeArcFlag} 1 ${x2},${y2} Z`;
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathData);
+        path.setAttribute('fill', `hsl(${index * 360 / Object.keys(frequencyMap).length}, 70%, 50%)`);
+
+        svg.appendChild(path);
+
+        // 텍스트 라벨 추가
+        const labelAngle = currentAngle + sliceAngle / 2;
+        const labelX = 200 + 180 * Math.cos(labelAngle);
+        const labelY = 200 + 180 * Math.sin(labelAngle);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', labelX);
+        text.setAttribute('y', labelY);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', '14');
+        text.textContent = `${type}: ${((count / total) * 100).toFixed(2)}%`;
+
+        svg.appendChild(text);
+
+        currentAngle += sliceAngle;
+    });
 }
 
 // 랜덤 색상 생성 함수
