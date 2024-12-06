@@ -60,7 +60,29 @@ async function loadModels() {
     }
 }
 
-// 실시간 감정 분석
+// 감정 데이터 저장 함수 (서버에 전송)
+async function saveEmotionsToServer(interviewId, emotionsData) {
+    try {
+        const response = await fetch('/api/save-expressions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                interviewId: interviewId,
+                emotions: emotionsData
+            }),
+        });
+
+        if (response.ok) {
+            console.log('감정 데이터가 서버에 성공적으로 저장되었습니다.');
+        } else {
+            console.error('감정 데이터 저장 실패:', response.statusText);
+        }
+    } catch (error) {
+        console.error('감정 데이터 저장 중 오류:', error);
+    }
+}
+
+// 실시간 감정 분석 및 저장
 async function analyzeExpressions() {
     const video = document.getElementById('user-webcam');
     const expressionOutput = document.getElementById('user-expression-output'); // 웹캠 아래 텍스트 출력
@@ -77,8 +99,19 @@ async function analyzeExpressions() {
                     expressions[a] > expressions[b] ? a : b
                 );
 
+                // 감정 데이터 수집
+                const emotionData = {
+                    type: dominantExpression,
+                    value: expressions[dominantExpression],
+                    interviewId: interviewId
+                };
+
                 expressionOutput.innerHTML = `현재 표정: ${dominantExpression} (${(expressions[dominantExpression] * 100).toFixed(2)}%)`;
                 console.log('감정 분석 결과:', expressions);
+
+                // 감정 데이터를 서버에 실시간으로 전송
+                saveEmotionsToServer(interviewId, [emotionData]);
+
             } else {
                 expressionOutput.innerHTML = '얼굴이 감지되지 않았습니다.';
                 console.warn('얼굴이 감지되지 않았습니다.');
@@ -86,7 +119,28 @@ async function analyzeExpressions() {
         } catch (error) {
             console.error('감정 분석 중 오류:', error);
         }
-    }, 500); // 500ms 간격으로 분석
+    }, 1000); // 1초 간격으로 분석 및 서버에 전송
+}
+
+
+
+// 감정 데이터 저장 함수
+async function saveExpressionData(emotionData) {
+    try {
+        const response = await fetch('/api/save-expression', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(emotionData),
+        });
+
+        if (response.ok) {
+            console.log('감정 데이터가 성공적으로 저장되었습니다:', emotionData);
+        } else {
+            console.error('감정 데이터 저장 실패:', response.statusText);
+        }
+    } catch (error) {
+        console.error('감정 데이터 저장 중 오류:', error);
+    }
 }
 
 // 음성 인식 초기화
