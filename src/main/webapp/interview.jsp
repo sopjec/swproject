@@ -168,7 +168,7 @@
 
     <!-- 모달 창 -->
     <div class="modal" id="feedback-modal">
-        <h3>피드백 생성</h3>
+        <h3>피드백</h3>
         <div id="emotion-pie-chart" style="width: 400px; height: 400px; margin: 0 auto;">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
                 <g transform="translate(200, 200)">
@@ -210,43 +210,7 @@
 
         <p id="modal-message">피드백을 생성 중입니다. 잠시만 기다려주세요...</p>
 
-        <!-- SVG 감정 분석 파이 차트 추가 -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-            <g transform="translate(200, 200)">
-                <g class="slice">
-                    <path d="M0,0V-150A150,150,0,1,1,-147.27,-54.98Z" fill="#99c2ff"></path>
-                    <text transform="translate(0, -110)" text-anchor="middle" font-size="14">neutral: 99.96%</text>
-                </g>
-                <g class="slice">
-                    <path d="M-147.27,-54.98A150,150,0,0,1,0,-150L0,0Z" fill="#7fb6ff"></path>
-                    <text transform="translate(-110, -40)" text-anchor="middle" font-size="14">neutral: 94.79%</text>
-                </g>
-                <g class="slice">
-                    <path d="M0,-150A150,150,0,0,1,-147.27,54.98L0,0Z" fill="#66abff"></path>
-                    <text transform="translate(0, 120)" text-anchor="middle" font-size="14">neutral: 95.84%</text>
-                </g>
-                <g class="slice">
-                    <path d="M-147.27,54.98A150,150,0,0,1,147.27,54.98L0,0Z" fill="#4da0ff"></path>
-                    <text transform="translate(110, 40)" text-anchor="middle" font-size="14">neutral: 98.40%</text>
-                </g>
-                <g class="slice">
-                    <path d="M147.27,54.98A150,150,0,0,1,147.27,-54.98L0,0Z" fill="#3495ff"></path>
-                    <text transform="translate(110, -40)" text-anchor="middle" font-size="14">neutral: 99.42%</text>
-                </g>
-                <g class="slice">
-                    <path d="M147.27,-54.98A150,150,0,0,1,0,150L0,0Z" fill="#1b8aff"></path>
-                    <text transform="translate(0, -120)" text-anchor="middle" font-size="14">neutral: 99.89%</text>
-                </g>
-                <g class="slice">
-                    <path d="M0,150A150,150,0,0,1,-147.27,54.98L0,0Z" fill="#0279ff"></path>
-                    <text transform="translate(-110, 40)" text-anchor="middle" font-size="14">happy: 99.92%</text>
-                </g>
-                <g class="slice">
-                    <path d="M-147.27,54.98A150,150,0,0,1,-147.27,-54.98L0,0Z" fill="#0070f3"></path>
-                    <text transform="translate(-110, -40)" text-anchor="middle" font-size="14">sad: 99.97%</text>
-                </g>
-            </g>
-        </svg>
+
 
         <button id="close-modal" onclick="closeModalAndRedirect()">닫기</button>
     </div>

@@ -412,7 +412,7 @@ async function generateAndSaveFeedback() {
     }
 }
 
-// 감정 데이터를 기반으로 파이 차트를 그리는 함수
+// 감정 데이터를 바탕으로 파이 차트를 그리는 함수 (감정 빈도 합이 100%가 되도록 조정)
 function drawPieChart(emotionsData) {
     const svg = document.querySelector('#emotion-pie-chart svg');
     svg.innerHTML = ''; // 이전 차트 내용 초기화
@@ -423,7 +423,7 @@ function drawPieChart(emotionsData) {
         return acc;
     }, {});
 
-    // 2. 감정 빈도를 비율로 변환
+    // 2. 감정 빈도를 비율로 변환 (각 감정의 빈도를 전체 빈도로 나누어 100%로 맞춤)
     const total = Object.values(frequencyMap).reduce((sum, count) => sum + count, 0);
     let currentAngle = 0;
 
