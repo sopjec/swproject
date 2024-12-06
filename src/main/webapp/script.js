@@ -405,26 +405,42 @@ document.getElementById('stop-recording').addEventListener('click', () => {
 // 질문 및 피드백 생성 및 업데이트 함수
 async function generateAndSaveFeedback() {
     // 모달 열기 및 초기 메시지 설정
-    openModal('피드백을 생성 중입니다. 잠시만 기다려주세요...');
+    openModal('감정 분석 결과를 불러오고 있습니다...');
 
     try {
-        // 데이터베이스에서 질문과 답변 가져오기
+        // 1. 데이터베이스에서 감정 분석 데이터 가져오기
+        const emotionFetchResponse = await fetch(`/api/get-emotions?interviewId=${interviewId}`);
+        if (!emotionFetchResponse.ok) {
+            throw new Error(`감정 데이터를 가져오는 데 실패했습니다: ${emotionFetchResponse.statusText}`);
+        }
+
+        const emotionsData = await emotionFetchResponse.json();
+        console.log('데이터베이스에서 가져온 감정 데이터:', emotionsData);
+
+        // 2. 감정 피드백을 모달에 표시
+        let emotionFeedback = '감정 분석 결과:\n';
+        emotionsData.forEach((emotion, index) => {
+            emotionFeedback += `#${index + 1} ${emotion.type}: ${(emotion.value * 100).toFixed(2)}%\n`;
+        });
+        openModal(`${emotionFeedback}\n피드백을 생성 중입니다. 잠시만 기다려주세요...`);
+
+        // 3. 데이터베이스에서 질문과 답변 가져오기
         const fetchResponse = await fetch(`/api/get-questions-and-answers?interviewId=${interviewId}`);
         if (!fetchResponse.ok) {
-            throw new Error(`질문과 답변 데이터를 가져오는데 실패했습니다: ${fetchResponse.statusText}`);
+            throw new Error(`질문과 답변 데이터를 가져오는 데 실패했습니다: ${fetchResponse.statusText}`);
         }
 
         const questionsAndAnswers = await fetchResponse.json();
         console.log('데이터베이스에서 가져온 질문과 답변 데이터:', questionsAndAnswers);
 
-        // 질문과 답변이 모두 비어 있는지 확인
+        // 4. 질문과 답변이 모두 비어 있는지 확인
         const hasValidAnswers = questionsAndAnswers.some(qa => qa.answer.trim() !== "");
         if (!hasValidAnswers) {
-            openModal('모든 질문에 대한 답변이 비어 있습니다. 피드백을 생성할 수 없습니다.');
+            openModal(`${emotionFeedback}\n\n모든 질문에 대한 답변이 비어 있습니다. 피드백을 생성할 수 없습니다.`);
             return; // 피드백 생성 중단
         }
 
-        // GPT API를 통해 피드백 요청
+        // 5. GPT API를 통해 피드백 요청
         const response = await fetch('/api/generate-feedback', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -438,8 +454,8 @@ async function generateAndSaveFeedback() {
             const data = await response.json();
             console.log("피드백 생성 완료:", data.feedback);
 
-            // 모달에 생성된 피드백 표시
-            openModal(`피드백 생성 완료:\n\n${data.feedback}`);
+            // 6. 모달에 생성된 피드백 표시
+            openModal(`${emotionFeedback}\n\n질문 피드백:\n${data.feedback}`);
         } else {
             throw new Error(`피드백 생성 실패: ${response.statusText}`);
         }
