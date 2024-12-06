@@ -63,19 +63,12 @@ async function loadModels() {
 // 감정 데이터 저장 함수 (서버에 전송)
 async function saveEmotionsToServer(interviewId, emotionsData) {
     try {
-        const response = await fetch('/api/save-expressions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                interviewId: interviewId,
-                emotions: emotionsData
-            }),
-        });
-
-        if (response.ok) {
-            console.log('감정 데이터가 서버에 성공적으로 저장되었습니다.');
-        } else {
-            console.error('감정 데이터 저장 실패:', response.statusText);
+        for (const emotion of emotionsData) {
+            await saveExpression(
+                interviewId,
+                emotion.type,
+                emotion.value
+            );
         }
     } catch (error) {
         console.error('감정 데이터 저장 중 오류:', error);
@@ -125,16 +118,16 @@ async function analyzeExpressions() {
 
 
 // 감정 데이터 저장 함수
-async function saveExpressionData(emotionData) {
+async function saveExpression(interviewId, type, value) {
     try {
         const response = await fetch('/api/save-expression', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(emotionData),
+            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+            body: JSON.stringify({ interviewId, type, value })
         });
 
         if (response.ok) {
-            console.log('감정 데이터가 성공적으로 저장되었습니다:', emotionData);
+            console.log('감정 데이터 저장 성공');
         } else {
             console.error('감정 데이터 저장 실패:', response.statusText);
         }

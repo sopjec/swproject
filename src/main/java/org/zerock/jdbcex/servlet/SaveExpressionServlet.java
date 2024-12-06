@@ -38,10 +38,13 @@ public class SaveExpressionServlet extends HttpServlet {
             int interviewId = jsonObject.getInt("interviewId");
             String emotionType = jsonObject.getString("type");
             double emotionValue = jsonObject.getDouble("value");
-            long timestamp = jsonObject.getLong("timestamp");
+
+            System.out.println("Emotion Data Received - Interview ID: " + interviewId
+                    + ", Type: " + emotionType
+                    + ", Value: " + emotionValue);
 
             // 감정 데이터를 DB에 저장하는 로직 (DAO 호출)
-            EmotionDAO.saveEmotion(interviewId, emotionType, emotionValue, timestamp);
+            EmotionDAO.saveEmotion(interviewId, emotionType, emotionValue);
 
             // 성공적으로 저장되었을 경우 응답
             resp.setStatus(HttpServletResponse.SC_OK);
