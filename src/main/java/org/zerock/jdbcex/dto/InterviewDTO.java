@@ -13,5 +13,6 @@ public class InterviewDTO {
     private String userId;
     private String path;
     private String feedback;
+    private int resume_id;
     private Date interviewDate;
 }
