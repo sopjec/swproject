@@ -365,10 +365,10 @@ async function generateAndSaveFeedback() {
         drawPieChart(emotionsData);
 
         // 3. 감정 피드백을 모달에 표시
-        let emotionFeedback = '감정 분석 결과:\n';
-        emotionsData.forEach((emotion, index) => {
-            emotionFeedback += `#${index + 1} ${emotion.type}: ${(emotion.value * 100).toFixed(2)}%\n`;
-        });
+        //let emotionFeedback = '감정 분석 결과:\n';
+        //emotionsData.forEach((emotion, index) => {
+        //    emotionFeedback += `#${index + 1} ${emotion.type}: ${(emotion.value * 100).toFixed(2)}%\n`;
+        //});
         openModal(`${emotionFeedback}\n피드백을 생성 중입니다. 잠시만 기다려주세요...`);
 
         // 3. 데이터베이스에서 질문과 답변 가져오기
