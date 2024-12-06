@@ -12,6 +12,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.1/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         .container {
             display: flex;
@@ -167,10 +169,65 @@
     <!-- 모달 창 -->
     <div class="modal" id="feedback-modal">
         <h3>피드백 생성</h3>
-        <p id="modal-message">피드백을 생성 중입니다. 잠시만 기다려주세요...</p>
-        <button id="close-modal" onclick="closeModalAndRedirect()">닫기</button>
+        <div id="emotion-pie-chart" style="width: 400px; height: 400px; margin: 0 auto;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+                <g transform="translate(250, 250)">
+                    <g class="slice">
+                        <path d="M0,0V-150A150,150,0,1,1,-147.27,-54.98Z" fill="#99c2ff"></path>
+                        <text transform="translate(-10, -120)" text-anchor="middle" font-size="10">neutral: 99.96%</text>
+                    </g>
+                    <g class="slice">
+                        <path d="M-147.27,-54.98A150,150,0,0,1,0,-150L0,0Z" fill="#7fb6ff"></path>
+                        <text transform="translate(-120, -40)" text-anchor="middle" font-size="10">neutral: 94.79%</text>
+                    </g>
+                    <!-- 기타 슬라이스와 텍스트도 동일하게 수정 -->
+                </g>
+            </svg>
+        </div>
 
+        <p id="modal-message">피드백을 생성 중입니다. 잠시만 기다려주세요...</p>
+
+        <!-- SVG 감정 분석 파이 차트 추가 -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+            <g transform="translate(200, 200)">
+                <g class="slice">
+                    <path d="M0,0V-150A150,150,0,1,1,-147.27,-54.98Z" fill="#99c2ff"></path>
+                    <text transform="translate(0, -110)" text-anchor="middle" font-size="14">neutral: 99.96%</text>
+                </g>
+                <g class="slice">
+                    <path d="M-147.27,-54.98A150,150,0,0,1,0,-150L0,0Z" fill="#7fb6ff"></path>
+                    <text transform="translate(-110, -40)" text-anchor="middle" font-size="14">neutral: 94.79%</text>
+                </g>
+                <g class="slice">
+                    <path d="M0,-150A150,150,0,0,1,-147.27,54.98L0,0Z" fill="#66abff"></path>
+                    <text transform="translate(0, 120)" text-anchor="middle" font-size="14">neutral: 95.84%</text>
+                </g>
+                <g class="slice">
+                    <path d="M-147.27,54.98A150,150,0,0,1,147.27,54.98L0,0Z" fill="#4da0ff"></path>
+                    <text transform="translate(110, 40)" text-anchor="middle" font-size="14">neutral: 98.40%</text>
+                </g>
+                <g class="slice">
+                    <path d="M147.27,54.98A150,150,0,0,1,147.27,-54.98L0,0Z" fill="#3495ff"></path>
+                    <text transform="translate(110, -40)" text-anchor="middle" font-size="14">neutral: 99.42%</text>
+                </g>
+                <g class="slice">
+                    <path d="M147.27,-54.98A150,150,0,0,1,0,150L0,0Z" fill="#1b8aff"></path>
+                    <text transform="translate(0, -120)" text-anchor="middle" font-size="14">neutral: 99.89%</text>
+                </g>
+                <g class="slice">
+                    <path d="M0,150A150,150,0,0,1,-147.27,54.98L0,0Z" fill="#0279ff"></path>
+                    <text transform="translate(-110, 40)" text-anchor="middle" font-size="14">happy: 99.92%</text>
+                </g>
+                <g class="slice">
+                    <path d="M-147.27,54.98A150,150,0,0,1,-147.27,-54.98L0,0Z" fill="#0070f3"></path>
+                    <text transform="translate(-110, -40)" text-anchor="middle" font-size="14">sad: 99.97%</text>
+                </g>
+            </g>
+        </svg>
+
+        <button id="close-modal" onclick="closeModalAndRedirect()">닫기</button>
     </div>
+
 
     <!-- 메인 컨텐츠 -->
     <div class="content">

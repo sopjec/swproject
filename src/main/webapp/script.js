@@ -74,7 +74,6 @@ async function saveEmotionsToServer(interviewId, emotionsData) {
         console.error('감정 데이터 저장 중 오류:', error);
     }
 }
-
 // 실시간 감정 분석 및 저장
 async function analyzeExpressions() {
     const video = document.getElementById('user-webcam');
@@ -347,6 +346,114 @@ async function saveQuestionAndAnswer(question, answer) {
         console.error('질문과 답변 저장 중 오류:', error);
     }
 }
+// 질문 및 피드백 생성 및 업데이트 함수
+async function generateAndSaveFeedback() {
+    // 모달 열기 및 초기 메시지 설정
+    openModal('감정 분석 결과를 불러오고 있습니다...');
+
+    try {
+        // 1. 데이터베이스에서 감정 분석 데이터 가져오기
+        const emotionFetchResponse = await fetch(`/api/get-emotions?interviewId=${interviewId}`);
+        if (!emotionFetchResponse.ok) {
+            throw new Error(`감정 데이터를 가져오는 데 실패했습니다: ${emotionFetchResponse.statusText}`);
+        }
+
+        const emotionsData = await emotionFetchResponse.json();
+        console.log('데이터베이스에서 가져온 감정 데이터:', emotionsData);
+
+        // 2. 감정 데이터를 이용해 파이 차트 생성
+        drawPieChart(emotionsData);
+
+        // 3. 감정 피드백을 모달에 표시
+        let emotionFeedback = '감정 분석 결과:\n';
+        emotionsData.forEach((emotion, index) => {
+            emotionFeedback += `#${index + 1} ${emotion.type}: ${(emotion.value * 100).toFixed(2)}%\n`;
+        });
+        openModal(`${emotionFeedback}\n피드백을 생성 중입니다. 잠시만 기다려주세요...`);
+
+        // 3. 데이터베이스에서 질문과 답변 가져오기
+        const fetchResponse = await fetch(`/api/get-questions-and-answers?interviewId=${interviewId}`);
+        if (!fetchResponse.ok) {
+            throw new Error(`질문과 답변 데이터를 가져오는 데 실패했습니다: ${fetchResponse.statusText}`);
+        }
+
+        const questionsAndAnswers = await fetchResponse.json();
+        console.log('데이터베이스에서 가져온 질문과 답변 데이터:', questionsAndAnswers);
+
+        // 4. 질문과 답변이 모두 비어 있는지 확인
+        const hasValidAnswers = questionsAndAnswers.some(qa => qa.answer.trim() !== "");
+        if (!hasValidAnswers) {
+            openModal(`${emotionFeedback}\n\n모든 질문에 대한 답변이 비어 있습니다. 피드백을 생성할 수 없습니다.`);
+            return; // 피드백 생성 중단
+        }
+
+        // 5. GPT API를 통해 피드백 요청
+        const response = await fetch('/api/generate-feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                interviewId: interviewId, // 현재 인터뷰 ID
+                data: questionsAndAnswers // 질문과 답변 배열
+            }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log("피드백 생성 완료:", data.feedback);
+
+            // 6. 모달에 생성된 피드백 표시
+            openModal(`${emotionFeedback}\n\n질문 피드백:\n${data.feedback}`);
+        } else {
+            throw new Error(`피드백 생성 실패: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error('피드백 생성 중 오류:', error);
+        openModal('피드백 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+}
+
+// 감정 데이터를 기반으로 파이 차트를 그리는 함수
+function drawPieChart(emotionsData) {
+    const svgContainer = document.getElementById('emotion-pie-chart');
+    if (svgContainer) {
+        svgContainer.innerHTML = ''; // 기존 차트를 제거하고 새로 생성
+
+        const total = emotionsData.reduce((sum, emotion) => sum + emotion.value, 0);
+        let cumulativeAngle = 0;
+
+        emotionsData.forEach((emotion, index) => {
+            const sliceAngle = (emotion.value / total) * 360;
+            const largeArcFlag = sliceAngle > 180 ? 1 : 0;
+            cumulativeAngle += sliceAngle;
+
+            const endX = 200 + 150 * Math.cos((cumulativeAngle * Math.PI) / 180);
+            const endY = 200 + 150 * Math.sin((cumulativeAngle * Math.PI) / 180);
+
+            const pathData = `
+                M 200 200
+                L ${200 + 150 * Math.cos(((cumulativeAngle - sliceAngle) * Math.PI) / 180)} 
+                  ${200 + 150 * Math.sin(((cumulativeAngle - sliceAngle) * Math.PI) / 180)}
+                A 150 150 0 ${largeArcFlag} 1 ${endX} ${endY}
+                Z
+            `;
+
+            const slice = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            slice.setAttribute('d', pathData);
+            slice.setAttribute('fill', getRandomColor());
+            svgContainer.appendChild(slice);
+        });
+    }
+}
+
+// 랜덤 색상 생성 함수
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
 
 
 // 이벤트 리스너 설정
@@ -402,65 +509,4 @@ document.getElementById('stop-recording').addEventListener('click', () => {
     }
 });
 
-// 질문 및 피드백 생성 및 업데이트 함수
-async function generateAndSaveFeedback() {
-    // 모달 열기 및 초기 메시지 설정
-    openModal('감정 분석 결과를 불러오고 있습니다...');
 
-    try {
-        // 1. 데이터베이스에서 감정 분석 데이터 가져오기
-        const emotionFetchResponse = await fetch(`/api/get-emotions?interviewId=${interviewId}`);
-        if (!emotionFetchResponse.ok) {
-            throw new Error(`감정 데이터를 가져오는 데 실패했습니다: ${emotionFetchResponse.statusText}`);
-        }
-
-        const emotionsData = await emotionFetchResponse.json();
-        console.log('데이터베이스에서 가져온 감정 데이터:', emotionsData);
-
-        // 2. 감정 피드백을 모달에 표시
-        let emotionFeedback = '감정 분석 결과:\n';
-        emotionsData.forEach((emotion, index) => {
-            emotionFeedback += `#${index + 1} ${emotion.type}: ${(emotion.value * 100).toFixed(2)}%\n`;
-        });
-        openModal(`${emotionFeedback}\n피드백을 생성 중입니다. 잠시만 기다려주세요...`);
-
-        // 3. 데이터베이스에서 질문과 답변 가져오기
-        const fetchResponse = await fetch(`/api/get-questions-and-answers?interviewId=${interviewId}`);
-        if (!fetchResponse.ok) {
-            throw new Error(`질문과 답변 데이터를 가져오는 데 실패했습니다: ${fetchResponse.statusText}`);
-        }
-
-        const questionsAndAnswers = await fetchResponse.json();
-        console.log('데이터베이스에서 가져온 질문과 답변 데이터:', questionsAndAnswers);
-
-        // 4. 질문과 답변이 모두 비어 있는지 확인
-        const hasValidAnswers = questionsAndAnswers.some(qa => qa.answer.trim() !== "");
-        if (!hasValidAnswers) {
-            openModal(`${emotionFeedback}\n\n모든 질문에 대한 답변이 비어 있습니다. 피드백을 생성할 수 없습니다.`);
-            return; // 피드백 생성 중단
-        }
-
-        // 5. GPT API를 통해 피드백 요청
-        const response = await fetch('/api/generate-feedback', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                interviewId: interviewId, // 현재 인터뷰 ID
-                data: questionsAndAnswers // 질문과 답변 배열
-            }),
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            console.log("피드백 생성 완료:", data.feedback);
-
-            // 6. 모달에 생성된 피드백 표시
-            openModal(`${emotionFeedback}\n\n질문 피드백:\n${data.feedback}`);
-        } else {
-            throw new Error(`피드백 생성 실패: ${response.statusText}`);
-        }
-    } catch (error) {
-        console.error('피드백 생성 중 오류:', error);
-        openModal('피드백 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
-    }
-}
