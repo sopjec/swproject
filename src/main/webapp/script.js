@@ -272,7 +272,7 @@ async function startPageRecording() {
         mediaRecorder.start();
 
         // 화면 녹화가 시작된 후 질문 생성 및 음성 출력
-        await generateQuestionAndSpeak();
+        generateQuestionAndSpeak();
 
         console.log('페이지 녹화가 시작되었습니다.');
     } catch (error) {
@@ -312,11 +312,11 @@ async function startInterview() {
         document.getElementById('user-webcam').srcObject = webcamStream;
 
         console.log('웹캠 스트림 연결 성공');
-        await startPageRecording(); // 녹화 시작과 동시에 질문 생성
+        startPageRecording(); // 녹화 시작과 동시에 질문 생성
 
         await loadModels(); // 모델 로드
         console.log('감정 분석 시작...');
-        await analyzeExpressions(); // 감정 분석 시작
+        analyzeExpressions(); // 감정 분석 시작
     } catch (error) {
         console.error('웹캠 연결 오류:', error);
         alert('웹캠과 마이크 접근 권한을 확인하세요.');
@@ -365,11 +365,12 @@ async function generateAndSaveFeedback() {
         drawPieChart(emotionsData);
 
         // 3. 감정 피드백을 모달에 표시
-        //let emotionFeedback = '감정 분석 결과:\n';
+        let emotionFeedback = '\n';
         //emotionsData.forEach((emotion, index) => {
         //    emotionFeedback += `#${index + 1} ${emotion.type}: ${(emotion.value * 100).toFixed(2)}%\n`;
-        //});
-        openModal(`${emotionFeedback}\n피드백을 생성 중입니다. 잠시만 기다려주세요...`);
+       // });
+        //openModal(`${emotionFeedback}\n피드백을 생성 중입니다. 잠시만 기다려주세요...`);
+        openModal(`피드백을 생성 중입니다. 잠시만 기다려주세요...`);
 
         // 3. 데이터베이스에서 질문과 답변 가져오기
         const fetchResponse = await fetch(`/api/get-questions-and-answers?interviewId=${interviewId}`);
@@ -476,7 +477,6 @@ function getRandomColor() {
 
 // 이벤트 리스너 설정
 document.getElementById('start-interview').addEventListener('click', startInterview);
-
 // 음성 인식 종료
 function stopSpeechRecognition() {
     if (recognition && isRecording) {
@@ -517,6 +517,15 @@ document.getElementById('next-question').addEventListener('click', async () => {
         }
     }
 });
-
+document.getElementById('stop-recording').addEventListener('click', () => {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+        console.log('녹화 중지');
+    }
+    if (webcamStream) {
+        webcamStream.getTracks().forEach(track => track.stop());
+        console.log('웹캠 스트림 중지');
+    }
+});
 
 
