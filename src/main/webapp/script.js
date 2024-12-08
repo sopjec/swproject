@@ -333,7 +333,7 @@ async function saveQuestionAndAnswer(question, answer) {
             body: JSON.stringify({
                 interviewId: interviewId,
                 question: question,
-                answer: answer || "", // 답변이 없으면 빈 문자열
+                answer: answer === "질문이 끝난 후 답변해주세요." ? "" : (answer || ""), // 특정 문구 처리
             }),
         });
 
@@ -382,11 +382,12 @@ async function generateAndSaveFeedback() {
         console.log('데이터베이스에서 가져온 질문과 답변 데이터:', questionsAndAnswers);
 
         // 4. 질문과 답변이 모두 비어 있는지 확인
-        const hasValidAnswers = questionsAndAnswers.some(qa => qa.answer.trim() !== "");
+        const hasValidAnswers = questionsAndAnswers.some(qa => qa.answer && qa.answer.trim() !== "");
         if (!hasValidAnswers) {
             openModal(`${emotionFeedback}\n\n모든 질문에 대한 답변이 비어 있습니다. 피드백을 생성할 수 없습니다.`);
             return; // 피드백 생성 중단
         }
+
 
         // 5. GPT API를 통해 피드백 요청
         const response = await fetch('/api/generate-feedback', {
@@ -506,7 +507,7 @@ document.getElementById('next-question').addEventListener('click', async () => {
             document.getElementById('interviewer-text-output').innerText = nextQuestion;
 
             // 면접자 텍스트창 내용 초기화
-            userTextOutput.innerText = '';
+            userTextOutput.innerText = '질문이 끝난 후 답변해주세요.';
 
             // 새 질문 읽어주고 음성 녹음 시작
             readTextAloud(nextQuestion, startSpeechRecognition);
