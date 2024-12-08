@@ -264,27 +264,39 @@
 
         // 선택된 숫자박스 강조
         const selectedBox = document.getElementById("box" + number);
-        selectedBox.classList.add("selected");
+        if (selectedBox) {
+            selectedBox.classList.add("selected");
+        }
 
         // 선택된 문항 번호 저장
         selectedQuestion = number;
+
+        // 선택된 문항으로 스크롤 (선택적으로 추가 가능)
+        const selectedQuestionBox = document.getElementById("question" + number);
+        if (selectedQuestionBox) {
+            selectedQuestionBox.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
     }
 
-    //문항 추가 기능
+
     document.getElementById("addQuestion").addEventListener("click", () => {
         totalQuestions++;
-        //새로운 숫자 박스 생성
+
+        // 새로운 숫자박스 생성
         const newNumberBox = document.createElement("div");
         newNumberBox.classList.add("number-box");
         newNumberBox.id = "box" + totalQuestions;
         newNumberBox.textContent = totalQuestions;
-        newNumberBox.onclick = () => selectQuestion(totalQuestions);
+
+        // 클릭 이벤트 연결 또는 onclick 속성 추가
+        newNumberBox.setAttribute("onclick", "selectQuestion(" + totalQuestions + ")");
+
         document.getElementById("controls-container").insertBefore(newNumberBox, document.getElementById("addQuestion"));
 
-        //새로운 문항 박스 생성
+        // 새로운 문항박스 생성
         const newQuestion = document.createElement("div");
         newQuestion.classList.add("question-group");
-        newQuestion.id = "question"+totalQuestions;
+        newQuestion.id = "question" + totalQuestions;
 
         newQuestion.innerHTML =
             "<div class='question-content'>" +
@@ -299,13 +311,13 @@
             "<div class='result-box' name='resultBox' id='resultBox" + totalQuestions + "'></div>" +
             "</div>";
 
-
-        document.getElementById("question-list").appendChild(newQuestion); // 문학 박스 추가
+        document.getElementById("question-list").appendChild(newQuestion);
         document.getElementById("removeQuestion").style.display = "flex"; // 삭제 버튼 활성화
+
+        // 새로 추가된 문항 선택
         selectQuestion(totalQuestions);
     });
 
-    // 문항 삭제 기능
     document.getElementById("removeQuestion").addEventListener("click", () => {
         if (totalQuestions > 1) {
             // 선택된 숫자박스와 문항박스 삭제
@@ -321,25 +333,23 @@
                 const questionGroups = document.querySelectorAll(".question-group");
 
                 numberBoxes.forEach((box, index) => {
-                    box.id = "box" + index + 1;
+                    box.id = "box" + (index + 1);
                     box.textContent = index + 1;
                     box.onclick = () => selectQuestion(index + 1); // 번호에 따라 다시 클릭 이벤트 연결
                 });
 
                 questionGroups.forEach((group, index) => {
-                    group.id = "question" + index + 1;
-                    group.querySelector("h3").textContent = index + 1 + "번 문항";
+                    group.id = "question" + (index + 1);
+                    group.querySelector("h3").textContent = (index + 1) + "번 문항";
                 });
 
                 totalQuestions--;
 
-                // 선택된 문항이 삭제된 이후 다른 문항 선택
-                selectedQuestion = totalQuestions >= selectedQuestion ? selectedQuestion : totalQuestions;
-                if (selectedQuestion > 0) {
-                    selectQuestion(selectedQuestion); // 다음 문항 선택
-                }
+                // 남아 있는 문항 중 첫 번째 문항 선택
+                selectedQuestion = Math.min(selectedQuestion, totalQuestions);
+                selectQuestion(selectedQuestion);
 
-                // 문항이 하나도 남지 않으면 삭제 버튼 비활성화
+                // 문항이 하나 남으면 삭제 버튼 비활성화
                 if (totalQuestions === 1) {
                     document.getElementById("removeQuestion").style.display = "none";
                 }

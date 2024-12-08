@@ -201,6 +201,7 @@ async function generateQuestionAndSpeak() {
             const data = await response.json();
             console.log("서버 응답 데이터:", data); // 서버 응답 확인
 
+            document.getElementById('current-status').innerText='질문 생성 완료 ';
             // 인터뷰 ID 저장
             interviewId = data.interviewId;
             console.log("인터뷰 ID:", interviewId);
@@ -307,6 +308,7 @@ async function saveRecording() {
 
 // 면접 시작
 async function startInterview() {
+    document.getElementById('current-status').innerText='질문을 생성하고 있습니다. ';
     try {
         webcamStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         document.getElementById('user-webcam').srcObject = webcamStream;

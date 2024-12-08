@@ -204,7 +204,7 @@
                 </tbody>
             </table>
             <div class="button-controls">
-                <button type="button" id="start-interview">면접 시작</button>
+                <button type="button" id="start-interview">선택</button>
             </div>
         </form>
     </div>
