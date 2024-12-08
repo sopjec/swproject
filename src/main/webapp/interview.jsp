@@ -78,6 +78,7 @@
         .video-section {
             flex: 1;
             display: flex;
+            width: 100%;
             flex-direction: column;
             align-items: center;
             gap: 10px;
@@ -96,15 +97,22 @@
         }
 
         .text-output {
-            width: 100%;
+            border: 1px #333333 solid; /* 테두리 색상 유지 */
+            border-radius: 10px; /* 모서리를 둥글게 */
+            margin-top: 10px;
+            margin-bottom: 10px;
+            width: 90%;
+            height: 150px;
             padding: 10px;
             overflow-y: auto;
-            text-align: center;
+            text-align: left;
             font-size: 15px;
             line-height: 1.5;
             font-family: 'Arial', sans-serif;
             color: #333;
+            background-color: #f7f7f7; /* 약간 어두운 흰색 */
         }
+
 
         .expression-output {
             margin-top: 10px;
@@ -116,7 +124,7 @@
 
         .button-container {
             display: flex;
-            margin : 100px 0 30px 0;
+            margin : 30px 0 30px 0;
             gap: 10px;
         }
 
@@ -206,12 +214,7 @@
 
     <!-- 메인 컨텐츠 -->
     <div class="content">
-        <!-- 첫 번째 행: 면접관 화면과 면접관 텍스트 창 -->
-            <div class="video-section">
-                <span class="text-output" id="interviewer-text-output">질문이 이곳에 표시됩니다. 질문 생성 중 ...</span>
-            </div>
-
-        <!-- 두 번째 행: 면접자 화면과 면접자 텍스트 창 -->
+        <h3 id="current-status">면접 시작버튼을 눌러주세요</h3>
         <div class="row">
             <div class="video-section">
                 <img id="interviewer-video" src="img/ai-character.png" alt="가상 면접관 AI 캐릭터">
@@ -224,7 +227,9 @@
             </div>
         </div>
         <div class="video-section">
-            <h4>답변 : </h4>
+            <span class="text-output" id="interviewer-text-output">질문이 이곳에 표시됩니다.</span>
+        </div>
+        <div class="video-section">
             <div class="text-output" id="user-text-output">질문이 끝난 후 답변해주세요.</div>
         </div>
 
