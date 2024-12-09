@@ -442,7 +442,22 @@
             },
             body: JSON.stringify({ text: answerText }) // 답변 텍스트 전송
         })
-            .then(response => response.json())
+            .then(response => {
+                // 응답 Content-Type 확인
+                const contentType = response.headers.get('Content-Type');
+                if (contentType && contentType.includes('application/json')) {
+                    // JSON 응답 처리
+                    return response.json();
+                } else {
+                    // HTML 응답일 경우 로그인 페이지로 이동
+                    return response.text().then(html => {
+                        console.error('HTML 응답 반환:', html);
+                        alert('로그인이 필요합니다. 로그인 페이지로 이동합니다.');
+                        window.location.href = '/login.jsp'; // 로그인 페이지로 리다이렉트
+                        throw new Error('HTML 응답 반환');
+                    });
+                }
+            })
             .then(data => {
                 if (data && data.replacedText) {
                     console.log("Response Text:", data.replacedText);
@@ -463,7 +478,7 @@
             })
             .catch(error => {
                 console.error("Error:", error);
-                alert('AI 코칭 요청 실패.');
+                alert('AI 코칭 요청 실패: ' + error.message);
             });
 
     }

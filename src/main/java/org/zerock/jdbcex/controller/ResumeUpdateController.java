@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
 @WebServlet(name = "ResumeUpdateController", urlPatterns = {"/updateAnswer", "/updateAnswers"})
 public class ResumeUpdateController extends HttpServlet {
 
@@ -45,13 +46,7 @@ public class ResumeUpdateController extends HttpServlet {
                 // 개별 답변 수정
                 Map<String, Object> payload = gson.fromJson(requestBody, Map.class);
                 int id = Integer.parseInt(payload.get("id").toString()); // resume_qna.id
-                String newTitle = payload.get("newTitle") != null ? payload.get("newTitle").toString() : null;
                 String answer = payload.get("answer").toString();
-
-                // 제목 업데이트
-                if (newTitle != null) {
-                    resumeService.updateTitleById(id, newTitle);
-                }
 
                 // 답변 업데이트
                 resumeQnaService.updateAnswerById(id, answer);
@@ -65,10 +60,10 @@ public class ResumeUpdateController extends HttpServlet {
                 String newTitle = payload.get("title") != null ? payload.get("title").toString() : null;
                 List<Map<String, Object>> answers = (List<Map<String, Object>>) payload.get("answers");
 
-                // 제목 업데이트
                 if (newTitle != null) {
-                    int resumeId = Integer.parseInt(answers.get(0).get("id").toString()); // ID로 resume를 식별
-                    resumeService.updateTitleById(resumeId, newTitle);
+                    String resumeId = (String) payload.get("resumeId");
+                    System.out.println("Updating Title for resumeId: " + resumeId + ", newTitle: " + newTitle);
+                    resumeService.updateTitleByResumeId(resumeId, newTitle); // 제목 업데이트 로직 호출
                 }
 
                 // 답변 업데이트 처리

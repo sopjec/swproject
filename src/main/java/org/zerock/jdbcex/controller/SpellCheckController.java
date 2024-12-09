@@ -64,7 +64,7 @@ public class SpellCheckController extends HttpServlet {
 
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", "system");
-        systemMessage.addProperty("content", "자기소개서에 적합하며 직무에 적합한 어휘로 교체해줘. 교체된 단어만 대괄호로 표시해줘");
+        systemMessage.addProperty("content", "자기소개서에 적합하며 직무에 적합한 어휘로 교체해. 교체된 단어만 대괄호로 표시해줘. 불필요한 대괄호는 사용하지마.");
         messages.add(systemMessage);
 
         JsonObject userMessage = new JsonObject();
