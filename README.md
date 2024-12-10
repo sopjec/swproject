@@ -80,6 +80,13 @@ CREATE TABLE comments (
                           FOREIGN KEY (parent_comment_id) REFERENCES comments(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE emotions (
+                          id INT AUTO_INCREMENT PRIMARY KEY,
+                          interview_id INT NOT NULL,
+                          emotion_type VARCHAR(50) NOT NULL,
+                          emotion_value DOUBLE NOT NULL,
+                          FOREIGN KEY (interview_id) REFERENCES interview(id) ON DELETE CASCADE
+);
 
 
 DELIMITER $$
