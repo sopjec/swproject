@@ -102,16 +102,17 @@
             margin-top: 10px;
             margin-bottom: 10px;
             width: 90%;
-            height: 150px;
+            height: 100px; /* 세로 길이를 줄임 */
             padding: 10px;
             overflow-y: auto;
             text-align: left;
-            font-size: 15px;
+            font-size: 15pt; /* 폰트 크기를 15pt로 설정 */
             line-height: 1.5;
             font-family: 'Arial', sans-serif;
             color: #333;
             background-color: #f7f7f7; /* 약간 어두운 흰색 */
         }
+
 
 
         .expression-output {
@@ -124,7 +125,7 @@
 
         .button-container {
             display: flex;
-            margin : 30px 0 30px 0;
+            margin: 10px 0 0 0; /* 위쪽 마진을 30px에서 10px으로 줄임 */
             gap: 10px;
         }
 
@@ -133,7 +134,7 @@
             background-color: #333;
             border: none;
             color: white;
-            border-radius: 10px; /* 왼쪽 직선, 오른쪽 둥근 모서리 */
+            border-radius: 10px; /* 모서리를 둥글게 */
             cursor: pointer;
             font-size: 16px;
             text-align: center;
@@ -142,6 +143,7 @@
         .button-container button:hover {
             background-color: #555;
         }
+
         .row {
             display: flex;
             width: 100%;
