@@ -29,7 +29,7 @@ public class ResumeDetailController extends HttpServlet {
 
         try {
             int resumeId = Integer.parseInt(idParam);
-
+            System.out.print("resumeId DetailCon:" + resumeId);
             // resume 제목 조회
             String title = resumeService.getResumeTitleById(resumeId);
 
@@ -39,6 +39,8 @@ public class ResumeDetailController extends HttpServlet {
             // 알림 메시지 전달
             req.setAttribute("message", "자기소개서가 저장되었습니다.");
 
+            // resumeId, 제목, QnA 리스트를 JSP로 전달
+            req.setAttribute("resumeId", resumeId); // resumeId 전달
             req.setAttribute("title", title);
             req.setAttribute("qnaList", qnaList);
             req.getRequestDispatcher("resume_detail.jsp").forward(req, resp);

@@ -12,7 +12,7 @@
     <style>
         .resume-container {
             width: 100%;
-            margin: 0;
+            margin: 0 auto;
             padding: 20px;
             max-width: 800px;
             background-color: white;
@@ -38,7 +38,7 @@
             border-radius: 4px;
             background-color: #f9f9f9;
         }
-        .edit-button, .save-button {
+        .edit-button {
             padding: 8px 15px;
             background-color: #333;
             color: white;
@@ -47,7 +47,7 @@
             cursor: pointer;
             font-size: 14px;
         }
-        .edit-button:hover, .save-button:hover {
+        .edit-button:hover {
             background-color: black;
         }
     </style>
@@ -65,7 +65,7 @@
         </ul>
     </div>
 
-    <div class="resume-container">
+    <div class="resume-container" data-resume-id="<%= request.getAttribute("resumeId") %>">
         <div class="title-row">
             <h2 id="resumeTitle" contenteditable="false"><%= request.getAttribute("title") %></h2>
             <button class="edit-button" onclick="enableEditingAll()">전체 수정하기</button>
@@ -75,9 +75,9 @@
         <% if (qnaList != null) {
             for (ResumeQnaDTO qna : qnaList) { %>
         <div class="question-box">
-            <p class="question">질문: <%= qna.getQuestion() %></p>
+            <p class="question"><%= qna.getQuestion() %></p>
             <div class="answer-box">
-                <p class="answer" contenteditable="false" id="answer-<%= qna.getId() %>">답변: <%= qna.getAnswer() %></p>
+                <p class="answer" contenteditable="false" id="answer-<%= qna.getId() %>"><%= qna.getAnswer() %></p>
                 <button class="edit-button" onclick="enableEditing('<%= qna.getId() %>')">수정하기</button>
             </div>
         </div>
@@ -105,8 +105,6 @@
             if (button) {
                 button.innerText = "저장하기";
                 button.setAttribute("onclick", "saveAnswer('" + id + "')");
-            } else {
-                console.error("수정 버튼을 찾을 수 없습니다: enableEditing('" + id + "')");
             }
         };
 
@@ -150,7 +148,7 @@
 
         // 전체 수정 활성화
         window.enableEditingAll = function () {
-            document.querySelectorAll(".answer").forEach(function (answer) {
+            document.querySelectorAll(".answer").forEach(answer => {
                 answer.contentEditable = true;
             });
 
@@ -168,15 +166,31 @@
 
         // 전체 저장
         window.saveAllAnswers = async function () {
-            const answers = Array.from(document.querySelectorAll(".answer")).map(function (answer) {
-                return {
-                    id: answer.id.split("-")[1],
-                    answer: answer.textContent.trim()
-                };
-            });
+            const answers = Array.from(document.querySelectorAll(".answer")).map(answer => ({
+                id: answer.id.split("-")[1],
+                answer: answer.textContent.trim()
+            }));
 
             const titleElement = document.getElementById("resumeTitle");
             const newTitle = titleElement ? titleElement.textContent.trim() : "";
+
+            const resumeContainer = document.querySelector(".resume-container");
+            if (!resumeContainer) {
+                console.error("Resume container not found.");
+                return;
+            }
+
+            const resumeId = resumeContainer.getAttribute("data-resume-id");
+            if (!resumeId) {
+                console.error("Resume ID is missing.");
+                return;
+            }
+
+            console.log("Submitting Data:", {
+                title: newTitle,
+                resumeId: resumeId,
+                answers: answers
+            });
 
             try {
                 const response = await fetch("/updateAnswers", {
@@ -184,12 +198,12 @@
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ title: newTitle, answers: answers })
+                    body: JSON.stringify({ title: newTitle, resumeId: resumeId, answers: answers })
                 });
 
                 if (response.ok) {
                     alert("모든 내용이 저장되었습니다.");
-                    document.querySelectorAll(".answer").forEach(function (answer) {
+                    document.querySelectorAll(".answer").forEach(answer => {
                         answer.contentEditable = false;
                     });
                     if (titleElement) {
@@ -201,14 +215,6 @@
                         button.innerText = "전체 수정하기";
                         button.setAttribute("onclick", "enableEditingAll()");
                     }
-
-                    document.querySelectorAll("button").forEach(function (btn) {
-                        if (btn.innerText === "저장하기") {
-                            const id = btn.getAttribute("onclick").match(/saveAnswer\('(.+?)'\)/)[1];
-                            btn.innerText = "수정하기";
-                            btn.setAttribute("onclick", "enableEditing('" + id + "')");
-                        }
-                    });
                 } else {
                     alert("저장 중 문제가 발생했습니다.");
                 }

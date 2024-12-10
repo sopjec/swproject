@@ -282,7 +282,7 @@ async function startPageRecording() {
 }
 async function saveRecording() {
     const blob = new Blob(recordedChunks, { type: 'video/webm' });
-    const fileName = `recording_${interviewId || 'unknown'}.webm`; // 인터뷰 ID를 파일명에 포함
+    const fileName = "recording_" + interviewId + "|| unknown'}.webm"; // 인터뷰 ID를 파일명에 포함
     const formData = new FormData();
     formData.append('videoFile', blob, fileName); // 파일명 동기화
     formData.append('resumeId', resumeId); // resumeId를 함께 전송
@@ -295,9 +295,9 @@ async function saveRecording() {
         });
 
         if (response.ok) {
-            console.log(`녹화본이 서버에 성공적으로 업로드되었습니다.: ${fileName}`);
+            console.log("녹화본이 서버에 성공적으로 업로드되었습니다.:"+ fileName);
         } else {
-            console.error('녹화본 업로드 실패:', response.statusText);
+            console.error("녹화본 업로드 실패: " + response.statusText);
         }
     } catch (error) {
         console.error('녹화본 업로드 중 오류:', error);
@@ -340,7 +340,7 @@ async function saveQuestionAndAnswer(question, answer) {
         });
 
         if (response.ok) {
-            console.log(`질문과 답변 저장 성공: ${question}, ${answer}`);
+            console.log("질문과 답변 저장 성공: " + question + answer);
         } else {
             console.error('질문과 답변 저장 실패:', response.statusText);
         }
