@@ -192,7 +192,7 @@
         const videoFeedback = document.getElementById("video-feedback");
 
         // URL 디코딩
-        const title = decodeURIComponent(encodedTitle);
+        const title = decodeURIComponent(encodedTitle).replace(/\+/g, " ");
         const feedback = decodeURIComponent(encodedFeedback).replace(/\+/g, " ").replace(/-/g, "\n").replace(/질문 \d+/g, "\n$&");
 
         // 테이블 숨기기
