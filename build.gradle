@@ -26,6 +26,7 @@ dependencies {
   implementation 'com.squareup.okhttp3:okhttp:4.11.0'
   implementation 'com.google.code.gson:gson:2.10'
 
+  implementation 'javax.websocket:javax.websocket-api:1.1'
 
   // Servlet API
   compileOnly('javax.servlet:javax.servlet-api:4.0.1')

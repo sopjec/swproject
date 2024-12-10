@@ -100,6 +100,7 @@
         }
 
         .question-content textarea {
+            font-size: 15px;
             width: 100%;
             height: 120px;
             padding: 10px;
