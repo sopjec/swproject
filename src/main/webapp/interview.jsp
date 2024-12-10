@@ -53,6 +53,12 @@
             color: #555;
         }
 
+        #modal-message {
+            text-align: left;
+            white-space: pre-wrap; /* 줄 바꿈 유지 */
+        }
+
+
         #feedback-modal button {
             padding: 10px 20px;
             background-color: #007bff;
