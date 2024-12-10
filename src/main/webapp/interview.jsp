@@ -70,21 +70,15 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding : 0;
             justify-content: center;
-            gap: 20px;
             flex: 1;
-        }
-
-        .row {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            width: 100%;
         }
 
         .video-section {
             flex: 1;
             display: flex;
+            width: 100%;
             flex-direction: column;
             align-items: center;
             gap: 10px;
@@ -92,21 +86,23 @@
 
         .video-section img {
             width: 100%;
-            max-height: 300px;
+            height: 300px;
             box-sizing: border-box;
         }
         .video-section video {
             width: 100%;
-            max-height: 300px;
+            height: 300px;
             border: 1px solid #333;
             box-sizing: border-box;
         }
 
         .text-output {
-            width: 100%;
-            height: 300px; /* 면접자 화면 높이와 맞춤 */
-            border: 1px solid #333;
-            box-sizing: border-box;
+            border: 1px #333333 solid; /* 테두리 색상 유지 */
+            border-radius: 10px; /* 모서리를 둥글게 */
+            margin-top: 10px;
+            margin-bottom: 10px;
+            width: 90%;
+            height: 150px;
             padding: 10px;
             overflow-y: auto;
             text-align: left;
@@ -114,8 +110,9 @@
             line-height: 1.5;
             font-family: 'Arial', sans-serif;
             color: #333;
-            background-color: #f9f9f9;
+            background-color: #f7f7f7; /* 약간 어두운 흰색 */
         }
+
 
         .expression-output {
             margin-top: 10px;
@@ -126,13 +123,9 @@
         }
 
         .button-container {
-            position: absolute;
             display: flex;
-            flex-direction: column;
+            margin : 30px 0 30px 0;
             gap: 10px;
-            left: 100%; /* 컨테이너 오른쪽에 딱 붙이기 */
-            top: 25%;
-            transform: translate(-10px, -50%); /* 살짝 간격을 두기 위해 조정 */
         }
 
         .button-container button {
@@ -140,15 +133,18 @@
             background-color: #333;
             border: none;
             color: white;
-            border-radius: 0 10px 10px 0; /* 왼쪽 직선, 오른쪽 둥근 모서리 */
+            border-radius: 10px; /* 왼쪽 직선, 오른쪽 둥근 모서리 */
             cursor: pointer;
             font-size: 16px;
             text-align: center;
-            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* 살짝 그림자 추가 */
         }
 
         .button-container button:hover {
             background-color: #555;
+        }
+        .row {
+            display: flex;
+            width: 100%;
         }
     </style>
 </head>
@@ -218,43 +214,33 @@
 
     <!-- 메인 컨텐츠 -->
     <div class="content">
-        <!-- 첫 번째 행: 면접관 화면과 면접관 텍스트 창 -->
+        <h3 id="current-status">면접 시작버튼을 눌러주세요</h3>
         <div class="row">
             <div class="video-section">
-                <h2>면접관 화면</h2>
-                <img id="interviewer-video" src="ai-character.png" alt="가상 면접관 AI 캐릭터">
+                <img id="interviewer-video" src="img/ai-character.png" alt="가상 면접관 AI 캐릭터">
             </div>
-            <div class="video-section">
-                <h2>면접관 텍스트 창</h2>
-                <div class="text-output" id="interviewer-text-output"></div>
-            </div>
-        </div>
 
-        <!-- 두 번째 행: 면접자 화면과 면접자 텍스트 창 -->
-        <div class="row">
             <div class="video-section">
-                <h2>
-                    면접자:
-                    <%= session.getAttribute("loggedInUser") != null
-                            ? ((UserDTO) session.getAttribute("loggedInUser")).getName()
-                            : "Unknown" %>
-                </h2>
                 <video id="user-webcam" autoplay playsinline muted></video>
                 <!-- 표정 분석 결과 추가 -->
                 <div class="expression-output" id="user-expression-output">표정 분석 결과가 여기에 표시됩니다.</div>
             </div>
-            <div class="video-section">
-                <h2>면접자 텍스트 창</h2>
-                <div class="text-output" id="user-text-output"></div>
-            </div>
+        </div>
+        <div class="video-section">
+            <span class="text-output" id="interviewer-text-output">질문이 이곳에 표시됩니다.</span>
+        </div>
+        <div class="video-section">
+            <div class="text-output" id="user-text-output">질문이 끝난 후 답변해주세요.</div>
+        </div>
+
+        <!-- 버튼 컨테이너 -->
+        <div class="button-container">
+            <button id="start-interview">면접 시작</button>
+            <button id="next-question">다음 질문</button>
         </div>
     </div>
 
-    <!-- 버튼 컨테이너 -->
-    <div class="button-container">
-        <button id="start-interview">면접 시작</button>
-        <button id="next-question">다음 질문</button>
-    </div>
+
 </div>
 
 <script src="script.js"></script>

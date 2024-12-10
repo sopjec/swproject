@@ -144,9 +144,6 @@
     <div class="sidebar">
         <ul>
             <li><a href="mypage.jsp">내계정</a></li>
-            <li><a href="resume_view?action=view">자기소개서 조회</a></li>
-            <li><a href=interview_view?action=interview_view">면접 녹화 기록 조회</a></li>
-            <li><a href="jobScrap?action=jobScrap.jsp">저장된 공고 목록</a></li>
         </ul>
     </div>
 
