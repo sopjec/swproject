@@ -41,6 +41,7 @@
         }
 
         #feedback-modal h3 {
+            padding-left: 46%;
             margin-bottom: 10px;
             font-size: 18px;
             font-weight: bold;
@@ -148,6 +149,11 @@
 
         .button-container button:hover {
             background-color: #555;
+
+        }
+
+        #close-modal {
+            margin-left: 45%;
         }
 
         .row {

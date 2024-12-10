@@ -58,7 +58,7 @@ public class AICoaching extends HttpServlet {
         // OpenAI 요청 데이터 생성
         JsonObject requestBody = new JsonObject();
         requestBody.addProperty("model", FINE_TUNED_MODEL_ID); // Fine-Tuned 모델 ID 사용
-        requestBody.addProperty("max_tokens", 100); // max_tokens를 100으로 제한
+        requestBody.addProperty("max_tokens", 500); // max_tokens를 100으로 제한
 
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
